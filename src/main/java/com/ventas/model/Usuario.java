@@ -1,6 +1,5 @@
 package com.ventas.model;
 
-import com.ventas.dao.UsuarioDao;
 import com.ventas.dto.UsuarioDto;
 import com.ventas.factories.FabricaDao;
 
@@ -14,15 +13,13 @@ public class Usuario extends Modelo{
     private String password;
     private Empleado empleado;
     private Date ultimoAcceso;
-    public Date getUltimoAcceso() {
-        return ultimoAcceso;
-    }
-
-    public void setUltimoAcceso(Date ultimoAcceso) {
-        this.ultimoAcceso = ultimoAcceso;
-    }
-
     private ModelMapper mapper = new ModelMapper();
+
+     public Usuario(){
+        this.dao = FabricaDao.fabricar("UsuarioDao");
+    }
+
+    // Getters y Setters
 
     public String getUsername() {
         return username;
@@ -48,9 +45,15 @@ public class Usuario extends Modelo{
         this.empleado = empleado;
     }
 
-    public Usuario(){
-        this.dao = FabricaDao.fabricar("UsuarioDao");
+     public Date getUltimoAcceso() {
+        return ultimoAcceso;
     }
+
+    public void setUltimoAcceso(Date ultimoAcceso) {
+        this.ultimoAcceso = ultimoAcceso;
+    }
+
+    // Business Methods
 
     public void iniciarSesion(String username, String pass){
         UsuarioDto user = new UsuarioDto();
