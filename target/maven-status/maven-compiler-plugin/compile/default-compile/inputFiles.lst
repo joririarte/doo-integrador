@@ -1,0 +1,16 @@
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\App.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\controller\AdminController.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\controller\AdminSelectorController.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\controller\CajeroController.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\controller\LoginController.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\controller\ProductoFormularioController.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\controller\VerVentasController.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\db\ConexionSQLite.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\db\DBInitializer.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\db\DBVentasInitializer.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\model\DetalleVenta.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\model\ItemVenta.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\model\Producto.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\model\Usuario.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\model\Venta.java
+C:\Users\Santi\SistemaVentas\src\main\java\com\ventas\util\Database.java

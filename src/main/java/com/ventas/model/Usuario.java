@@ -1,0 +1,68 @@
+package com.ventas.model;
+
+import com.ventas.dao.UsuarioDao;
+import com.ventas.dto.UsuarioDto;
+import com.ventas.factories.FabricaDao;
+
+import java.util.Arrays;
+import java.util.Date;
+
+import org.modelmapper.ModelMapper;
+
+public class Usuario extends Modelo{
+    private String username;
+    private String password;
+    private Empleado empleado;
+    private Date ultimoAcceso;
+    public Date getUltimoAcceso() {
+        return ultimoAcceso;
+    }
+
+    public void setUltimoAcceso(Date ultimoAcceso) {
+        this.ultimoAcceso = ultimoAcceso;
+    }
+
+    private ModelMapper mapper = new ModelMapper();
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Empleado getEmpleado() {
+        return empleado;
+    }
+
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
+    }
+
+    public Usuario(){
+        this.dao = FabricaDao.fabricar("UsuarioDao");
+    }
+
+    public void iniciarSesion(String username, String pass){
+        UsuarioDto user = new UsuarioDto();
+        
+        user.username=username;
+        user.password=pass;
+        user = (UsuarioDto) this.dao.buscar(user);
+        this.username = user.username;
+        this.password = user.password;
+        this.ultimoAcceso = user.ultimoAcceso;
+        this.empleado = this.mapper.map(user.empleado, Empleado.class);
+
+        this.dao.actualizar(user, Arrays.asList("ultimoAccesso"));
+    }
+}

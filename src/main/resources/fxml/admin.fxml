@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ventas.controller.AdminController" spacing="10">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Listado de Productos" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <Button fx:id="btnRegistrarProducto" text="Registrar Producto"/>
+
+    </HBox>
+
+    <TableView fx:id="tablaProductos" prefHeight="400" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="nombreColumn" text="Nombre" prefWidth="150"/>
+            <TableColumn fx:id="marcaColumn" text="Marca" prefWidth="100"/>
+            <TableColumn fx:id="codigoBarrasColumn" text="Código de barras" prefWidth="150"/>
+            <TableColumn fx:id="precioColumn" text="Precio" prefWidth="80"/>
+            <TableColumn fx:id="stockColumn" text="Stock" prefWidth="80"/>
+
+            <!-- Columna para acciones -->
+            <TableColumn fx:id="accionColumn" text="Acciones" prefWidth="160"/>
+        </columns>
+    </TableView>
+
+</VBox>
