@@ -3,9 +3,12 @@ package com.ventas.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.ventas.dto.PrecioDto;
 import com.ventas.dto.ProductoDto;
+import com.ventas.dto.StockDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
 
 public class ProductoDao implements Dao<ProductoDto> {
@@ -145,11 +148,17 @@ public class ProductoDao implements Dao<ProductoDto> {
                         case "nombre":
                             stmt.setString(index++, obj.nombre);
                             break;
-                        case "marca":
-                            stmt.setString(index++, obj.marca);
+                        case "monto":
+                            {
+                                PrecioDao precioDao = new PrecioDao();
+                                precioDao.actualizar(obj.precio.getLast(), null);
+                            }
                             break;
-                        case "codigoBarras":
-                            stmt.setString(index++, obj.codigoBarras);
+                        case "cantidad":
+                            {
+                                StockDao stockDao = new StockDao();
+                                stockDao.actualizar(obj.stock.getLast(), null);
+                            }
                             break;
                         default:
                             throw new IllegalArgumentException("Campo no soportado: " + param);
@@ -165,6 +174,17 @@ public class ProductoDao implements Dao<ProductoDto> {
                 stmt.setString(2, obj.marca);
                 stmt.setString(3, obj.codigoBarras);
                 stmt.executeUpdate();
+                
+                StockDao stockDao = new StockDao();
+                for (StockDto s : obj.stock){
+                    stockDao.actualizar(s, null);
+                }
+
+                PrecioDao precioDao = new PrecioDao();
+                for(PrecioDto p : obj.precio){
+                    precioDao.actualizar(p, null);
+                }
+
 
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
@@ -184,6 +204,16 @@ public class ProductoDao implements Dao<ProductoDto> {
         String sql = "DELETE FROM Producto WHERE productoId = ?";
 
         try {
+            StockDao stockDao = new StockDao();
+            for(StockDto s : obj.stock){
+                stockDao.borrar(s);
+            }
+
+            PrecioDao precioDao = new PrecioDao();
+            for(PrecioDto p : obj.precio){
+                precioDao.borrar(p);
+            }
+
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
             stmt.setInt(1, obj.productoId);
             stmt.executeUpdate();
