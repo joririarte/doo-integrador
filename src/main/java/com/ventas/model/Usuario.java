@@ -21,7 +21,7 @@ public class Usuario extends Modelo{
         mapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
     }
 
-    // Getters y Setters
+    //#region Getters y Setters
 
     public String getUsername() {
         return username;
@@ -54,8 +54,9 @@ public class Usuario extends Modelo{
     public void setUltimoAcceso(Date ultimoAcceso) {
         this.ultimoAcceso = ultimoAcceso;
     }
+    //#endregion
 
-    // Business Methods
+    //#region Business Methods
 
     public Boolean iniciarSesion(String username, String pass){
         UsuarioDto user = new UsuarioDto();
@@ -81,4 +82,5 @@ public class Usuario extends Modelo{
         }
         return false;
     }
+    //#endregion
 }
