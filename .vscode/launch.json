@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug (JavaFX App)",
+      "request": "launch",
+      "mainClass": "com.ventas.App",
+      "projectName": "SistemaVentas",
+      "vmArgs": "--module-path \"C:/javafx-sdk-21.0.7/lib\" --add-modules javafx.controls,javafx.fxml"
+    }
+  ]
+}

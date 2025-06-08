@@ -22,10 +22,10 @@ public class StockDao implements Dao<StockDto> {
 
             while (rs.next()) {
                 StockDto dto = new StockDto();
-                dto.id = rs.getInt("id");
+                dto.productoId = rs.getInt("productoId");
+                dto.stockId = rs.getInt("stockId");
                 dto.cantidad = rs.getFloat("cantidad");
                 dto.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
-                dto.productoId = rs.getInt("producto_id");
 
                 lista.add(dto);
             }
@@ -39,7 +39,7 @@ public class StockDao implements Dao<StockDto> {
 
     public List<StockDto> listarPorProducto(int productoId) {
         List<StockDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Stock WHERE producto_id = ?";
+        String sql = "SELECT * FROM Stock WHERE productoId = ? AND stockId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -48,7 +48,8 @@ public class StockDao implements Dao<StockDto> {
 
             while (rs.next()) {
                 StockDto dto = new StockDto();
-                dto.id = rs.getInt("id");
+                dto.productoId = rs.getInt("productoId");
+                dto.stockId = rs.getInt("stockId");
                 dto.cantidad = rs.getFloat("cantidad");
                 dto.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
                 dto.productoId = rs.getInt("producto_id");
@@ -65,17 +66,19 @@ public class StockDao implements Dao<StockDto> {
 
     @Override
     public StockDto buscar(StockDto obj) {
-        String sql = "SELECT * FROM Stock WHERE id = ?";
+        String sql = "SELECT * FROM Stock WHERE productoId = ? AND stockId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.id);
+            stmt.setInt(1, obj.productoId);
+            stmt.setInt(2, obj.stockId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                obj.productoId = rs.getInt("productoId");
+                obj.stockId = rs.getInt("stockId");
                 obj.cantidad = rs.getFloat("cantidad");
                 obj.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
-                obj.productoId = rs.getInt("producto_id");
             } else {
                 obj = null;
             }
@@ -90,7 +93,7 @@ public class StockDao implements Dao<StockDto> {
     @Override
     public StockDto actualizar(StockDto obj, List<String> params) {
         try {
-            if (params != null && !params.isEmpty() && obj.id > 0) {
+            if (params != null && !params.isEmpty() && obj.productoId > 0 && obj.stockId > 0) {
                 StringBuilder sql = new StringBuilder("UPDATE Stock SET ");
                 for (int i = 0; i < params.size(); i++) {
                     sql.append(params.get(i)).append(" = ?");
@@ -98,7 +101,7 @@ public class StockDao implements Dao<StockDto> {
                         sql.append(", ");
                     }
                 }
-                sql.append(" WHERE id = ?");
+                sql.append(" WHERE productoId = ? AND stockId = ?");
 
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
 
@@ -111,28 +114,22 @@ public class StockDao implements Dao<StockDto> {
                         case "fecha":
                             stmt.setString(index++, CommonUtils.dateToString(obj.fecha));
                             break;
-                        case "producto_id":
-                            stmt.setInt(index++, obj.productoId);
-                            break;
                         default:
                             throw new IllegalArgumentException("Campo no soportado: " + param);
                     }
                 }
 
-                stmt.setInt(index, obj.id);
+                stmt.setInt(index, obj.productoId);
+                stmt.setInt(index++, obj.stockId);
                 stmt.executeUpdate();
             } else {
-                String sqlInsert = "INSERT INTO Stock (cantidad, fecha, producto_id) VALUES (?, ?, ?)";
+                String sqlInsert = "INSERT INTO Stock (productoId, stockId, cantidad, fecha) VALUES (?, ?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
-                stmt.setFloat(1, obj.cantidad);
-                stmt.setString(2, CommonUtils.dateToString(obj.fecha));
-                stmt.setInt(3, obj.productoId);
+                stmt.setInt(1, obj.productoId);
+                stmt.setInt(2, obj.stockId);
+                stmt.setFloat(3, obj.cantidad);
+                stmt.setString(4, CommonUtils.dateToString(obj.fecha));
                 stmt.executeUpdate();
-
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    obj.id = rs.getInt(1);
-                }
             }
 
         } catch (Exception e) {
@@ -144,16 +141,23 @@ public class StockDao implements Dao<StockDto> {
 
     @Override
     public StockDto borrar(StockDto obj) {
-        String sql = "DELETE FROM Stock WHERE id = ?";
+        String sql = "DELETE FROM Stock WHERE productoId = ? AND stockId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.id);
+            stmt.setInt(1, obj.productoId);
+            stmt.setInt(2, obj.stockId);
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return obj;
+    }
+
+    @Override
+    public List<StockDto> buscar(StockDto obj, List<String> params) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
     }
 }

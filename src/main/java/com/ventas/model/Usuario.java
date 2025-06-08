@@ -7,16 +7,18 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration.AccessLevel;
 
 public class Usuario extends Modelo{
     private String username;
     private String password;
     private Empleado empleado;
     private Date ultimoAcceso;
-    private ModelMapper mapper = new ModelMapper();
 
-     public Usuario(){
+    public Usuario(){
         this.dao = FabricaDao.fabricar("UsuarioDao");
+        this.mapper = new ModelMapper();
+        mapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
     }
 
     // Getters y Setters
@@ -55,17 +57,28 @@ public class Usuario extends Modelo{
 
     // Business Methods
 
-    public void iniciarSesion(String username, String pass){
+    public Boolean iniciarSesion(String username, String pass){
         UsuarioDto user = new UsuarioDto();
         
         user.username=username;
         user.password=pass;
-        user = (UsuarioDto) this.dao.buscar(user);
-        this.username = user.username;
-        this.password = user.password;
-        this.ultimoAcceso = user.ultimoAcceso;
-        this.empleado = this.mapper.map(user.empleado, Empleado.class);
+        try {
+            user = (UsuarioDto) this.dao.buscar(user);
+            if(user != null){
+                this.username = user.username;
+                this.password = user.password;
+                this.ultimoAcceso = user.ultimoAcceso;
+                this.empleado = this.mapper.map(user.empleado, Empleado.class);
 
-        this.dao.actualizar(user, Arrays.asList("ultimoAccesso"));
+                this.dao.actualizar(user, Arrays.asList("ultimoAcceso"));
+                
+                return true;
+            }
+        }
+        catch (Exception ex){
+            System.out.println(user);
+            System.out.println("ocurrio un error");
+        }
+        return false;
     }
 }

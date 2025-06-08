@@ -2,15 +2,15 @@ package com.ventas.dto;
 
 import java.util.*;
 public class VentaDto {
-    public int id;
+    public int ventaId;
+    public int vendedorId;
     public EmpleadoDto vendedor;
-    public int empleadoId;
     public Date fecha;
     public String estado;
     public float montoPagado;
-    public MedioPagoDto medioPago;
     public int medioPagoId;
-    public ClienteDto cliente;
+    public MedioPagoDto medioPago;
     public int clienteId;
+    public ClienteDto cliente;
     public List<DetalleVentaDto> detalleVenta;
 }

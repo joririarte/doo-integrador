@@ -22,18 +22,16 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
             while (rs.next()) {
                 DescuentoRecargoDto dto = new DescuentoRecargoDto();
-                dto.id = rs.getInt("id");
+                dto.medioPagoId = rs.getInt("medioPagoId");
+                dto.descuentoRecargoId = rs.getInt("descuentoRecargoId");
                 dto.nombre = rs.getString("nombre");
                 dto.tipo = rs.getString("tipo");
                 dto.monto = rs.getFloat("monto");
                 dto.fechaInicio = CommonUtils.stringToDate(rs.getString("fechaInicio"));
                 dto.fechaFin = CommonUtils.stringToDate(rs.getString("fechaFin"));
                 dto.habilitado = rs.getBoolean("habilitado");
-                dto.medioPagoId = rs.getInt("medio_pago_id");
-
                 lista.add(dto);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -43,21 +41,23 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
     @Override
     public DescuentoRecargoDto buscar(DescuentoRecargoDto obj) {
-        String sql = "SELECT * FROM DescuentoRecargo WHERE id = ?";
+        String sql = "SELECT * FROM DescuentoRecargo WHERE medioPagoId = ? AND descuentoRecargoId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.id);
+            stmt.setInt(1, obj.medioPagoId);
+            stmt.setInt(2, obj.descuentoRecargoId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                obj.medioPagoId = rs.getInt("medioPagoId");
+                obj.descuentoRecargoId = rs.getInt("descuentoRecargoId");
                 obj.nombre = rs.getString("nombre");
                 obj.tipo = rs.getString("tipo");
                 obj.monto = rs.getFloat("monto");
                 obj.fechaInicio = CommonUtils.stringToDate(rs.getString("fechaInicio"));
                 obj.fechaFin = CommonUtils.stringToDate(rs.getString("fechaFin"));
                 obj.habilitado = rs.getBoolean("habilitado");
-                obj.medioPagoId = rs.getInt("medio_pago_id");
             } else {
                 obj = null;
             }
@@ -71,7 +71,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
     public List<DescuentoRecargoDto> obtenerPorMedioPago(int medioPagoId) {
         List<DescuentoRecargoDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM DescuentoRecargo WHERE medio_pago_id = ?";
+        String sql = "SELECT * FROM DescuentoRecargo WHERE medioPagoId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -80,7 +80,8 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
             while (rs.next()) {
                 DescuentoRecargoDto dto = new DescuentoRecargoDto();
-                dto.id = rs.getInt("id");
+                dto.medioPagoId = rs.getInt("medioPagoId");
+                dto.descuentoRecargoId = rs.getInt("descuentoRecargoId");
                 dto.nombre = rs.getString("nombre");
                 dto.tipo = rs.getString("tipo");
                 dto.monto = rs.getFloat("monto");
@@ -102,7 +103,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
     @Override
     public DescuentoRecargoDto actualizar(DescuentoRecargoDto obj, List<String> params) {
         try {
-            if (params != null && !params.isEmpty() && obj.id > 0) {
+            if (params != null && !params.isEmpty() && obj.medioPagoId > 0 && obj.descuentoRecargoId > 0) {
                 StringBuilder sql = new StringBuilder("UPDATE DescuentoRecargo SET ");
                 for (int i = 0; i < params.size(); i++) {
                     sql.append(params.get(i)).append(" = ?");
@@ -110,7 +111,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
                         sql.append(", ");
                     }
                 }
-                sql.append(" WHERE id = ?");
+                sql.append(" WHERE medioPagoId = ? AND descuentoRecargoId = ?");
 
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
 
@@ -137,26 +138,23 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
                     }
                 }
 
-                stmt.setInt(index, obj.id);
+                stmt.setInt(index, obj.medioPagoId);
+                stmt.setInt(index++, obj.descuentoRecargoId);
                 stmt.executeUpdate();
 
             } else {
-                String sqlInsert = "INSERT INTO DescuentoRecargo (nombre, tipo, monto, fechaInicio, fechaFin, habilitado, medio_pago_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                String sqlInsert = "INSERT INTO DescuentoRecargo (medioPagoId, descuentoRecargoId, nombre, tipo, monto, fechaInicio, fechaFin, habilitado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
-                stmt.setString(1, obj.nombre);
-                stmt.setString(2, obj.tipo);
-                stmt.setFloat(3, obj.monto);
-                stmt.setString(4, CommonUtils.dateToString(obj.fechaInicio));
-                stmt.setString(5, CommonUtils.dateToString(obj.fechaFin));
-                stmt.setBoolean(6, obj.habilitado);
-                stmt.setInt(7, obj.medioPagoId);
+                stmt.setInt(1, obj.medioPagoId);
+                stmt.setInt(2, obj.descuentoRecargoId);
+                stmt.setString(3, obj.nombre);
+                stmt.setString(4, obj.tipo);
+                stmt.setFloat(5, obj.monto);
+                stmt.setString(6, CommonUtils.dateToString(obj.fechaInicio));
+                stmt.setString(7, CommonUtils.dateToString(obj.fechaFin));
+                stmt.setBoolean(8, obj.habilitado);
 
                 stmt.executeUpdate();
-
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    obj.id = rs.getInt(1);
-                }
             }
 
         } catch (Exception e) {
@@ -168,16 +166,23 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
     @Override
     public DescuentoRecargoDto borrar(DescuentoRecargoDto obj) {
-        String sql = "DELETE FROM DescuentoRecargo WHERE id = ?";
+        String sql = "DELETE FROM DescuentoRecargo WHERE medioPagoId = ? AND descuentoRecargoId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.id);
+            stmt.setInt(1, obj.medioPagoId);
+            stmt.setInt(1, obj.descuentoRecargoId);
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return obj;
+    }
+
+    @Override
+    public List<DescuentoRecargoDto> buscar(DescuentoRecargoDto obj, List<String> params) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
     }
 }

@@ -1,6 +1,7 @@
 package com.ventas.dao;
 
 import com.ventas.dto.DetalleVentaDto;
+import com.ventas.dto.ProductoDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
 import java.sql.*;
 import java.util.ArrayList;
@@ -18,12 +19,17 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
 
             while (rs.next()) {
                 DetalleVentaDto dto = new DetalleVentaDto();
-                dto.ventaId = rs.getInt("venta_id");
-                dto.detalleVentaId = rs.getInt("id");
+                dto.ventaId = rs.getInt("ventaId");
+                dto.detalleVentaId = rs.getInt("detalleVentaId");
                 dto.nombre = rs.getString("nombre");
                 dto.cantidad = rs.getInt("cantidad");
                 dto.precioVenta = rs.getFloat("precioVenta");
-                dto.productoId = rs.getInt("producto_id");
+                dto.productoId = rs.getInt("productoId");
+                
+                ProductoDto productoDto = new ProductoDto();
+                productoDto.productoId = dto.productoId;
+                dto.producto = new ProductoDao().buscar(productoDto);
+
                 lista.add(dto);
             }
 
@@ -36,7 +42,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
 
     @Override
     public DetalleVentaDto buscar(DetalleVentaDto obj) {
-        String sql = "SELECT * FROM DetalleVenta WHERE venta_id = ? AND id = ?";
+        String sql = "SELECT * FROM DetalleVenta WHERE ventaId = ? AND detalleVentaId = ?";
         DetalleVentaDto dto = null;
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql)) {
@@ -46,12 +52,16 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 dto = new DetalleVentaDto();
-                dto.ventaId = rs.getInt("venta_id");
-                dto.detalleVentaId = rs.getInt("id");
+                dto.ventaId = rs.getInt("ventaId");
+                dto.detalleVentaId = rs.getInt("detalleVentaId");
                 dto.nombre = rs.getString("nombre");
                 dto.cantidad = rs.getInt("cantidad");
-                dto.productoId = rs.getInt("producto_id");
                 dto.precioVenta = rs.getFloat("precioVenta");
+                dto.productoId = rs.getInt("productoId");
+
+                ProductoDto productoDto = new ProductoDto();
+                productoDto.productoId = dto.productoId;
+                dto.producto = new ProductoDao().buscar(productoDto);
             }
 
         } catch (SQLException e) {
@@ -64,7 +74,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
     public List<DetalleVentaDto> obtenerPorVenta(int ventaId) {
         DetalleVentaDto dto = null;
         List<DetalleVentaDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM DetalleVenta WHERE venta_id = ?";
+        String sql = "SELECT * FROM DetalleVenta WHERE ventaId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -73,12 +83,16 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
 
             while (rs.next()) {
                 dto = new DetalleVentaDto();
-                dto.ventaId = rs.getInt("venta_id");
-                dto.detalleVentaId = rs.getInt("id");
+                dto.ventaId = rs.getInt("ventaId");
+                dto.detalleVentaId = rs.getInt("detalleVentaId");
                 dto.nombre = rs.getString("nombre");
                 dto.cantidad = rs.getInt("cantidad");
-                dto.productoId = rs.getInt("producto_id");
                 dto.precioVenta = rs.getFloat("precioVenta");
+                dto.productoId = rs.getInt("productoId");
+
+                ProductoDto productoDto = new ProductoDto();
+                productoDto.productoId = dto.productoId;
+                dto.producto = new ProductoDao().buscar(productoDto);
 
                 lista.add(dto);
             }
@@ -97,7 +111,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
 
             if (campos == null || campos.isEmpty()) {
                 // Insertar
-                String sql = "INSERT INTO DetalleVenta (venta_id, id, nombre, cantidad, precioVenta, producto_id) VALUES (?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO DetalleVenta (ventaId, detalleVentaId, nombre, cantidad, precioVenta, productoId) VALUES (?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     stmt.setInt(1, obj.ventaId);
                     stmt.setInt(2, obj.detalleVentaId);
@@ -116,7 +130,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
                         sql.append(", ");
                     }
                 }
-                sql.append(" WHERE venta_id = ? AND id = ?");
+                sql.append(" WHERE ventaId = ? AND detalleVentaId = ?");
 
                 try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
                     for (int i = 0; i < campos.size(); i++) {
@@ -141,7 +155,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
 
     @Override
     public DetalleVentaDto borrar(DetalleVentaDto obj) {
-        String sql = "DELETE FROM DetalleVenta WHERE venta_id = ? AND id = ?";
+        String sql = "DELETE FROM DetalleVenta WHERE ventaId = ? AND detalleVentaId = ?";
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql)) {
             stmt.setInt(1, obj.ventaId);
@@ -152,5 +166,11 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
         }
 
         return obj;
+    }
+
+    @Override
+    public List<DetalleVentaDto> buscar(DetalleVentaDto obj, List<String> params) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
     }
 }

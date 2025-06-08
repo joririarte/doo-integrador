@@ -22,12 +22,12 @@ public class LoginController {
 
         Usuario user = new Usuario();
 
-        user.iniciarSesion(usuario, contraseña);
+        if(user.iniciarSesion(usuario, contraseña)){
 
-        String rol = user.getEmpleado().getCargo();
+            String rol = user.getEmpleado().getCargo();
 
-        try{
-            if ("Admin".equals(rol)) {
+            try{
+            if ("Administrador".equals(rol)) {
                 // Abrir selector admin (productos o ventas)
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin_selector.fxml"));
                 Stage stage = (Stage) usuarioField.getScene().getWindow();
@@ -42,7 +42,7 @@ public class LoginController {
                 if (fxml != null) {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
                     Stage stage = (Stage) usuarioField.getScene().getWindow();
-                    stage.setScene(new Scene(loader.load()));
+                    stage.setScene(new Scene(loader.load())); 
                 } else {
                     mensajeLabel.setText("Rol no reconocido.");
                 }
@@ -50,5 +50,9 @@ public class LoginController {
 
         }
         catch(IOException ex){}
+        }
+        else {
+            System.out.println("usuario no encontrado");
+        }
     }
 }

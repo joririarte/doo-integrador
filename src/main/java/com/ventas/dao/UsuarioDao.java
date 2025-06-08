@@ -23,14 +23,13 @@ public class UsuarioDao implements Dao<UsuarioDto> {
 
             while (rs.next()) {
                 UsuarioDto usuario = new UsuarioDto();
-                usuario.id = rs.getInt("id");
+                usuario.empleadoId = rs.getInt("empleadoId");
                 usuario.username = rs.getString("username");
                 usuario.password = rs.getString("password");
                 usuario.ultimoAcceso = CommonUtils.stringToDate(rs.getString("ultimoAcceso"));
-                usuario.empleadoId = rs.getInt("empleado_id");
                 
                 EmpleadoDto emp = new EmpleadoDto();
-                emp.id = usuario.empleadoId;
+                emp.personaId = usuario.empleadoId;
                 usuario.empleado = new EmpleadoDao().buscar(emp);
                 
                 lista.add(usuario);
@@ -45,28 +44,24 @@ public class UsuarioDao implements Dao<UsuarioDto> {
 
     @Override
     public UsuarioDto buscar(UsuarioDto obj) {
-        String usuario = obj.username;
-        String contraseña = obj.password;
-
-        String sql = "SELECT * FROM usuarios WHERE username = ? AND password = ?";
+        String sql = "SELECT * FROM Usuario WHERE username = ? AND password = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
 
-            stmt.setString(1, usuario);
-            stmt.setString(2, contraseña);
+            stmt.setString(1, obj.username);
+            stmt.setString(2, obj.password);
 
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                obj.id = rs.getInt("id");
-                obj.username = rs.getString("obj");
+                obj.empleadoId = rs.getInt("empleadoId");
+                obj.username = rs.getString("username");
                 obj.password = rs.getString("password");
                 obj.ultimoAcceso = CommonUtils.stringToDate(rs.getString("ultimoAcceso"));
-                obj.empleadoId = rs.getInt("empleado_id");
 
                 EmpleadoDto emp = new EmpleadoDto();
-                emp.id = obj.empleadoId;
+                emp.personaId = obj.empleadoId;
                 obj.empleado = new EmpleadoDao().buscar(emp);
             }
             else
@@ -82,7 +77,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
     @Override
     public UsuarioDto actualizar(UsuarioDto obj, List<String> params) {
         try {
-            if (params != null && !params.isEmpty() && obj.id > 0) {
+            if (params != null && !params.isEmpty() && obj.empleadoId > 0) {
                 StringBuilder sql = new StringBuilder("UPDATE Usuario SET ");
             for (int i = 0; i < params.size(); i++) {
                 sql.append(params.get(i)).append(" = ?");
@@ -90,7 +85,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
                     sql.append(", ");
                 }
             }
-            sql.append(" WHERE id = ?");
+            sql.append(" WHERE empleadoId = ?");
 
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
 
@@ -108,19 +103,19 @@ public class UsuarioDao implements Dao<UsuarioDto> {
                 }
             }
 
-            stmt.setInt(index, obj.id);
+            stmt.setInt(index, obj.empleadoId);
             stmt.executeUpdate();
             } else {
-                String sqlInsert = "INSERT INTO Usuario (username, password, empleado_id) VALUES (?, ?, ?)";
+                String sqlInsert = "INSERT INTO Usuario (empleadoId, username, password) VALUES (?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
-                stmt.setString(1, obj.username);
-                stmt.setString(2, obj.password);
-                stmt.setInt(3, obj.empleadoId);
+                stmt.setInt(1, obj.empleadoId);
+                stmt.setString(2, obj.username);
+                stmt.setString(3, obj.password);
                 stmt.executeUpdate();
                 
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
-                    obj.id = rs.getInt(1);
+                    obj.empleadoId = rs.getInt(1);
                 }
             }
         } catch (Exception e) {
@@ -133,11 +128,11 @@ public class UsuarioDao implements Dao<UsuarioDto> {
 
     @Override
     public UsuarioDto borrar(UsuarioDto obj) {
-        String sql = "DELETE FROM Usuario WHERE id = ?";
+        String sql = "DELETE FROM Usuario WHERE empleadoId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.id);
+            stmt.setInt(1, obj.empleadoId);
 
             stmt.executeUpdate();
         } catch (Exception e) {
@@ -145,5 +140,11 @@ public class UsuarioDao implements Dao<UsuarioDto> {
         }
 
         return obj;
+    }
+
+    @Override
+    public List<UsuarioDto> buscar(UsuarioDto obj, List<String> params) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
     }
 }

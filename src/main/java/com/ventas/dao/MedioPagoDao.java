@@ -22,14 +22,14 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
 
             while (rs.next()) {
                 MedioPagoDto dto = new MedioPagoDto();
-                dto.id = rs.getInt("id");
+                dto.medioPagoId = rs.getInt("medioPagoId");
                 dto.nombre = rs.getString("nombre");
                 dto.habilitado = rs.getBoolean("habilitado");
                 dto.fechaHabilitadoDesde = CommonUtils.stringToDate(rs.getString("fechaHabilitadoDesde"));
                 dto.fechaHabilitadoHasta = CommonUtils.stringToDate(rs.getString("fechaHabilitadoHasta"));
 
                 // Relación: obtener lista de descuentos/recargos asociados
-                dto.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(dto.id);
+                dto.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(dto.medioPagoId);
 
                 lista.add(dto);
             }
@@ -42,11 +42,11 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
 
     @Override
     public MedioPagoDto buscar(MedioPagoDto obj) {
-        String sql = "SELECT * FROM MedioPago WHERE id = ?";
+        String sql = "SELECT * FROM MedioPago WHERE medioPagoId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.id);
+            stmt.setInt(1, obj.medioPagoId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -54,7 +54,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                 obj.habilitado = rs.getBoolean("habilitado");
                 obj.fechaHabilitadoDesde = CommonUtils.stringToDate(rs.getString("fechaHabilitadoDesde"));
                 obj.fechaHabilitadoHasta = CommonUtils.stringToDate(rs.getString("fechaHabilitadoHasta"));
-                obj.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(obj.id);
+                obj.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(obj.medioPagoId);
 
             } else {
                 obj = null;
@@ -70,7 +70,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
     @Override
     public MedioPagoDto actualizar(MedioPagoDto obj, List<String> params) {
         try {
-            if (params != null && !params.isEmpty() && obj.id > 0) {
+            if (params != null && !params.isEmpty() && obj.medioPagoId > 0) {
                 StringBuilder sql = new StringBuilder("UPDATE MedioPago SET ");
                 for (int i = 0; i < params.size(); i++) {
                     sql.append(params.get(i)).append(" = ?");
@@ -78,7 +78,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                         sql.append(", ");
                     }
                 }
-                sql.append(" WHERE id = ?");
+                sql.append(" WHERE medioPagoId = ?");
 
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
 
@@ -102,7 +102,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                     }
                 }
 
-                stmt.setInt(index, obj.id);
+                stmt.setInt(index, obj.medioPagoId);
                 stmt.executeUpdate();
 
             } else {
@@ -117,7 +117,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
 
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
-                    obj.id = rs.getInt(1);
+                    obj.medioPagoId = rs.getInt(1);
                 }
             }
 
@@ -130,16 +130,22 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
 
     @Override
     public MedioPagoDto borrar(MedioPagoDto obj) {
-        String sql = "DELETE FROM MedioPago WHERE id = ?";
+        String sql = "DELETE FROM MedioPago WHERE medioPagoId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.id);
+            stmt.setInt(1, obj.medioPagoId);
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return obj;
+    }
+
+    @Override
+    public List<MedioPagoDto> buscar(MedioPagoDto obj, List<String> params) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
     }
 }

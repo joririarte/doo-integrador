@@ -2,7 +2,7 @@ package com.ventas.dto;
 
 import java.util.*;
 public class PersonaDto {
-    public int id;
+    public int personaId;
     public String nombreApellido;
     public String tipoDocumento;
     public String nroDocumento;

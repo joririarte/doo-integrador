@@ -3,7 +3,7 @@ package com.ventas.dto;
 import java.util.List;
 
 public class ProductoDto {
-    public int id;
+    public int productoId;
     public String nombre;
     public String marca;
     public String codigoBarras;

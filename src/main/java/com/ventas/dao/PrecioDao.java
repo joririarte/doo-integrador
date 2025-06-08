@@ -22,10 +22,10 @@ public class PrecioDao implements Dao<PrecioDto> {
 
             while (rs.next()) {
                 PrecioDto dto = new PrecioDto();
-                dto.id = rs.getInt("id");
+                dto.productoId = rs.getInt("productoId");
+                dto.precioId = rs.getInt("precioId");
                 dto.monto = rs.getFloat("monto");
                 dto.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
-                dto.productoId = rs.getInt("producto_id");
                 lista.add(dto);
             }
 
@@ -38,17 +38,17 @@ public class PrecioDao implements Dao<PrecioDto> {
 
     @Override
     public PrecioDto buscar(PrecioDto obj) {
-        String sql = "SELECT * FROM Precio WHERE id = ?";
+        String sql = "SELECT * FROM Precio WHERE productoId = ? AND precioId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.id);
+            stmt.setInt(1, obj.productoId);
+            stmt.setInt(2, obj.precioId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 obj.monto = rs.getFloat("monto");
                 obj.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
-                obj.productoId = rs.getInt("producto_id");
             } else {
                 obj = null;
             }
@@ -62,7 +62,7 @@ public class PrecioDao implements Dao<PrecioDto> {
 
     public List<PrecioDto> listarPorProducto(int productoId) {
         List<PrecioDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Precio WHERE producto_id = ?";
+        String sql = "SELECT * FROM Precio WHERE productoId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -71,7 +71,8 @@ public class PrecioDao implements Dao<PrecioDto> {
 
             while (rs.next()) {
                 PrecioDto dto = new PrecioDto();
-                dto.id = rs.getInt("id");
+                dto.productoId = rs.getInt("productoId");
+                dto.precioId = rs.getInt("precioId");
                 dto.monto = rs.getFloat("monto");
                 dto.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
                 dto.productoId = productoId;
@@ -88,7 +89,7 @@ public class PrecioDao implements Dao<PrecioDto> {
     @Override
     public PrecioDto actualizar(PrecioDto obj, List<String> params) {
         try {
-            if (params != null && !params.isEmpty() && obj.id > 0) {
+            if (params != null && !params.isEmpty() && obj.productoId > 0 && obj.precioId > 0) {
                 StringBuilder sql = new StringBuilder("UPDATE Precio SET ");
                 for (int i = 0; i < params.size(); i++) {
                     sql.append(params.get(i)).append(" = ?");
@@ -96,7 +97,7 @@ public class PrecioDao implements Dao<PrecioDto> {
                         sql.append(", ");
                     }
                 }
-                sql.append(" WHERE id = ?");
+                sql.append(" WHERE productoId = ? AND precioId = ?");
 
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
 
@@ -109,28 +110,23 @@ public class PrecioDao implements Dao<PrecioDto> {
                         case "fecha":
                             stmt.setString(index++, CommonUtils.dateToString(obj.fecha));
                             break;
-                        case "producto_id":
-                            stmt.setInt(index++, obj.productoId);
-                            break;
                         default:
                             throw new IllegalArgumentException("Campo no soportado: " + param);
                     }
                 }
 
-                stmt.setInt(index, obj.id);
+                stmt.setInt(index, obj.productoId);
+                stmt.setInt(index++, obj.precioId);
                 stmt.executeUpdate();
             } else {
-                String sqlInsert = "INSERT INTO Precio (monto, fecha, producto_id) VALUES (?, ?, ?)";
+                String sqlInsert = "INSERT INTO Precio (productoId, precioId, monto, fecha) VALUES (?, ?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
-                stmt.setFloat(1, obj.monto);
-                stmt.setString(2, CommonUtils.dateToString(obj.fecha));
-                stmt.setInt(3, obj.productoId);
+                stmt.setInt(1, obj.productoId);
+                stmt.setInt(2, obj.precioId);
+                stmt.setFloat(3, obj.monto);
+                stmt.setString(4, CommonUtils.dateToString(obj.fecha));
+                
                 stmt.executeUpdate();
-
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    obj.id = rs.getInt(1);
-                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,17 +137,24 @@ public class PrecioDao implements Dao<PrecioDto> {
 
     @Override
     public PrecioDto borrar(PrecioDto obj) {
-        String sql = "DELETE FROM Precio WHERE id = ?";
+        String sql = "DELETE FROM Precio WHERE productoId = ? AND precioId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.id);
+            stmt.setInt(1, obj.productoId);
+                stmt.setInt(2, obj.precioId);
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return obj;
+    }
+
+    @Override
+    public List<PrecioDto> buscar(PrecioDto obj, List<String> params) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
     }
 }
 
