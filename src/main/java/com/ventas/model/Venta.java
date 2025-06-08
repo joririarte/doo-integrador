@@ -5,6 +5,7 @@ import java.util.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 
+import com.ventas.dto.VentaDto;
 import com.ventas.factories.FabricaDao;
 
 public class Venta extends Modelo {
@@ -142,14 +143,99 @@ public class Venta extends Modelo {
 
     //#region Business Methods
     
-    public float calcularMontoTotal() { return 0; }
-    public float calcularVuelto() { return 0; }
-    public void setCliente() {}
-    public void agregarDetalleProducto() {}
-    public MedioPago obtenerMedioPago() { return null; }
-    public void cobrar() {}
-    public boolean checkCobro() { return false; }
-    public void cancelar() {}
+    public float calcularMontoTotal() { 
+        float total = 0;
+        for(DetalleVenta dv : this.detalleVenta){
+            total += dv.calcularSubtotal();
+        }
+        return total; 
+    }
+
+    public float calcularVuelto() { 
+        float total = this.calcularMontoTotal();
+        return this.montoPagado > total ? this.montoPagado - total : 0; 
+    }
     
+    public void agregarDetalleVenta(DetalleVenta dv) {
+        this.detalleVenta.add(dv);
+    }
+    
+    public void obtenerMedioPago(MedioPago mp) { 
+        this.setMedioPago(mp); 
+    }
+    
+    public Boolean cobrar(float monto) {
+        if(this.checkCobro()){
+            this.setMontoPagado(monto);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkCobro() { 
+        try {
+            // Simular espera entre 1 y 3 segundos
+            int delay = (int) (Math.random() * 2000) + 1000; // de 1000 a 3000 ms
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // buena práctica
+            return false; // en caso de interrupción, consideramos fallido
+        }
+
+        // Generar resultado aleatorio
+        return Math.random() < 0.5;
+    }
+
+    public void cancelar() {
+        this.estado = "cancelada";
+    }
+
+    public List<Venta> listarVentas() {
+        try {
+            List<VentaDto> listado = this.dao.listarTodos();
+            if (!listado.isEmpty()) {
+                List<Venta> listaVentas = Arrays.asList(this.mapper.map(listado, Venta[].class));
+                return listaVentas;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Venta> consultarVenta(List<String> params) {
+        List<Venta> listadoVentas = null;
+        try {
+            VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
+            List<VentaDto> ventasDto = this.dao.buscar(ventaDto, params);
+            listadoVentas = Arrays.asList(this.mapper.map(ventasDto, Venta[].class));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return listadoVentas;
+    }
+
+    public Boolean registrarVenta() {
+        try {
+            VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
+            ventaDto = (VentaDto) this.dao.actualizar(ventaDto, null);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Boolean eliminarVenta() {
+        try {
+            VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
+            ventaDto = (VentaDto) this.dao.borrar(ventaDto);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     //#endregion
 }
