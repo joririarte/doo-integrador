@@ -154,8 +154,8 @@ VALUES
 -- Usamos mismo personaId como empleadoId (3 y 4)
 INSERT INTO Usuario (empleadoId, username, password, ultimoAcceso)
 VALUES 
-(3, 'adminCarlos', 'admin123', '2025-06-08 10:00:00'),
-(4, 'luciaCajera', 'cajero123', '2025-06-08 09:00:00');
+(3, 'admin', 'admin123', '2025-06-08 10:00:00'),
+(4, 'cajero', 'cajero123', '2025-06-08 09:00:00');
 
 INSERT INTO MedioPago (nombre, habilitado, fechaHabilitadoDesde, fechaHabilitadoHasta)
 VALUES 

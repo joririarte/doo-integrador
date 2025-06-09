@@ -1,7 +1,10 @@
 com\ventas\factories\FabricaDao.class
+com\ventas\model\Stock$StockBuilder.class
 com\ventas\model\DetalleVenta.class
+com\ventas\model\DescuentoRecargo$DescuentoRecargoBuilder.class
 com\ventas\dto\DetalleVentaDto.class
 com\ventas\model\Cliente$ClienteBuilder.class
+com\ventas\model\Producto$ProductoBuilder.class
 com\ventas\dto\MedioPagoDto.class
 com\ventas\model\Venta$VentaBuilder.class
 com\ventas\model\Modelo.class
@@ -26,7 +29,9 @@ com\ventas\model\Venta.class
 com\ventas\dao\MedioPagoDao.class
 com\ventas\dao\DescuentoRecargoDao.class
 com\ventas\dto\VentaDto.class
+com\ventas\model\Precio$PrecioBuilder.class
 com\ventas\dao\DetalleVentaDao.class
+com\ventas\model\MedioPago$MedioPagoBuilder.class
 com\ventas\dto\EmpleadoDto.class
 com\ventas\dto\UsuarioDto.class
 com\ventas\util\CommonUtils.class
