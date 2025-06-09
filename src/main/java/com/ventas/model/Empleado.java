@@ -1,11 +1,13 @@
 package com.ventas.model;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 
+import com.ventas.dto.EmpleadoDto;
 import com.ventas.factories.FabricaDao;
 
 public class Empleado extends Persona{
@@ -116,7 +118,7 @@ public class Empleado extends Persona{
 
 
     //#endregion
-    
+
     //#region Getters y Setters
     
     public String getCargo() {
@@ -134,6 +136,55 @@ public class Empleado extends Persona{
     public void generarInformeVentaCajero(Empleado c) {}
     public void generarInformeStockGeneral() {}
     public void generarInformeStockProducto(Producto p) {}
+
+    public List<Empleado> listarEmpleados(){
+        try{
+            List<EmpleadoDto> listado = this.dao.listarTodos();
+            if(!listado.isEmpty())
+                return Arrays.asList(this.mapper.map(listado, Empleado[].class));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Empleado> consultarEmpleado(List<String> params){
+        try{
+            EmpleadoDto empleadoDto = this.mapper.map(this, EmpleadoDto.class);
+            List<EmpleadoDto> empleadosDto = this.dao.buscar(empleadoDto, params);
+            if(!empleadosDto.isEmpty())
+            return Arrays.asList(this.mapper.map(empleadosDto, Empleado[].class));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public Empleado registrarEmpleado(){
+        try {
+            EmpleadoDto empleadoDto = this.mapper.map(this, EmpleadoDto.class);
+            empleadoDto = (EmpleadoDto) this.dao.actualizar(empleadoDto,null);
+            if(empleadoDto != null)
+                return this.mapper.map(empleadoDto, Empleado.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Empleado eliminarEmpleado(){
+        try {
+            EmpleadoDto empleadoDto = this.mapper.map(this,EmpleadoDto.class);
+            empleadoDto = (EmpleadoDto) this.dao.borrar(empleadoDto);
+            if(empleadoDto != null)
+                return this.mapper.map(empleadoDto, Empleado.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     //#endregion
 }

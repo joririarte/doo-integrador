@@ -14,13 +14,71 @@ public class Producto extends Modelo {
     private List<Precio> precio;
     private String marca;
     private String codigoBarras;
-    
+
+    //#region Constructors
+
     public Producto() {
         this.dao = FabricaDao.fabricar("ProductoDao");
         this.mapper = new ModelMapper();
         mapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
 
     }
+
+    public Producto(ProductoBuilder builder) {
+        this();
+        this.setNombre(builder.nombre);
+        this.setStock(builder.stock);
+        this.setPrecio(builder.precio);
+        this.setMarca(builder.marca);
+        this.setCodigoBarras(builder.codigoBarras);
+    }
+
+    //#endregion Constructors
+
+    //#region ProductoBuilder
+    public static class ProductoBuilder {
+        private String nombre;
+        private List<Stock> stock;
+        private List<Precio> precio;
+        private String marca;
+        private String codigoBarras;
+
+        public static ProductoBuilder getBuilder() {
+            return new ProductoBuilder();
+        }
+
+        public ProductoBuilder conNombre(String nombre) {
+            this.nombre = nombre;
+            return this;
+        }
+
+        public ProductoBuilder conStock(List<Stock> stock) {
+            this.stock = stock;
+            return this;
+        }
+
+        public ProductoBuilder conPrecio(List<Precio> precio) {
+            this.precio = precio;
+            return this;
+        }
+
+        public ProductoBuilder conMarca(String marca) {
+            this.marca = marca;
+            return this;
+        }
+
+        public ProductoBuilder conCodigoBarras(String codigoBarras) {
+            this.codigoBarras = codigoBarras;
+            return this;
+        }
+
+        public Producto build() {
+            return new Producto(this);
+        }
+    }
+
+    //#endregion ProductoBuilder
+
     //#region Getters y Setters
     public String getNombre() {
         return nombre;
@@ -64,34 +122,12 @@ public class Producto extends Modelo {
     //#endregion
     
     //#region Business Methods
-    public Boolean buscarProducto(String codigoBarras){
+    public List<Producto> buscarProducto(List<String> params){
         try{
-            ProductoDto productoDto = new ProductoDto();
-            productoDto.codigoBarras = codigoBarras;
-
-            List<ProductoDto> p = this.dao.buscar(productoDto, Arrays.asList("codigoBarras"));
-            if(!p.isEmpty()){
-                productoDto = p.getFirst();
-                this.nombre = productoDto.nombre;
-                this.marca = productoDto.marca;
-                this.codigoBarras = productoDto.codigoBarras;
-                this.stock = Arrays.asList(this.mapper.map(productoDto.stock, Stock[].class));
-                this.precio = Arrays.asList(this.mapper.map(productoDto.precio, Precio[].class));
-            }        
-        }
-        catch (Exception ex){
-            ex.printStackTrace();
-        }
-        return false;
-    }
-
-    public List<Producto> listarProductos(){
-        try{
-            List<ProductoDto> listado = this.dao.listarTodos();
-            if(!listado.isEmpty()){
-                List<Producto> listaProducto = Arrays.asList(this.mapper.map(listado, Producto[].class));
-                return listaProducto;
-            }
+            ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
+            List<ProductoDto> p = this.dao.buscar(productoDto, params);
+            if(!p.isEmpty())
+                return Arrays.asList(this.mapper.map(p, Producto[].class));        
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -99,46 +135,52 @@ public class Producto extends Modelo {
         return null;
     }
 
-    public Boolean registrarProducto(Producto nuevoProducto){
-        try {
-            ProductoDto productoDto = this.mapper.map(nuevoProducto, ProductoDto.class);
-            productoDto = (ProductoDto) this.dao.actualizar(productoDto, null);
+    public List<Producto> listarProductos(){
+        try{
+            List<ProductoDto> listado = this.dao.listarTodos();
+            if(!listado.isEmpty())
+                return Arrays.asList(this.mapper.map(listado, Producto[].class));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
 
-            nuevoProducto = this.mapper.map(productoDto, Producto.class);
-            return true;
-            
+    public Producto registrarProducto(){
+        try {
+            ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
+            productoDto = (ProductoDto) this.dao.actualizar(productoDto, null);
+            if(productoDto != null)
+                return this.mapper.map(productoDto, Producto.class);  
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
-    public Boolean actualizarProducto(Producto producto, List<String> params){
+    public Producto actualizarProducto(List<String> params){
         try {
-            ProductoDto productoDto = this.mapper.map(producto, ProductoDto.class);
-
+            ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
             productoDto = (ProductoDto) this.dao.actualizar(productoDto, params);
-
-            producto = this.mapper.map(productoDto, Producto.class);
-            return true;
-
+            if(productoDto != null)
+                return this.mapper.map(productoDto, Producto.class);
         } catch (Exception e) {
             e.printStackTrace();        
         }
-        return false;
+        return null;
     }
 
-    public Boolean eliminarProducto(Producto producto){
+    public Producto eliminarProducto(){
         try {
-            ProductoDto productoDto = this.mapper.map(producto, ProductoDto.class);
+            ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
             productoDto = (ProductoDto) this.dao.borrar(productoDto);
-            producto = this.mapper.map(productoDto, Producto.class);
-            return true;
-
+            if(productoDto != null)
+                return this.mapper.map(productoDto, Producto.class);
         } catch (Exception e) {
             e.printStackTrace();        
         }
-        return false;
+        return null;
     }
 
     //#endregion

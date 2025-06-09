@@ -1,26 +1,130 @@
 package com.ventas.model;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
-public class Stock {
+import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration.AccessLevel;
+
+import com.ventas.dto.StockDto;
+import com.ventas.factories.FabricaDao;
+
+public class Stock extends Modelo{
     private float cantidad;
     private Date fecha;
     
+    //#region Constructors
     public Stock() {
-        this.cantidad = 0;
-        this.fecha = new Date();
+        this.dao = FabricaDao.fabricar("StockDao");
+        this.mapper = new ModelMapper();
+        mapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
     }
 
-    public void setStock(float cantidad){
+    public Stock(StockBuilder builder) {
+        this(); // Llama al constructor por defecto
+        this.setCantidad(builder.cantidad);
+        this.setFecha(builder.fecha);
+    }
+
+    //#endregion Constructors
+
+    //#region StockBuilder 
+
+    public static class StockBuilder {
+        private float cantidad;
+        private Date fecha;
+
+        public static StockBuilder getBuilder() {
+            return new StockBuilder();
+        }
+
+        public StockBuilder conCantidad(float cantidad) {
+            this.cantidad = cantidad;
+            return this;
+        }
+
+        public StockBuilder conFecha(Date fecha) {
+            this.fecha = fecha;
+            return this;
+        }
+
+        public Stock build() {
+            return new Stock(this);
+        }
+    }
+
+    //#endregion StockBuilder 
+
+    //#region Getters Y Setters
+
+    public float getCantidad() {
+        return cantidad;
+    }
+    public void setCantidad(float cantidad) {
         this.cantidad = cantidad;
-        this.fecha = new Date();
-    }
-    
-    public float getStock() { 
-        return cantidad; 
     }
 
-    public float getStock(Date fecha) { 
-        return cantidad; 
+    public Date getFecha() {
+        return fecha;
     }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    //#endregion Getters Y Setters
+
+    //#region Business Methods
+
+    public List<Stock> listarStocks(){
+        try{
+            List<StockDto> listado = this.dao.listarTodos();
+            if(!listado.isEmpty())
+                return Arrays.asList(this.mapper.map(listado, Stock[].class));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Stock> consultarStock(List<String> params){ 
+        try{
+            StockDto stockDto = this.mapper.map(this, StockDto.class);
+            List<StockDto> stocksDto = this.dao.buscar(stockDto, params);
+            if(!stocksDto.isEmpty())
+                return Arrays.asList(this.mapper.map(stocksDto, Stock[].class));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public Stock registrarStock(){
+        try {
+            StockDto stockDto = this.mapper.map(this, StockDto.class);
+            stockDto = (StockDto) this.dao.actualizar(stockDto,null);
+            if(stockDto != null)
+                return this.mapper.map(stockDto, Stock.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Stock eliminarStock(){
+        try {
+            StockDto stockDto = this.mapper.map(this,StockDto.class);
+            stockDto = (StockDto) this.dao.borrar(stockDto);
+            if(stockDto != null)
+                return this.mapper.map(stockDto, Stock.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //#endregion Business Methods
 }

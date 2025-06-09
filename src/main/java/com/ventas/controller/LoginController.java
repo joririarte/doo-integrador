@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import java.io.IOException;
 
 import com.ventas.model.Usuario;
+import com.ventas.model.Usuario.UsuarioBuilder;
 
 public class LoginController {
     @FXML private TextField usuarioField;
@@ -20,9 +21,13 @@ public class LoginController {
         String usuario = usuarioField.getText();
         String contraseña = contraseñaField.getText();
 
-        Usuario user = new Usuario();
-
-        if(user.iniciarSesion(usuario, contraseña)){
+        Usuario user = UsuarioBuilder.getBuilder()
+                                     .conUsername(usuario)
+                                     .conPassword(contraseña)
+                                     .build();
+        user = user.iniciarSesion(); 
+ 
+        if(user != null){
 
             String rol = user.getEmpleado().getCargo();
 

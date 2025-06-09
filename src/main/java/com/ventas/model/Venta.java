@@ -178,7 +178,7 @@ public class Venta extends Modelo {
             int delay = (int) (Math.random() * 2000) + 1000; // de 1000 a 3000 ms
             Thread.sleep(delay);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // buena práctica
+            Thread.currentThread().interrupt();
             return false; // en caso de interrupción, consideramos fallido
         }
 
@@ -193,10 +193,8 @@ public class Venta extends Modelo {
     public List<Venta> listarVentas() {
         try {
             List<VentaDto> listado = this.dao.listarTodos();
-            if (!listado.isEmpty()) {
-                List<Venta> listaVentas = Arrays.asList(this.mapper.map(listado, Venta[].class));
-                return listaVentas;
-            }
+            if (!listado.isEmpty())
+                return Arrays.asList(this.mapper.map(listado, Venta[].class));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -204,37 +202,39 @@ public class Venta extends Modelo {
     }
 
     public List<Venta> consultarVenta(List<String> params) {
-        List<Venta> listadoVentas = null;
         try {
             VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
             List<VentaDto> ventasDto = this.dao.buscar(ventaDto, params);
-            listadoVentas = Arrays.asList(this.mapper.map(ventasDto, Venta[].class));
+            if (!ventasDto.isEmpty())
+                return Arrays.asList(this.mapper.map(ventasDto, Venta[].class));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return listadoVentas;
+        return null;
     }
 
-    public Boolean registrarVenta() {
+    public Venta registrarVenta() {
         try {
             VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
             ventaDto = (VentaDto) this.dao.actualizar(ventaDto, null);
-            return true;
+            if(ventaDto != null)
+                return this.mapper.map(ventaDto, Venta.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
-    public Boolean eliminarVenta() {
+    public Venta eliminarVenta() {
         try {
             VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
             ventaDto = (VentaDto) this.dao.borrar(ventaDto);
-            return true;
+            if(ventaDto != null)
+                return this.mapper.map(ventaDto, Venta.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     //#endregion

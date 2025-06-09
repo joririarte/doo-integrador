@@ -132,10 +132,8 @@ public class DetalleVenta extends Modelo{
     public List<DetalleVenta> listarDetalleVentas() {
         try {
             List<DetalleVentaDto> listado = this.dao.listarTodos();
-            if (!listado.isEmpty()) {
-                List<DetalleVenta> listaDetalleVentas = Arrays.asList(this.mapper.map(listado, DetalleVenta[].class));
-                return listaDetalleVentas;
-            }
+            if (!listado.isEmpty())
+                return Arrays.asList(this.mapper.map(listado, DetalleVenta[].class));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -143,37 +141,39 @@ public class DetalleVenta extends Modelo{
     }
 
     public List<DetalleVenta> consultarDetalleVenta(List<String> params) {
-        List<DetalleVenta> listadoDetalleVentas = null;
         try {
             DetalleVentaDto detalleVentaDto = this.mapper.map(this, DetalleVentaDto.class);
             List<DetalleVentaDto> detalleVentasDto = this.dao.buscar(detalleVentaDto, params);
-            listadoDetalleVentas = Arrays.asList(this.mapper.map(detalleVentasDto, DetalleVenta[].class));
+            if (!detalleVentasDto.isEmpty())
+                return Arrays.asList(this.mapper.map(detalleVentasDto, DetalleVenta[].class));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return listadoDetalleVentas;
+        return null;
     }
 
-    public Boolean registrarDetalleVenta() {
+    public DetalleVenta registrarDetalleVenta() {
         try {
             DetalleVentaDto detalleVentaDto = this.mapper.map(this, DetalleVentaDto.class);
             detalleVentaDto = (DetalleVentaDto) this.dao.actualizar(detalleVentaDto, null);
-            return true;
+            if(detalleVentaDto != null)
+                return this.mapper.map(detalleVentaDto, DetalleVenta.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
-    public Boolean eliminarDetalleVenta() {
+    public DetalleVenta eliminarDetalleVenta() {
         try {
             DetalleVentaDto detalleVentaDto = this.mapper.map(this, DetalleVentaDto.class);
             detalleVentaDto = (DetalleVentaDto) this.dao.borrar(detalleVentaDto);
-            return true;
+            if(detalleVentaDto != null)
+                return this.mapper.map(detalleVentaDto, DetalleVenta.class);;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     //#endregion

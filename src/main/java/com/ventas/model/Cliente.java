@@ -136,10 +136,8 @@ public class Cliente extends Persona {
     public List<Cliente> listarClientes(){
         try{
             List<ClienteDto> listado = this.dao.listarTodos();
-            if(!listado.isEmpty()){
-                List<Cliente> listaClientes = Arrays.asList(this.mapper.map(listado, Cliente[].class));
-                return listaClientes;
-            }
+            if(!listado.isEmpty())
+                return Arrays.asList(this.mapper.map(listado, Cliente[].class));
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -147,40 +145,41 @@ public class Cliente extends Persona {
         return null;
     }
 
-    public List<Cliente> consultarCliente(List<String> params){
-        List<Cliente> listadoClientes = null;
+    public List<Cliente> consultarCliente(List<String> params){ 
         try{
             ClienteDto clienteDto = this.mapper.map(this, ClienteDto.class);
             List<ClienteDto> clientesDto = this.dao.buscar(clienteDto, params);
-            listadoClientes = Arrays.asList(this.mapper.map(clientesDto, Cliente[].class));
-
+            if(!clientesDto.isEmpty())
+                return Arrays.asList(this.mapper.map(clientesDto, Cliente[].class));
         }
         catch (Exception ex){
             ex.printStackTrace();
         }
-        return listadoClientes;
+        return null;
     }
 
-    public Boolean registrarCliente(){
+    public Cliente registrarCliente(){
         try {
             ClienteDto clienteDto = this.mapper.map(this, ClienteDto.class);
             clienteDto = (ClienteDto) this.dao.actualizar(clienteDto,null);
-            return true;
+            if(clienteDto != null)
+                return this.mapper.map(clienteDto, Cliente.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
-    public Boolean eliminarCliente(){
+    public Cliente eliminarCliente(){
         try {
             ClienteDto clienteDto = this.mapper.map(this,ClienteDto.class);
             clienteDto = (ClienteDto) this.dao.borrar(clienteDto);
-            return true;
+            if(clienteDto != null)
+                return this.mapper.map(clienteDto, Cliente.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
     //#endregion
 }

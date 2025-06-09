@@ -13,6 +13,14 @@ public abstract class Persona extends Modelo{
     private String domicilio;
     private String email;
     private List<String> telefonos;
+
+    //#region Constructors
+
+    public Persona(){}
+
+    //#endregion
+
+    //#region Getters y Setters
     public String getNombreApellido() {
         return nombreApellido;
     }
@@ -73,6 +81,6 @@ public abstract class Persona extends Modelo{
     public void setTelefonos(List<String> telefonos) {
         this.telefonos = telefonos;
     }
-    public Persona() {
-    }
+
+    //#endregion
 }

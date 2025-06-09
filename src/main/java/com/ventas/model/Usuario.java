@@ -15,11 +15,61 @@ public class Usuario extends Modelo{
     private Empleado empleado;
     private Date ultimoAcceso;
 
+    //#region Constructors
+    
     public Usuario(){
         this.dao = FabricaDao.fabricar("UsuarioDao");
         this.mapper = new ModelMapper();
         mapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
     }
+
+    public Usuario(UsuarioBuilder builder) {
+        this();
+        this.setUsername(builder.username);
+        this.setPassword(builder.password);
+        this.setEmpleado(builder.empleado);
+        this.setUltimoAcceso(builder.ultimoAcceso);
+    }
+    //#endregion
+
+    //#region UsuarioBuilder
+
+    public static class UsuarioBuilder {
+        private String username;
+        private String password;
+        private Empleado empleado;
+        private Date ultimoAcceso;
+
+        public static UsuarioBuilder getBuilder() {
+            return new UsuarioBuilder();
+        }
+
+        public UsuarioBuilder conUsername(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public UsuarioBuilder conPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public UsuarioBuilder conEmpleado(Empleado empleado) {
+            this.empleado = empleado;
+            return this;
+        }
+
+        public UsuarioBuilder conUltimoAcceso(Date ultimoAcceso) {
+            this.ultimoAcceso = ultimoAcceso;
+            return this;
+        }
+
+        public Usuario build() {
+            return new Usuario(this);
+        }
+    }
+
+    //#endregion
 
     //#region Getters y Setters
 
@@ -58,29 +108,19 @@ public class Usuario extends Modelo{
 
     //#region Business Methods
 
-    public Boolean iniciarSesion(String username, String pass){
-        UsuarioDto user = new UsuarioDto();
-        
-        user.username=username;
-        user.password=pass;
+    public Usuario iniciarSesion(){
         try {
+            UsuarioDto user = this.mapper.map(this, UsuarioDto.class);
             user = (UsuarioDto) this.dao.buscar(user);
             if(user != null){
-                this.username = user.username;
-                this.password = user.password;
-                this.ultimoAcceso = user.ultimoAcceso;
-                this.empleado = this.mapper.map(user.empleado, Empleado.class);
-
                 this.dao.actualizar(user, Arrays.asList("ultimoAcceso"));
-                
-                return true;
+                return this.mapper.map(user, Usuario.class);
             }
         }
         catch (Exception ex){
-            System.out.println(user);
-            System.out.println("ocurrio un error");
+            ex.printStackTrace();
         }
-        return false;
+        return null;
     }
     //#endregion
 }
