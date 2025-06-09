@@ -164,6 +164,18 @@ public class DetalleVenta extends Modelo{
         return null;
     }
 
+    public DetalleVenta actualizararDetalleVenta(List<String> params) {
+        try {
+            DetalleVentaDto detalleVentaDto = this.mapper.map(this, DetalleVentaDto.class);
+            detalleVentaDto = (DetalleVentaDto) this.dao.actualizar(detalleVentaDto, params);
+            if(detalleVentaDto != null)
+                return this.mapper.map(detalleVentaDto, DetalleVenta.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public DetalleVenta eliminarDetalleVenta() {
         try {
             DetalleVentaDto detalleVentaDto = this.mapper.map(this, DetalleVentaDto.class);

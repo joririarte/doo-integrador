@@ -171,6 +171,18 @@ public class MedioPago extends Modelo {
         return null;
     }
 
+    public MedioPago actualizararMedioPago(List<String> params) {
+        try {
+            MedioPagoDto medioPagoDto = this.mapper.map(this, MedioPagoDto.class);
+            medioPagoDto = (MedioPagoDto) this.dao.actualizar(medioPagoDto, params);
+            if(medioPagoDto != null)
+                return this.mapper.map(medioPagoDto, MedioPago.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     public MedioPago eliminarMedioPago(){
         try {
             MedioPagoDto medioPagoDto = this.mapper.map(this,MedioPagoDto.class);
