@@ -170,6 +170,18 @@ public class Cliente extends Persona {
         return null;
     }
 
+    public Cliente actualizararCliente(List<String> params) {
+        try {
+            ClienteDto clienteDto = this.mapper.map(this, ClienteDto.class);
+            clienteDto = (ClienteDto) this.dao.actualizar(clienteDto, params);
+            if(clienteDto != null)
+                return this.mapper.map(clienteDto, Cliente.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Cliente eliminarCliente(){
         try {
             ClienteDto clienteDto = this.mapper.map(this,ClienteDto.class);
