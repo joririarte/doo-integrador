@@ -25,11 +25,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
                 dto.cantidad = rs.getInt("cantidad");
                 dto.precioVenta = rs.getFloat("precioVenta");
                 dto.productoId = rs.getInt("productoId");
-                
-                ProductoDto productoDto = new ProductoDto();
-                productoDto.productoId = dto.productoId;
-                dto.producto = new ProductoDao().buscar(productoDto);
-
+                dto.producto = new ProductoDao().buscar(dto.productoId);
                 lista.add(dto);
             }
 
@@ -41,34 +37,8 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
     }
 
     @Override
-    public DetalleVentaDto buscar(DetalleVentaDto obj) {
-        String sql = "SELECT * FROM DetalleVenta WHERE ventaId = ? AND detalleVentaId = ?";
-        DetalleVentaDto dto = null;
-
-        try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, obj.ventaId);
-            stmt.setInt(2, obj.detalleVentaId);
-
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                dto = new DetalleVentaDto();
-                dto.ventaId = rs.getInt("ventaId");
-                dto.detalleVentaId = rs.getInt("detalleVentaId");
-                dto.nombre = rs.getString("nombre");
-                dto.cantidad = rs.getInt("cantidad");
-                dto.precioVenta = rs.getFloat("precioVenta");
-                dto.productoId = rs.getInt("productoId");
-
-                ProductoDto productoDto = new ProductoDto();
-                productoDto.productoId = dto.productoId;
-                dto.producto = new ProductoDao().buscar(productoDto);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return dto;
+    public DetalleVentaDto buscar(int id) {
+        return null;
     }
     
     public List<DetalleVentaDto> obtenerPorVenta(int ventaId) {
@@ -89,10 +59,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
                 dto.cantidad = rs.getInt("cantidad");
                 dto.precioVenta = rs.getFloat("precioVenta");
                 dto.productoId = rs.getInt("productoId");
-
-                ProductoDto productoDto = new ProductoDto();
-                productoDto.productoId = dto.productoId;
-                dto.producto = new ProductoDao().buscar(productoDto);
+                dto.producto = new ProductoDao().buscar(dto.productoId);
 
                 lista.add(dto);
             }
@@ -170,7 +137,6 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
 
     @Override
     public List<DetalleVentaDto> buscar(DetalleVentaDto obj, List<String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
+        return null;
     }
 }

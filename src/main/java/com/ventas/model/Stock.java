@@ -114,6 +114,18 @@ public class Stock extends Modelo{
         return null;
     }
 
+    public Stock actualizararStock(List<String> params) {
+        try {
+            StockDto stockDto = this.mapper.map(this, StockDto.class);
+            stockDto = (StockDto) this.dao.actualizar(stockDto, params);
+            if(stockDto != null)
+                return this.mapper.map(stockDto, Stock.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Stock eliminarStock(){
         try {
             StockDto stockDto = this.mapper.map(this,StockDto.class);

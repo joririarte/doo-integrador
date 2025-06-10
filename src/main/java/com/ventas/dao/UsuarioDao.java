@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ventas.dto.EmpleadoDto;
 import com.ventas.dto.UsuarioDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
 import com.ventas.util.CommonUtils;
@@ -26,11 +25,8 @@ public class UsuarioDao implements Dao<UsuarioDto> {
                 usuario.empleadoId = rs.getInt("empleadoId");
                 usuario.username = rs.getString("username");
                 usuario.password = rs.getString("password");
-                usuario.ultimoAcceso = CommonUtils.stringToDate(rs.getString("ultimoAcceso"));
-                
-                EmpleadoDto emp = new EmpleadoDto();
-                emp.personaId = usuario.empleadoId;
-                usuario.empleado = new EmpleadoDao().buscar(emp);
+                usuario.ultimoAcceso = CommonUtils.stringToDateTime(rs.getString("ultimoAcceso"));
+                usuario.empleado = new EmpleadoDao().buscar(usuario.empleadoId);
                 
                 lista.add(usuario);
             }
@@ -43,35 +39,30 @@ public class UsuarioDao implements Dao<UsuarioDto> {
     }
 
     @Override
-    public UsuarioDto buscar(UsuarioDto obj) {
-        String sql = "SELECT * FROM Usuario WHERE username = ? AND password = ?";
-
+    public UsuarioDto buscar(int id) {
+        String sql = "SELECT * FROM Usuario WHERE empleadoId = ?";
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
 
-            stmt.setString(1, obj.username);
-            stmt.setString(2, obj.password);
+            stmt.setInt(1, id);
 
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                UsuarioDto obj = new UsuarioDto();
                 obj.empleadoId = rs.getInt("empleadoId");
                 obj.username = rs.getString("username");
                 obj.password = rs.getString("password");
-                obj.ultimoAcceso = CommonUtils.stringToDate(rs.getString("ultimoAcceso"));
+                obj.ultimoAcceso = CommonUtils.stringToDateTime(rs.getString("ultimoAcceso"));
 
-                EmpleadoDto emp = new EmpleadoDto();
-                emp.personaId = obj.empleadoId;
-                obj.empleado = new EmpleadoDao().buscar(emp);
+                obj.empleado = new EmpleadoDao().buscar(obj.empleadoId);
+                return obj;
             }
-            else
-                obj = null;
-
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             e.printStackTrace();
         }
-
-        return obj;
+        return null;
     }
 
     @Override
@@ -87,13 +78,15 @@ public class UsuarioDao implements Dao<UsuarioDto> {
             }
             sql.append(" WHERE empleadoId = ?");
 
-            PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
+            String query = sql.toString();
+            PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
 
             int index = 1;
             for (String param : params) {
                 switch (param) {
                     case "ultimoAcceso":
-                        stmt.setString(index++, CommonUtils.dateToString(obj.ultimoAcceso));
+                        String ultimoAcceso = CommonUtils.dateTimeToString(obj.ultimoAcceso);
+                        stmt.setString(index++, ultimoAcceso);
                         break;
                     case "password":
                         stmt.setString(index++, obj.password);
@@ -106,11 +99,12 @@ public class UsuarioDao implements Dao<UsuarioDto> {
             stmt.setInt(index, obj.empleadoId);
             stmt.executeUpdate();
             } else {
-                String sqlInsert = "INSERT INTO Usuario (empleadoId, username, password) VALUES (?, ?, ?)";
+                String sqlInsert = "INSERT INTO Usuario (empleadoId, username, password, ultimoAcceso) VALUES (?, ?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
                 stmt.setInt(1, obj.empleadoId);
                 stmt.setString(2, obj.username);
                 stmt.setString(3, obj.password);
+                stmt.setString(4, CommonUtils.dateTimeToString(obj.ultimoAcceso));
                 stmt.executeUpdate();
                 
                 ResultSet rs = stmt.getGeneratedKeys();
@@ -144,7 +138,53 @@ public class UsuarioDao implements Dao<UsuarioDto> {
 
     @Override
     public List<UsuarioDto> buscar(UsuarioDto obj, List<String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
+        List<UsuarioDto> lista = new ArrayList<>();
+        try{
+            if (params != null && !params.isEmpty()) {
+                StringBuilder sql = new StringBuilder("SELECT * FROM Usuario WHERE ");
+                for (int i = 0; i < params.size(); i++) {
+                    sql.append(params.get(i)).append(" = ?");
+                    if (i < params.size() - 1) {
+                        sql.append(" AND ");
+                    }
+                }
+
+                String query = sql.toString();
+
+                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
+                
+                int index = 1;
+                for (String param : params) {
+                    switch (param) {
+                        case "password":
+                            stmt.setString(index++, obj.password);
+                            break;
+                        case "username":
+                            stmt.setString(index++, obj.username);
+                            break;  
+                        default:
+                            throw new IllegalArgumentException("Campo no soportado: " + param);
+                    }
+                }
+                
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    obj.empleadoId = rs.getInt("empleadoId");
+                    obj.username = rs.getString("username");
+                    obj.password = rs.getString("password");
+                    obj.ultimoAcceso = CommonUtils.stringToDateTime(rs.getString("ultimoAcceso"));
+
+                    obj.empleado = new EmpleadoDao().buscar(obj.empleadoId);
+
+                    lista.add(obj);
+                }
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return lista;
     }
 }

@@ -9,6 +9,7 @@ import com.ventas.dto.VentaDto;
 import com.ventas.factories.FabricaDao;
 
 public class Venta extends Modelo {
+    private String codigoVenta;
     private Empleado vendedor;
     private Date fecha;
     private String estado;
@@ -26,6 +27,7 @@ public class Venta extends Modelo {
 
     public Venta(VentaBuilder builder) {
         this(); // Llama al constructor por defecto
+        this.setCodigoVenta(builder.codigoVenta);
         this.setVendedor(builder.vendedor);
         this.setFecha(builder.fecha);
         this.setEstado(builder.estado);
@@ -39,62 +41,76 @@ public class Venta extends Modelo {
     //#region VentaBuilder
 
     public static class VentaBuilder {
-    private Empleado vendedor;
-    private Date fecha;
-    private String estado;
-    private float montoPagado;
-    private MedioPago medioPago;
-    private Cliente cliente;
-    private List<DetalleVenta> detalleVenta;
+        private String codigoVenta;
+        private Empleado vendedor;
+        private Date fecha;
+        private String estado;
+        private float montoPagado;
+        private MedioPago medioPago;
+        private Cliente cliente;
+        private List<DetalleVenta> detalleVenta;
 
-    public static VentaBuilder getBuilder() {
-        return new VentaBuilder();
-    }
+        public static VentaBuilder getBuilder() {
+            return new VentaBuilder();
+        }
 
-    public VentaBuilder conVendedor(Empleado vendedor) {
-        this.vendedor = vendedor;
-        return this;
-    }
+        public VentaBuilder conCodigoVenta(String codigoVenta) {
+            this.codigoVenta = codigoVenta;
+            return this;
+        }
 
-    public VentaBuilder conFecha(Date fecha) {
-        this.fecha = fecha;
-        return this;
-    }
+        public VentaBuilder conVendedor(Empleado vendedor) {
+            this.vendedor = vendedor;
+            return this;
+        }
 
-    public VentaBuilder conEstado(String estado) {
-        this.estado = estado;
-        return this;
-    }
+        public VentaBuilder conFecha(Date fecha) {
+            this.fecha = fecha;
+            return this;
+        }
 
-    public VentaBuilder conMontoPagado(float montoPagado) {
-        this.montoPagado = montoPagado;
-        return this;
-    }
+        public VentaBuilder conEstado(String estado) {
+            this.estado = estado;
+            return this;
+        }
 
-    public VentaBuilder conMedioPago(MedioPago medioPago) {
-        this.medioPago = medioPago;
-        return this;
-    }
+        public VentaBuilder conMontoPagado(float montoPagado) {
+            this.montoPagado = montoPagado;
+            return this;
+        }
 
-    public VentaBuilder conCliente(Cliente cliente) {
-        this.cliente = cliente;
-        return this;
-    }
+        public VentaBuilder conMedioPago(MedioPago medioPago) {
+            this.medioPago = medioPago;
+            return this;
+        }
 
-    public VentaBuilder conDetalleVenta(List<DetalleVenta> detalleVenta) {
-        this.detalleVenta = detalleVenta;
-        return this;
-    }
+        public VentaBuilder conCliente(Cliente cliente) {
+            this.cliente = cliente;
+            return this;
+        }
 
-    public Venta build() {
-        return new Venta(this);
+        public VentaBuilder conDetalleVenta(List<DetalleVenta> detalleVenta) {
+            this.detalleVenta = detalleVenta;
+            return this;
+        }
+
+        public Venta build() {
+            return new Venta(this);
+        }
     }
-}
 
 
     //#endregion
 
     //#region Getters y Setters
+
+    public String getCodigoVenta() {
+        return codigoVenta;
+    }
+
+    public void setCodigoVenta(String codigoVenta) {
+        this.codigoVenta = codigoVenta;
+    }
 
     public Empleado getVendedor() {
         return vendedor;
@@ -217,6 +233,18 @@ public class Venta extends Modelo {
         try {
             VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
             ventaDto = (VentaDto) this.dao.actualizar(ventaDto, null);
+            if(ventaDto != null)
+                return this.mapper.map(ventaDto, Venta.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Venta actualizararVenta(List<String> params) {
+        try {
+            VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
+            ventaDto = (VentaDto) this.dao.actualizar(ventaDto, params);
             if(ventaDto != null)
                 return this.mapper.map(ventaDto, Venta.class);
         } catch (Exception e) {

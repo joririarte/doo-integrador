@@ -5,24 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ventas.dto.ClienteDto;
+import com.ventas.dto.EmpleadoDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
 import com.ventas.util.CommonUtils;
 
 public class ClienteDao implements Dao<ClienteDto> {
 
     @Override
-    public ClienteDto buscar(ClienteDto obj) {
-        String sql = "SELECT c.id, c.nroCliente, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
+    public ClienteDto buscar(int id) {
+        String sql = "SELECT c.personaId, c.nroCliente, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
                      "FROM Cliente AS c JOIN Persona AS p ON c.personaId = p.personaId WHERE c.personaId = ?";
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, obj.personaId);
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
-
             if (rs.next()) {
+                ClienteDto obj = new ClienteDto();
                 obj.personaId = rs.getInt("personaId");
                 obj.nroCliente = rs.getString("nroCliente");
-
                 obj.nombreApellido = rs.getString("nombreApellido");
                 obj.tipoDocumento = rs.getString("tipoDocumento");
                 obj.nroDocumento = rs.getString("nroDocumento");
@@ -32,16 +32,13 @@ public class ClienteDao implements Dao<ClienteDto> {
                 obj.fechaNacimiento = CommonUtils.stringToDate(rs.getString("fechaNacimiento"));
                 obj.domicilio = rs.getString("domicilio");
                 obj.email = rs.getString("email");
-            } else {
-                obj = null;
+                return obj;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            obj = null;
         }
 
-        return obj;
+        return null;
     }
 
     @Override
@@ -143,7 +140,7 @@ public class ClienteDao implements Dao<ClienteDto> {
     @Override
     public List<ClienteDto> listarTodos() {
         List<ClienteDto> lista = new ArrayList<>();
-        String sql = "SELECT c.id, c.nroCliente, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
+        String sql = "SELECT c.personaId, c.nroCliente, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
                      "FROM Cliente AS c JOIN Persona AS p ON c.personaId = p.personaId";
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -176,7 +173,88 @@ public class ClienteDao implements Dao<ClienteDto> {
 
     @Override
     public List<ClienteDto> buscar(ClienteDto obj, List<String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
+        List<ClienteDto> lista = new ArrayList<>();
+        try{
+            if (params != null && !params.isEmpty()) {
+                StringBuilder sql = new StringBuilder("SELECT * FROM Cliente WHERE ");
+                for (int i = 0; i < params.size(); i++) {
+                    if(params.get(i).equals("fechaNacimiento")){
+                        sql.append(params.get(i)).append(" = ?");
+                    }
+                    else{
+                        sql.append(params.get(i)).append(" LIKE ?");
+                    }
+                    if (i < params.size() - 1) {
+                        sql.append(" AND ");
+                    }
+                }
+
+                String query = sql.toString();
+
+                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
+                
+                int index = 1;
+                for (String param : params) {
+                    switch (param) {
+                        case "nombreApellido":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.nombreApellido));
+                            break;
+                        case "tipoDocumento":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.tipoDocumento));
+                            break;
+                        case "nroDocumento":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.nroDocumento));
+                            break;
+                        case "CUIT":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.CUIT));
+                            break;
+                        case "condicionAfip":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.condicionAfip));
+                            break;
+                        case "genero":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.genero));
+                            break;
+                        case "fechaNacimiento":
+                            stmt.setString(index++, CommonUtils.dateToString(obj.fechaNacimiento));
+                            break;
+                        case "domicilio":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.domicilio));
+                            break;
+                        case "email":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.email));
+                            break;
+                        case "nroCliente":
+                            stmt.setString(index++, obj.nroCliente);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Campo no soportado: " + param);
+                    }
+                }
+                
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    obj.personaId = rs.getInt("personaId");
+                    obj.nroCliente = rs.getString("nroCliente");
+
+                    obj.nombreApellido = rs.getString("nombreApellido");
+                    obj.tipoDocumento = rs.getString("tipoDocumento");
+                    obj.nroDocumento = rs.getString("nroDocumento");
+                    obj.CUIT = rs.getString("CUIT");
+                    obj.condicionAfip = rs.getString("condicionAfip");
+                    obj.genero = rs.getString("genero");
+                    obj.fechaNacimiento = CommonUtils.stringToDate(rs.getString("fechaNacimiento"));
+                    obj.domicilio = rs.getString("domicilio");
+                    obj.email = rs.getString("email");
+
+                    lista.add(obj);
+                }
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return lista;
     }
 }

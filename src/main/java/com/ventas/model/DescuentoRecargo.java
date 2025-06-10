@@ -180,6 +180,18 @@ public class DescuentoRecargo extends Modelo {
         return null;
     }
 
+    public DescuentoRecargo actualizararDescuentoRecargo(List<String> params) {
+        try {
+            DescuentoRecargoDto descuentoRecargoDto = this.mapper.map(this, DescuentoRecargoDto.class);
+            descuentoRecargoDto = (DescuentoRecargoDto) this.dao.actualizar(descuentoRecargoDto, params);
+            if(descuentoRecargoDto != null)
+                return this.mapper.map(descuentoRecargoDto, DescuentoRecargo.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public DescuentoRecargo eliminarDescuentoRecargo(){
         try {
             DescuentoRecargoDto descuentoRecargoDto = this.mapper.map(this,DescuentoRecargoDto.class);

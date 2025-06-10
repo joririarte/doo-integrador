@@ -3,6 +3,7 @@ package com.ventas.dto;
 import java.util.*;
 public class VentaDto {
     public int ventaId;
+    public String codigoVenta;
     public int vendedorId;
     public EmpleadoDto vendedor;
     public Date fecha;

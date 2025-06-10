@@ -22,6 +22,7 @@ public class Empleado extends Persona{
     }
 
     public Empleado(EmpleadoBuilder builder) {
+        this();
         this.setNombreApellido(builder.nombreApellido);
         this.setTipoDocumento(builder.tipoDocumento);
         this.setNroDocumento(builder.nroDocumento);
@@ -166,6 +167,18 @@ public class Empleado extends Persona{
         try {
             EmpleadoDto empleadoDto = this.mapper.map(this, EmpleadoDto.class);
             empleadoDto = (EmpleadoDto) this.dao.actualizar(empleadoDto,null);
+            if(empleadoDto != null)
+                return this.mapper.map(empleadoDto, Empleado.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Empleado actualizararEmpleado(List<String> params) {
+        try {
+            EmpleadoDto empleadoDto = this.mapper.map(this, EmpleadoDto.class);
+            empleadoDto = (EmpleadoDto) this.dao.actualizar(empleadoDto, params);
             if(empleadoDto != null)
                 return this.mapper.map(empleadoDto, Empleado.class);
         } catch (Exception e) {

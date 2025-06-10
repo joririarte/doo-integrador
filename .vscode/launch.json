@@ -3,6 +3,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "DBInitializerV2",
+      "request": "launch",
+      "mainClass": "com.ventas.db.DBInitializerV2",
+      "projectName": "SistemaVentas"
+    },
+    {
+      "type": "java",
+      "name": "SimpleTest",
+      "request": "launch",
+      "mainClass": "com.ventas.util.SimpleTest",
+      "projectName": "SistemaVentas"
+    },
+    {
+      "type": "java",
       "name": "Debug (JavaFX App)",
       "request": "launch",
       "mainClass": "com.ventas.App",

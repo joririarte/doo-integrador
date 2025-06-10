@@ -5,6 +5,7 @@ import com.ventas.factories.FabricaDao;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
@@ -111,9 +112,13 @@ public class Usuario extends Modelo{
     public Usuario iniciarSesion(){
         try {
             UsuarioDto user = this.mapper.map(this, UsuarioDto.class);
-            user = (UsuarioDto) this.dao.buscar(user);
-            if(user != null){
+            List<UsuarioDto> response = this.dao.buscar(user, Arrays.asList("username","password")); 
+            if(!response.isEmpty() && response.size() == 1){
+                user = response.getFirst();
+                this.ultimoAcceso = user.ultimoAcceso;
+                user.ultimoAcceso = new Date();
                 this.dao.actualizar(user, Arrays.asList("ultimoAcceso"));
+                user.ultimoAcceso = this.ultimoAcceso;
                 return this.mapper.map(user, Usuario.class);
             }
         }

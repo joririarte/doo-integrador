@@ -114,6 +114,18 @@ public class Precio extends Modelo {
         return null;
     }
 
+    public Precio actualizararPrecio(List<String> params) {
+        try {
+            PrecioDto precioDto = this.mapper.map(this, PrecioDto.class);
+            precioDto = (PrecioDto) this.dao.actualizar(precioDto, params);
+            if(precioDto != null)
+                return this.mapper.map(precioDto, Precio.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Precio eliminarPrecio(){
         try {
             PrecioDto precioDto = this.mapper.map(this,PrecioDto.class);

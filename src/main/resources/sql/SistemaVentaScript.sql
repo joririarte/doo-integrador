@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS DescuentoRecargo (
 CREATE TABLE IF NOT EXISTS Producto (
     productoId INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT,
-    Marca TEXT,
+    marca TEXT,
     codigoBarras TEXT
 );
 
@@ -101,6 +101,7 @@ CREATE TABLE IF NOT EXISTS Stock (
 -- Tabla Venta
 CREATE TABLE IF NOT EXISTS Venta (
     ventaId INTEGER PRIMARY KEY AUTOINCREMENT,
+    codigoVenta TEXT UNIQUE NOT NULL, 
     vendedorId INTEGER,
     fecha TEXT,
     estado TEXT,
@@ -130,14 +131,14 @@ CREATE TABLE IF NOT EXISTS DetalleVenta (
 -- Clientes (Persona)
 INSERT INTO Persona (nombreApellido, tipoDocumento, nroDocumento, CUIT, condicionAfip, genero, fechaNacimiento, domicilio, email)
 VALUES 
-('Juan Pérez', 'DNI', '30123456', '20-30123456-3', 'Consumidor Final', 'M', '1985-06-15', 'Calle Falsa 123', 'juan@example.com'),
-('Ana García', 'DNI', '27876543', '27-27876543-9', 'Monotributista', 'F', '1990-04-22', 'Av. Siempre Viva 742', 'ana@example.com');
+('Juan Perez', 'DNI', '30123456', '20-30123456-3', 'Consumidor Final', 'M', '1985-06-15', 'Calle Falsa 123', 'juan@example.com'),
+('Ana Garcia', 'DNI', '27876543', '27-27876543-9', 'Monotributista', 'F', '1990-04-22', 'Av. Siempre Viva 742', 'ana@example.com');
 
 -- Empleados (Persona)
 INSERT INTO Persona (nombreApellido, tipoDocumento, nroDocumento, CUIT, condicionAfip, genero, fechaNacimiento, domicilio, email)
 VALUES 
-('Carlos López', 'DNI', '25678901', '23-25678901-1', 'Responsable Inscripto', 'M', '1980-03-10', 'Mitre 1000', 'carlos@example.com'),
-('Lucía Martínez', 'DNI', '29876543', '27-29876543-5', 'Monotributista', 'F', '1995-11-05', 'Belgrano 500', 'lucia@example.com');
+('Carlos Lopez', 'DNI', '25678901', '23-25678901-1', 'Responsable Inscripto', 'M', '1980-03-10', 'Mitre 1000', 'carlos@example.com'),
+('Lucia Martinez', 'DNI', '29876543', '27-29876543-5', 'Monotributista', 'F', '1995-11-05', 'Belgrano 500', 'lucia@example.com');
 
 -- Asumiendo personaId = 1 (Juan) y 2 (Ana)
 INSERT INTO Cliente (personaId, nroCliente)
@@ -160,17 +161,17 @@ VALUES
 INSERT INTO MedioPago (nombre, habilitado, fechaHabilitadoDesde, fechaHabilitadoHasta)
 VALUES 
 ('Efectivo', 1, '2024-01-01', '2030-12-31'),
-('Tarjeta de Crédito', 1, '2024-01-01', '2030-12-31');
+('Tarjeta de Credito', 1, '2024-01-01', '2030-12-31');
 
 INSERT INTO DescuentoRecargo (medioPagoId, descuentoRecargoId, nombre, tipo, monto, fechaInicio, fechaFin, habilitado)
 VALUES 
 (1, 1, 'Descuento 10% efectivo', 'Descuento', 10.0, '2024-01-01', '2030-12-31', 1),
 (2, 1, 'Recargo 5% tarjeta', 'Recargo', 5.0, '2024-01-01', '2030-12-31', 1);
 
-INSERT INTO Producto (nombre, Marca, codigoBarras)
+INSERT INTO Producto (nombre, marca, codigoBarras)
 VALUES 
-('Leche Entera', 'La Serenísima', '7791234567890'),
-('Yerba Mate', 'Taragüí', '7790987654321'),
+('Leche Entera', 'La Serenisima', '7791234567890'),
+('Yerba Mate', 'Natura', '7790987654321'),
 ('Galletitas Dulces', 'Bagley', '7791122334455');
 
 -- Producto 1
@@ -195,9 +196,9 @@ VALUES
 (3, 1, 80, '2025-06-01');
 
 -- Venta realizada por Lucía (empleadoId = 4) al cliente Juan (clienteId = 1) con efectivo (medioPagoId = 1)
-INSERT INTO Venta (vendedorId, fecha, estado, montoPagado, medioPagoId, clienteId)
+INSERT INTO Venta (vendedorId, codigoVenta, fecha, estado, montoPagado, medioPagoId, clienteId)
 VALUES 
-(4, '2025-06-08', 'Confirmada', 3000.0, 1, 1);
+(4,'C-001', '2025-06-08 11:00:00', 'Confirmada', 3000.0, 1, 1);
 
 -- Supongamos ventaId autogenerado es 1
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ventas.dto.MedioPagoDto;
+import com.ventas.dto.ProductoDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
 import com.ventas.util.CommonUtils;
 
@@ -41,30 +42,29 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
     }
 
     @Override
-    public MedioPagoDto buscar(MedioPagoDto obj) {
+    public MedioPagoDto buscar(int id) {
         String sql = "SELECT * FROM MedioPago WHERE medioPagoId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.medioPagoId);
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                MedioPagoDto obj = new MedioPagoDto();
                 obj.nombre = rs.getString("nombre");
                 obj.habilitado = rs.getBoolean("habilitado");
                 obj.fechaHabilitadoDesde = CommonUtils.stringToDate(rs.getString("fechaHabilitadoDesde"));
                 obj.fechaHabilitadoHasta = CommonUtils.stringToDate(rs.getString("fechaHabilitadoHasta"));
                 obj.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(obj.medioPagoId);
+                return obj;
 
-            } else {
-                obj = null;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return obj;
+        return null;
     }
 
     @Override
@@ -145,7 +145,73 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
 
     @Override
     public List<MedioPagoDto> buscar(MedioPagoDto obj, List<String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
+        List<MedioPagoDto> lista = new ArrayList<>();
+        try{
+            if (params != null && !params.isEmpty()) {
+                StringBuilder sql = new StringBuilder("SELECT * FROM MedioPago WHERE ");
+                for (int i = 0; i < params.size(); i++) {
+                    switch (params.get(i)) {
+                        case "fechaHabilitadoDesde":
+                            sql.append("fechaHabilitadoDesde >= ?");
+                            break;
+                        case "fechaHabilitadoHasta":
+                            sql.append("fechaHabilitadoHasta <= ?");
+                            break;
+                        case "nombre":
+                            sql.append("nombre LIKE ?");
+                            break;
+                        default:
+                            sql.append(params.get(i)).append(" = ?");
+                            break;
+                    }
+
+                    if (i < params.size() - 1) {
+                        sql.append(" AND ");
+                    }
+                }
+
+                String query = sql.toString();
+
+                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
+                
+                int index = 1;
+                for (String param : params) {
+                    switch (param) {
+                        case "habilitado":
+                            stmt.setBoolean(index++, obj.habilitado);
+                            break;
+                        case "nombre":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.nombre));
+                            break;
+                        case "fechaHabilitadoDesde":
+                            stmt.setString(index++, CommonUtils.dateToString(obj.fechaHabilitadoDesde));
+                            break;
+                        case "fechaHabilitadoHasta":
+                            stmt.setString(index++, CommonUtils.dateToString(obj.fechaHabilitadoHasta));
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Campo no soportado: " + param);
+                    }
+                }
+                
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    obj.medioPagoId = rs.getInt("medioPagoId");
+                    obj.nombre = rs.getString("nombre");
+                    obj.habilitado = rs.getBoolean("habilitado");
+                    obj.fechaHabilitadoDesde = CommonUtils.stringToDate(rs.getString("fechaHabilitadoDesde"));
+                    obj.fechaHabilitadoHasta = CommonUtils.stringToDate(rs.getString("fechaHabilitadoHasta"));
+                    obj.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(obj.medioPagoId);
+
+                    lista.add(obj);
+                }
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return lista;
     }
 }
