@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
 
+import com.ventas.model.AppContext;
 import com.ventas.model.Usuario;
 import com.ventas.model.Usuario.UsuarioBuilder;
 
@@ -21,43 +22,56 @@ public class LoginController {
         String usuario = usuarioField.getText();
         String contraseña = contraseñaField.getText();
 
+        System.out.println("Intentando login con usuario: " + usuario + " y contraseña: " + contraseña);
+
         Usuario user = UsuarioBuilder.getBuilder()
-                                     .conUsername(usuario)
-                                     .conPassword(contraseña)
-                                     .build();
+                                    .conUsername(usuario)
+                                    .conPassword(contraseña)
+                                    .build();
         user = user.iniciarSesion(); 
- 
-        if(user != null){
 
+        if (user != null) {
+            System.out.println("Login exitoso");
             String rol = user.getEmpleado().getCargo();
+            System.out.println("Rol detectado: " + rol);
 
-            try{
-            if ("Administrador".equals(rol)) {
-                // Abrir selector admin (productos o ventas)
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin_selector.fxml"));
-                Stage stage = (Stage) usuarioField.getScene().getWindow();
-                stage.setScene(new Scene(loader.load()));
-                stage.setTitle("Seleccionar acción Admin");
-            } else {
-                String fxml = switch (rol) {
-                case "Cajero" -> "/fxml/cajero.fxml";
-                    default -> null;
-                };
+            AppContext.setUsuarioActual(user);
 
-                if (fxml != null) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+            try {
+                if ("Administrador".equals(rol)) {
+                    System.out.println("Cargando vista de administrador...");
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
                     Stage stage = (Stage) usuarioField.getScene().getWindow();
-                    stage.setScene(new Scene(loader.load())); 
+                    stage.setScene(new Scene(loader.load()));
+                    stage.setTitle("Seleccionar acción Admin");
                 } else {
-                    mensajeLabel.setText("Rol no reconocido.");
+                    String fxml = switch (rol) {
+                        case "Cajero" -> "/fxml/main.fxml";
+                        default -> null;
+                    };
+
+                    System.out.println("FXML para rol: " + fxml);
+
+                    if (fxml != null) {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+                        Stage stage = (Stage) usuarioField.getScene().getWindow();
+                        stage.setScene(new Scene(loader.load())); 
+                        System.out.println("Vista cargada correctamente.");
+                    } else {
+                        mensajeLabel.setText("Rol no reconocido.");
+                        System.out.println("Rol no reconocido: " + rol);
+                    }
                 }
+
+            } catch (IOException ex) {
+                System.out.println("Error cargando la vista: " + ex.getMessage());
+                ex.printStackTrace();
             }
 
-        }
-        catch(IOException ex){}
-        }
-        else {
-            System.out.println("usuario no encontrado");
+        } else {
+            mensajeLabel.setText("Credenciales incorrectas.");
+            System.out.println("Usuario no encontrado o credenciales incorrectas.");
         }
     }
+
 }

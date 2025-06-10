@@ -1,4 +1,4 @@
-// package com.ventas.controller;
+package com.ventas.controller;
 
 // import javafx.beans.property.SimpleDoubleProperty;
 // import javafx.beans.property.SimpleIntegerProperty;
@@ -19,7 +19,9 @@
 // import com.ventas.dto.ProductoDto;
 // import com.ventas.dto.VentaDto;
 
-// public class VerVentasController {
+ public class VerVentasController {
+
+ }
 
 //     @FXML private TableView<VentaDto> tablaVentas;
 //     @FXML private TableColumn<VentaDto, Integer> idColumn;
