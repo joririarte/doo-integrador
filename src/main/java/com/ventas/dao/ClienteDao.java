@@ -12,7 +12,7 @@ public class ClienteDao implements Dao<ClienteDto> {
 
     @Override
     public ClienteDto buscar(ClienteDto obj) {
-        String sql = "SELECT c.id, c.nroCliente, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
+        String sql = "SELECT c.personaId, c.nroCliente, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
                      "FROM Cliente AS c JOIN Persona AS p ON c.personaId = p.personaId WHERE c.personaId = ?";
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql)) {
@@ -143,7 +143,7 @@ public class ClienteDao implements Dao<ClienteDto> {
     @Override
     public List<ClienteDto> listarTodos() {
         List<ClienteDto> lista = new ArrayList<>();
-        String sql = "SELECT c.id, c.nroCliente, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
+        String sql = "SELECT c.personaId, c.nroCliente, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
                      "FROM Cliente AS c JOIN Persona AS p ON c.personaId = p.personaId";
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
