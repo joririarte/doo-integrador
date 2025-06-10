@@ -1,165 +1,167 @@
-// package com.ventas.controller;
+package com.ventas.controller;
 
-// import javafx.beans.property.ReadOnlyObjectWrapper;
-// import javafx.beans.property.ReadOnlyStringWrapper;
-// import javafx.collections.FXCollections;
-// import javafx.collections.ObservableList;
-// import javafx.fxml.FXML;
-// import javafx.scene.control.*;
+import com.ventas.model.*;
+import com.ventas.dao.*;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.collections.*;
 
-// import java.sql.*;
-// import java.time.LocalDate;
-// import java.util.Optional;
+import java.util.*;
 
-// import com.ventas.model.DetalleVenta;
-// import com.ventas.model.Producto;
+public class CajeroController {
 
-// public class CajeroController {
+    @FXML private TextField txtCodigoBarras;
+    @FXML private TextField txtCantidad;
+    @FXML private TableView<DetalleVenta> tablaVenta;
+    @FXML private Label lblTotal;
+    @FXML private TextField txtMontoPagado;
+    @FXML private ComboBox<String> cbxMedioPago;
+    @FXML private Button btnConfirmarVenta;
+    @FXML private Button btnCancelarVenta;
 
-//     @FXML private TextField codigoBarrasField;
-//     @FXML private TextField nombreField;
-//     @FXML private TextField marcaField;
-//     @FXML private TextField precioField;
-//     @FXML private TextField stockField;
-//     @FXML private Spinner<Integer> cantidadSpinner;
-//     @FXML private Button agregarButton;
-//     @FXML private TableView<DetalleVenta> tablaVenta;
-//     @FXML private TableColumn<DetalleVenta, String> productoColumn;
-//     @FXML private TableColumn<DetalleVenta, String> marcaColumn;
-//     @FXML private TableColumn<DetalleVenta, Double> precioColumn;
-//     @FXML private TableColumn<DetalleVenta, Integer> cantidadColumn;
-//     @FXML private TableColumn<DetalleVenta, Double> subtotalColumn;
-//     @FXML private ComboBox<String> medioPagoComboBox;
-//     @FXML private Button confirmarButton;
-//     @FXML private Button cancelarButton;
+    private Venta ventaActual;
+    private ObservableList<DetalleVenta> detallesObservable;
 
-//     private ObservableList<DetalleVenta> listaVenta = FXCollections.observableArrayList();
-//     private Producto productoSeleccionado;
+    private Producto producto = new Producto();
+    private Venta venta = new Venta();
 
-//     @FXML
-//     public void initialize() {
-//         cantidadSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1));
-//         productoColumn.setCellValueFactory(cell -> new ReadOnlyStringWrapper(cell.getValue().getProducto()));
-//         marcaColumn.setCellValueFactory(cell -> new ReadOnlyStringWrapper(cell.getValue().getMarca()));
-//         precioColumn.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getPrecio()));
-//         cantidadColumn.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getCantidad()));
-//         subtotalColumn.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getSubtotal()));
-//         tablaVenta.setItems(listaVenta);
+    private Empleado empleadoLogueado = obtenerEmpleadoSesion();
 
-//         medioPagoComboBox.getItems().addAll("Efectivo", "Débito", "Crédito");
-//         medioPagoComboBox.getSelectionModel().selectFirst();
+    @FXML
+    public void initialize() {
+        detallesObservable = FXCollections.observableArrayList();
+        tablaVenta.setItems(detallesObservable);
 
-//         codigoBarrasField.setOnAction(e -> buscarProducto());
-//         agregarButton.setOnAction(e -> agregarProductoAVenta());
-//         confirmarButton.setOnAction(e -> confirmarVenta());
-//         cancelarButton.setOnAction(e -> cancelarVenta());
-//     }
+        this.ventaActual = new Venta.VentaBuilder()
+            .conVendedor(empleadoLogueado)
+            .conFecha(new Date())
+            .conEstado("pendiente")
+            .conCliente(null)
+            .conDetalleVenta(new ArrayList<>())
+            .build();
 
-//     private void buscarProducto() {
-//         String codigo = codigoBarrasField.getText().trim();
-//         if (codigo.isEmpty()) return;
-//         try {
-//             Producto productoSeleccionado = new Producto();
-//             if(productoSeleccionado.obtenerProducto(codigo)){
-//                 nombreField.setText(productoSeleccionado.getNombre());
-//                 marcaField.setText(productoSeleccionado.getMarca());
-//                 precioField.setText(String.valueOf(productoSeleccionado.getPrecio()));
-//                 stockField.setText(String.valueOf(productoSeleccionado.getStock()));
-//             } else {
-//                 mostrarAlerta("Producto no encontrado");
-//                 limpiarCamposProducto();
-//             }
+        cbxMedioPago.setItems(FXCollections.observableArrayList("Efectivo", "Tarjeta", "Transferencia"));
+    }
 
-//         } catch (Exception e) {
-//             e.printStackTrace();
-//         }
-//     }
+    @FXML
+    public void agregarProducto() {
+        String codigo = txtCodigoBarras.getText();
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(txtCantidad.getText());
+            if (cantidad <= 0) {
+                mostrarAlerta("La cantidad debe ser mayor que cero");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            mostrarAlerta("Cantidad inválida");
+            return;
+        }
 
-//     private void agregarProductoAVenta() {
-//         if (productoSeleccionado == null) return;
+        Producto producto = this.producto.buscarPorCodigo(codigo);
 
-//         int cantidad = cantidadSpinner.getValue();
-//         if (cantidad > productoSeleccionado.getStock()) {
-//             mostrarAlerta("Stock insuficiente");
-//             return;
-//         }
+        if (producto == null) {
+            mostrarAlerta("Producto no encontrado");
+            return;
+        }
 
-//         listaVenta.add(new DetalleVentaDto(productoSeleccionado, cantidad));
-//         limpiarCamposProducto();
-//     }
+        DetalleVenta detalle = new DetalleVenta.DetalleVentaBuilder()
+            .conProducto(producto)
+            .conCantidad(cantidad)
+            .conPrecioVenta(producto.getPrecio().get(producto.getPrecio().size() - 1).getMonto()) // obtener último precio
+            .conNombre(producto.getNombre())
+            .build();
 
-//     private void confirmarVenta() {
-//         if (listaVenta.isEmpty()) {
-//             mostrarAlerta("No hay productos en la venta");
-//             return;
-//         }
+        ventaActual.agregarDetalleVenta(detalle);
+        detallesObservable.add(detalle);
+        actualizarTotal();
+    }
 
-//         try (Connection conn = DriverManager.getConnection(DB_URL)) {
-//             conn.setAutoCommit(false);
+    @FXML
+    public void confirmarVenta() {
+        try {
+            float montoPagado = Float.parseFloat(txtMontoPagado.getText());
+            MedioPago medioPago = obtenerMedioPagoDesdeCombo();
 
-//             double total = listaVenta.stream().mapToDouble(DetalleVentaDto::getSubtotal).sum();
+            if (medioPago == null) {
+                mostrarAlerta("Seleccione un medio de pago");
+                return;
+            }
 
-//             String insertVenta = "INSERT INTO ventas (fecha, total) VALUES (?, ?)";
-//             try (PreparedStatement ventaStmt = conn.prepareStatement(insertVenta, Statement.RETURN_GENERATED_KEYS)) {
-//                 ventaStmt.setString(1, LocalDate.now().toString());
-//                 ventaStmt.setDouble(2, total);
-//                 ventaStmt.executeUpdate();
+            ventaActual.setMedioPago(medioPago);
 
-//                 ResultSet rs = ventaStmt.getGeneratedKeys();
-//                 if (rs.next()) {
-//                     int ventaId = rs.getInt(1);
+            if (!ventaActual.cobrar(montoPagado)) {
+                mostrarAlerta("El monto pagado es insuficiente");
+                return;
+            }
 
-//                     String insertDetalle = "INSERT INTO detalle_ventas (venta_id, producto_id, cantidad, subtotal) VALUES (?, ?, ?, ?)";
-//                     try (PreparedStatement detalleStmt = conn.prepareStatement(insertDetalle)) {
-//                         for (DetalleVentaDto item : listaVenta) {
-//                             detalleStmt.setInt(1, ventaId);
-//                             detalleStmt.setInt(2, item.getProductoObj().getId());
-//                             detalleStmt.setInt(3, item.getCantidad());
-//                             detalleStmt.setDouble(4, item.getSubtotal());
-//                             detalleStmt.addBatch();
+            ventaActual.setEstado("confirmada");
+            Venta ventaRegistrada = venta.registrarVenta();
 
-//                             Actualizar stock
-//                             String updateStock = "UPDATE productos SET stock = stock - ? WHERE id = ?";
-//                             try (PreparedStatement stockStmt = conn.prepareStatement(updateStock)) {
-//                                 stockStmt.setInt(1, item.getCantidad());
-//                                 stockStmt.setInt(2, item.getProductoObj().getId());
-//                                 stockStmt.executeUpdate();
-//                             }
-//                         }
-//                         detalleStmt.executeBatch();
-//                     }
-//                 }
-//                 conn.commit();
-//                 mostrarAlerta("Venta registrada con éxito.");
-//                 listaVenta.clear();
-//             } catch (SQLException e) {
-//                 conn.rollback();
-//                 throw e;
-//             }
+            if (ventaRegistrada != null) {
+                mostrarAlerta("Venta registrada con éxito");
+                limpiarFormulario();
+            } else {
+                mostrarAlerta("Error al registrar la venta");
+            }
 
-//         } catch (SQLException e) {
-//             e.printStackTrace();
-//             mostrarAlerta("Error al registrar la venta.");
-//         }
-//     }
+        } catch (NumberFormatException ex) {
+            mostrarAlerta("Monto pagado inválido");
+        } catch (Exception ex) {
+            mostrarAlerta("Error inesperado: " + ex.getMessage());
+        }
+    }
 
-//     private void cancelarVenta() {
-//         listaVenta.clear();
-//         limpiarCamposProducto();
-//     }
+    @FXML
+    public void cancelarVenta() {
+        ventaActual.cancelar();
+        mostrarAlerta("Venta cancelada");
+        limpiarFormulario();
+    }
 
-//     private void limpiarCamposProducto() {
-//         productoSeleccionado = null;
-//         codigoBarrasField.clear();
-//         nombreField.clear();
-//         marcaField.clear();
-//         precioField.clear();
-//         stockField.clear();
-//     }
+    private void actualizarTotal() {
+        float total = 0;
+        for (DetalleVenta d : ventaActual.getDetalleVenta()) {
+            total += d.calcularSubtotal();
+        }
+        lblTotal.setText(String.format("Total: $%.2f", total));
+    }
 
-//     private void mostrarAlerta(String mensaje) {
-//         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//         alert.setContentText(mensaje);
-//         alert.showAndWait();
-//     }
-// }
+    private MedioPago obtenerMedioPagoDesdeCombo() {
+        String seleccionado = cbxMedioPago.getValue();
+        if (seleccionado == null) return null;
+
+        MedioPago mp = new MedioPago();
+        mp.setNombre(seleccionado);
+        
+        return mp;
+    }
+
+    private void limpiarFormulario() {
+        txtCodigoBarras.clear();
+        txtCantidad.clear();
+        txtMontoPagado.clear();
+        cbxMedioPago.getSelectionModel().clearSelection();
+        detallesObservable.clear();
+        lblTotal.setText("Total: $0.00");
+
+        this.ventaActual = new Venta.VentaBuilder()
+            .conVendedor(empleadoLogueado)
+            .conFecha(new Date())
+            .conEstado("pendiente")
+            .conCliente(null)
+            .conDetalleVenta(new ArrayList<>())
+            .build();
+    }
+
+    private void mostrarAlerta(String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
+
+    private Empleado obtenerEmpleadoSesion() {
+        // Implementa la lógica para obtener el empleado conectado desde la sesión o contexto
+        return new Empleado(); // solo un ejemplo
+    }
+}
