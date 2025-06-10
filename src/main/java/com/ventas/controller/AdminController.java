@@ -1,4 +1,6 @@
-// package com.ventas.controller;
+package com.ventas.controller;
+
+import com.ventas.model.Producto;
 
 // import javafx.collections.FXCollections;
 // import javafx.collections.ObservableList;
@@ -17,7 +19,12 @@
 
 // import com.ventas.dto.ProductoDto;
 
-// public class AdminController {
+ public class AdminController {
+    private List<Producto> obtenerProductos(){
+        Producto p = p.listarProductos();
+        return null;
+    }
+ }
 
 //     @FXML private TableView<ProductoDto> tablaProductos;
 //     @FXML private TableColumn<ProductoDto, String> nombreColumn;
