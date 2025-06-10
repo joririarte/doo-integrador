@@ -15,24 +15,28 @@ public class SimpleTest {
     
     public static void main(String[] args) {
         
-        // Venta venta = VentaBuilder.getBuilder()
-        //                           .conEstado("Confirmada")
-        //                           .conFecha(CommonUtils.stringToDate("2025-06-08"))
-        //                           .build();
+        System.out.println("-------------------- VENTA ------------------------");
+        Venta venta = VentaBuilder.getBuilder()
+                                  .conCodigoVenta("C")
+                                  .build();
 
-        // List<Venta> listado = venta.consultarVenta(Arrays.asList("fecha"));
+        List<Venta> listado = venta.consultarVenta(Arrays.asList("codigoVenta"));
 
-        // System.out.println(listado.getFirst().getEstado());
-        // System.out.println(listado.getFirst().getCliente().getNombreApellido());
+        System.out.println(listado.getFirst().getEstado());
+        System.out.println(listado.getFirst().getCliente().getNombreApellido());
+        
+        System.out.println("-------------------- PRODUCTO ------------------------");
+        Producto p = ProductoBuilder.getBuilder()
+                                    .conNombre("Galletitas Dulces").build();
+        List<Producto> lista = p.buscarProducto(Arrays.asList("nombre"));
 
-        // Producto p = ProductoBuilder.getBuilder()
-        //                             .conNombre("Galletitas Dulces").build();
-        // List<Producto> lista = p.buscarProducto(Arrays.asList("nombre"));
+        System.out.println(lista.getFirst().getMarca());
+        System.out.println(lista.getFirst().getPrecio().getLast().getMonto());
 
-        // System.out.println(lista.getFirst().getMarca());
-        // System.out.println(lista.getFirst().getPrecio().getLast().getMonto());
-
+        System.out.println("-------------------- USUARIO ------------------------");
         Usuario user = UsuarioBuilder.getBuilder().conUsername("admin").conPassword("admin123").build();
-            user.iniciarSesion();
+        user.iniciarSesion();
+        System.out.println(user.getUltimoAcceso());
+        System.out.println(user.getEmpleado().getCUIT());
     }
 }

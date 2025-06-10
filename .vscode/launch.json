@@ -3,16 +3,16 @@
   "configurations": [
     {
       "type": "java",
-      "name": "SimpleTest",
+      "name": "DBInitializerV2",
       "request": "launch",
-      "mainClass": "com.ventas.util.SimpleTest",
+      "mainClass": "com.ventas.db.DBInitializerV2",
       "projectName": "SistemaVentas"
     },
     {
       "type": "java",
-      "name": "lala",
+      "name": "SimpleTest",
       "request": "launch",
-      "mainClass": "com.ventas.util.lala",
+      "mainClass": "com.ventas.util.SimpleTest",
       "projectName": "SistemaVentas"
     },
     {

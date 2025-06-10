@@ -83,7 +83,12 @@ public class VentaDao implements Dao<VentaDto> {
             if (params != null && !params.isEmpty()) {
                 StringBuilder sql = new StringBuilder("SELECT * FROM Venta WHERE ");
                 for (int i = 0; i < params.size(); i++) {
-                    sql.append(params.get(i)).append(" = ?");
+                    if(params.get(i).equals("codigoVenta")){
+                        sql.append(params.get(i)).append(" LIKE ?");
+                    }
+                    else{
+                        sql.append(params.get(i)).append(" = ?");
+                    }
                     if (i < params.size() - 1) {
                         sql.append(" AND ");
                     }
@@ -97,7 +102,7 @@ public class VentaDao implements Dao<VentaDto> {
                 for (String param : params) {
                     switch (param) {
                         case "codigoVenta":
-                            stmt.setString(index++, obj.codigoVenta);
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.codigoVenta));
                             break;
                         case "fecha":
                             stmt.setString(index++, CommonUtils.dateToString(obj.fecha));
