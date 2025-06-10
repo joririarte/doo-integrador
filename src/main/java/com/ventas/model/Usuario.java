@@ -113,7 +113,10 @@ public class Usuario extends Modelo{
             UsuarioDto user = this.mapper.map(this, UsuarioDto.class);
             user = (UsuarioDto) this.dao.buscar(user);
             if(user != null){
+                this.ultimoAcceso = user.ultimoAcceso;
+                user.ultimoAcceso = new Date();
                 this.dao.actualizar(user, Arrays.asList("ultimoAcceso"));
+                user.ultimoAcceso = this.ultimoAcceso;
                 return this.mapper.map(user, Usuario.class);
             }
         }

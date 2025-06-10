@@ -12,20 +12,20 @@ public class lala {
     
     public static void main(String[] args) {
         
-        // Venta venta = VentaBuilder.getBuilder()
-        //                           .conEstado("Confirmada")
-        //                           .conFecha(CommonUtils.stringToDate("2025-06-08"))
-        //                           .build();
+        Venta venta = VentaBuilder.getBuilder()
+                                  .conEstado("Confirmada")
+                                  .conFecha(CommonUtils.stringToDate("2025-06-08"))
+                                  .build();
 
-        // List<Venta> listado = venta.consultarVenta(Arrays.asList("estado"));
+        List<Venta> listado = venta.consultarVenta(Arrays.asList("estado"));
 
-        // System.out.println(listado.getFirst().getEstado());
-        // System.out.println(listado.getFirst().getCliente().getNombreApellido());
+        System.out.println(listado.getFirst().getEstado());
+        System.out.println(listado.getFirst().getCliente().getNombreApellido());
 
-        Producto p = ProductoBuilder.getBuilder()
-                                    .conNombre("Galletitas Dulces").build();
-        List<Producto> lista = p.buscarProducto(Arrays.asList("nombre"));
+        // Producto p = ProductoBuilder.getBuilder()
+        //                             .conNombre("Galletitas Dulces").build();
+        // List<Producto> lista = p.buscarProducto(Arrays.asList("nombre"));
 
-        System.out.println(lista.getFirst().getMarca());
+        // System.out.println(lista.getFirst().getMarca());
     }
 }

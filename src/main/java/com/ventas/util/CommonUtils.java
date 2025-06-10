@@ -5,20 +5,42 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CommonUtils {
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    // Formato solo fecha
+    private static final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
+    // Formato fecha y hora
+    private static final SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    // convierte "2025-06-09" en Date (sin hora específica, es 00:00:00)
     public static Date stringToDate(String strDate) {
         if (strDate == null) return null;
         try {
-            return sdf.parse(strDate);
+            return sdfDate.parse(strDate);
         } catch (ParseException e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    // convierte "2025-06-09 14:30:00" en Date
+    public static Date stringToDateTime(String strDateTime) {
+        if (strDateTime == null) return null;
+        try {
+            return sdfDateTime.parse(strDateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // convierte Date a "yyyy-MM-dd"
     public static String dateToString(Date date) {
         if (date == null) return null;
-        return sdf.format(date);
+        return sdfDate.format(date);
+    }
+
+    // convierte Date a "yyyy-MM-dd HH:mm:ss"
+    public static String dateTimeToString(Date date) {
+        if (date == null) return null;
+        return sdfDateTime.format(date);
     }
 }

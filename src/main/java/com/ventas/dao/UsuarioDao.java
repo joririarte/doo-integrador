@@ -26,7 +26,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
                 usuario.empleadoId = rs.getInt("empleadoId");
                 usuario.username = rs.getString("username");
                 usuario.password = rs.getString("password");
-                usuario.ultimoAcceso = CommonUtils.stringToDate(rs.getString("ultimoAcceso"));
+                usuario.ultimoAcceso = CommonUtils.stringToDateTime(rs.getString("ultimoAcceso"));
                 
                 EmpleadoDto emp = new EmpleadoDto();
                 emp.personaId = usuario.empleadoId;
@@ -58,7 +58,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
                 obj.empleadoId = rs.getInt("empleadoId");
                 obj.username = rs.getString("username");
                 obj.password = rs.getString("password");
-                obj.ultimoAcceso = CommonUtils.stringToDate(rs.getString("ultimoAcceso"));
+                obj.ultimoAcceso = CommonUtils.stringToDateTime(rs.getString("ultimoAcceso"));
 
                 EmpleadoDto emp = new EmpleadoDto();
                 emp.personaId = obj.empleadoId;
@@ -87,13 +87,15 @@ public class UsuarioDao implements Dao<UsuarioDto> {
             }
             sql.append(" WHERE empleadoId = ?");
 
-            PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
+            String query = sql.toString();
+            PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
 
             int index = 1;
             for (String param : params) {
                 switch (param) {
                     case "ultimoAcceso":
-                        stmt.setString(index++, CommonUtils.dateToString(obj.ultimoAcceso));
+                        String ultimoAcceso = CommonUtils.dateTimeToString(obj.ultimoAcceso);
+                        stmt.setString(index++, ultimoAcceso);
                         break;
                     case "password":
                         stmt.setString(index++, obj.password);
@@ -106,11 +108,12 @@ public class UsuarioDao implements Dao<UsuarioDto> {
             stmt.setInt(index, obj.empleadoId);
             stmt.executeUpdate();
             } else {
-                String sqlInsert = "INSERT INTO Usuario (empleadoId, username, password) VALUES (?, ?, ?)";
+                String sqlInsert = "INSERT INTO Usuario (empleadoId, username, password, ultimoAcceso) VALUES (?, ?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
                 stmt.setInt(1, obj.empleadoId);
                 stmt.setString(2, obj.username);
                 stmt.setString(3, obj.password);
+                stmt.setString(4, CommonUtils.dateTimeToString(obj.ultimoAcceso));
                 stmt.executeUpdate();
                 
                 ResultSet rs = stmt.getGeneratedKeys();
