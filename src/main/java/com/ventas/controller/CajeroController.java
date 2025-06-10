@@ -1,6 +1,7 @@
 package com.ventas.controller;
 
 import com.ventas.model.*;
+import com.ventas.model.Producto.ProductoBuilder;
 import com.ventas.dao.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -57,8 +58,8 @@ public class CajeroController {
             mostrarAlerta("Cantidad inválida");
             return;
         }
-
-        Producto producto = this.producto.buscarPorCodigo(codigo);
+        
+        Producto producto = this.buscarPorCodigoBarras(codigo);
 
         if (producto == null) {
             mostrarAlerta("Producto no encontrado");
@@ -163,5 +164,15 @@ public class CajeroController {
     private Empleado obtenerEmpleadoSesion() {
         // Implementa la lógica para obtener el empleado conectado desde la sesión o contexto
         return new Empleado(); // solo un ejemplo
+    }
+
+    private Producto buscarPorCodigoBarras(String codigoBarras){
+        Producto p = ProductoBuilder.getBuilder().conCodigoBarras(codigoBarras).build();
+        List<Producto> listado = p.buscarProducto(Arrays.asList("codigoBarras"));
+        if(!listado.isEmpty()){
+            p = listado.getFirst();
+            return p;
+        }
+        return null;
     }
 }
