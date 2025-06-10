@@ -35,7 +35,7 @@ public class SimpleTest {
 
         System.out.println("-------------------- USUARIO ------------------------");
         Usuario user = UsuarioBuilder.getBuilder().conUsername("admin").conPassword("admin123").build();
-        user.iniciarSesion();
+        user = user.iniciarSesion();
         System.out.println(user.getUltimoAcceso());
         System.out.println(user.getEmpleado().getCUIT());
     }

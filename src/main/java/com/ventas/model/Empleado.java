@@ -22,6 +22,7 @@ public class Empleado extends Persona{
     }
 
     public Empleado(EmpleadoBuilder builder) {
+        this();
         this.setNombreApellido(builder.nombreApellido);
         this.setTipoDocumento(builder.tipoDocumento);
         this.setNroDocumento(builder.nroDocumento);
