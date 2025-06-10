@@ -9,6 +9,7 @@ import com.ventas.dto.VentaDto;
 import com.ventas.factories.FabricaDao;
 
 public class Venta extends Modelo {
+    private String codigoVenta;
     private Empleado vendedor;
     private Date fecha;
     private String estado;
@@ -26,6 +27,7 @@ public class Venta extends Modelo {
 
     public Venta(VentaBuilder builder) {
         this(); // Llama al constructor por defecto
+        this.setCodigoVenta(builder.codigoVenta);
         this.setVendedor(builder.vendedor);
         this.setFecha(builder.fecha);
         this.setEstado(builder.estado);
@@ -39,6 +41,7 @@ public class Venta extends Modelo {
     //#region VentaBuilder
 
     public static class VentaBuilder {
+        private String codigoVenta;
         private Empleado vendedor;
         private Date fecha;
         private String estado;
@@ -49,6 +52,11 @@ public class Venta extends Modelo {
 
         public static VentaBuilder getBuilder() {
             return new VentaBuilder();
+        }
+
+        public VentaBuilder conCodigoVenta(String codigoVenta) {
+            this.codigoVenta = codigoVenta;
+            return this;
         }
 
         public VentaBuilder conVendedor(Empleado vendedor) {
@@ -95,6 +103,14 @@ public class Venta extends Modelo {
     //#endregion
 
     //#region Getters y Setters
+
+    public String getCodigoVenta() {
+        return codigoVenta;
+    }
+
+    public void setCodigoVenta(String codigoVenta) {
+        this.codigoVenta = codigoVenta;
+    }
 
     public Empleado getVendedor() {
         return vendedor;

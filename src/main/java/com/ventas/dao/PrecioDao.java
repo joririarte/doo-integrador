@@ -37,27 +37,8 @@ public class PrecioDao implements Dao<PrecioDto> {
     }
 
     @Override
-    public PrecioDto buscar(PrecioDto obj) {
-        String sql = "SELECT * FROM Precio WHERE productoId = ? AND precioId = ?";
-
-        try {
-            PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.productoId);
-            stmt.setInt(2, obj.precioId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                obj.monto = rs.getFloat("monto");
-                obj.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
-            } else {
-                obj = null;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return obj;
+    public PrecioDto buscar(int id) {
+        return null;
     }
 
     public List<PrecioDto> listarPorProducto(int productoId) {
@@ -153,8 +134,7 @@ public class PrecioDao implements Dao<PrecioDto> {
 
     @Override
     public List<PrecioDto> buscar(PrecioDto obj, List<String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
+        return null;
     }
 }
 

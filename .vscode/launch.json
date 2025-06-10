@@ -3,6 +3,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "SimpleTest",
+      "request": "launch",
+      "mainClass": "com.ventas.util.SimpleTest",
+      "projectName": "SistemaVentas"
+    },
+    {
+      "type": "java",
+      "name": "lala",
+      "request": "launch",
+      "mainClass": "com.ventas.util.lala",
+      "projectName": "SistemaVentas"
+    },
+    {
+      "type": "java",
       "name": "Debug (JavaFX App)",
       "request": "launch",
       "mainClass": "com.ventas.App",

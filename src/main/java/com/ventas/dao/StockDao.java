@@ -65,29 +65,8 @@ public class StockDao implements Dao<StockDto> {
     }
 
     @Override
-    public StockDto buscar(StockDto obj) {
-        String sql = "SELECT * FROM Stock WHERE productoId = ? AND stockId = ?";
-
-        try {
-            PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.productoId);
-            stmt.setInt(2, obj.stockId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                obj.productoId = rs.getInt("productoId");
-                obj.stockId = rs.getInt("stockId");
-                obj.cantidad = rs.getFloat("cantidad");
-                obj.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
-            } else {
-                obj = null;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return obj;
+    public StockDto buscar(int id) {
+        return null;
     }
 
     @Override
@@ -157,7 +136,6 @@ public class StockDao implements Dao<StockDto> {
 
     @Override
     public List<StockDto> buscar(StockDto obj, List<String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
+        return null;
     }
 }

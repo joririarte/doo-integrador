@@ -40,33 +40,8 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
     }
 
     @Override
-    public DescuentoRecargoDto buscar(DescuentoRecargoDto obj) {
-        String sql = "SELECT * FROM DescuentoRecargo WHERE medioPagoId = ? AND descuentoRecargoId = ?";
-
-        try {
-            PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.medioPagoId);
-            stmt.setInt(2, obj.descuentoRecargoId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                obj.medioPagoId = rs.getInt("medioPagoId");
-                obj.descuentoRecargoId = rs.getInt("descuentoRecargoId");
-                obj.nombre = rs.getString("nombre");
-                obj.tipo = rs.getString("tipo");
-                obj.monto = rs.getFloat("monto");
-                obj.fechaInicio = CommonUtils.stringToDate(rs.getString("fechaInicio"));
-                obj.fechaFin = CommonUtils.stringToDate(rs.getString("fechaFin"));
-                obj.habilitado = rs.getBoolean("habilitado");
-            } else {
-                obj = null;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return obj;
+    public DescuentoRecargoDto buscar(int id) {
+        return null;
     }
 
     public List<DescuentoRecargoDto> obtenerPorMedioPago(int medioPagoId) {
@@ -182,7 +157,6 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
     @Override
     public List<DescuentoRecargoDto> buscar(DescuentoRecargoDto obj, List<String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscar'");
+        return null;
     }
 }

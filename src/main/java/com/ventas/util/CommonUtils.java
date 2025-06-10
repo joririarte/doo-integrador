@@ -43,4 +43,8 @@ public class CommonUtils {
         if (date == null) return null;
         return sdfDateTime.format(date);
     }
+
+    public static String setWildcard(String param){
+        return "%" + param + "%";
+    }
 }

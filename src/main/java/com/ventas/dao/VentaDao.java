@@ -1,9 +1,7 @@
 package com.ventas.dao;
 
 import com.ventas.dto.VentaDto;
-import com.ventas.dto.ClienteDto;
 import com.ventas.dto.DetalleVentaDto;
-import com.ventas.dto.EmpleadoDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
 import com.ventas.util.CommonUtils;
 
@@ -33,14 +31,8 @@ public class VentaDao implements Dao<VentaDto> {
 
                 // Cargar detalle de venta
                 dto.detalleVenta = new DetalleVentaDao().obtenerPorVenta(dto.ventaId);
-
-                ClienteDto clienteDto = new ClienteDto();
-                clienteDto.personaId = dto.clienteId;
-                dto.cliente = new ClienteDao().buscar(clienteDto);
-
-                EmpleadoDto vendedorDto = new EmpleadoDto();
-                vendedorDto.personaId = dto.vendedorId;
-                dto.vendedor = new EmpleadoDao().buscar(vendedorDto);
+                dto.cliente = new ClienteDao().buscar(dto.clienteId);
+                dto.vendedor = new EmpleadoDao().buscar(dto.vendedorId);
 
                 ventas.add(dto);
             }
@@ -53,12 +45,12 @@ public class VentaDao implements Dao<VentaDto> {
     }
 
     @Override
-    public VentaDto buscar(VentaDto obj) {
+    public VentaDto buscar(int id) {
         VentaDto dto = null;
         String sql = "SELECT * FROM Venta WHERE ventaId = ?";
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, obj.ventaId);
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -73,14 +65,8 @@ public class VentaDao implements Dao<VentaDto> {
 
                 // Detalles
                 dto.detalleVenta = new DetalleVentaDao().obtenerPorVenta(dto.ventaId);
-
-                ClienteDto clienteDto = new ClienteDto();
-                clienteDto.personaId = dto.clienteId;
-                dto.cliente = new ClienteDao().buscar(clienteDto);
-
-                EmpleadoDto vendedorDto = new EmpleadoDto();
-                vendedorDto.personaId = dto.vendedorId;
-                dto.vendedor = new EmpleadoDao().buscar(vendedorDto);
+                dto.cliente = new ClienteDao().buscar(dto.clienteId);
+                dto.vendedor = new EmpleadoDao().buscar(dto.vendedorId);
             }
 
         } catch (SQLException e) {
@@ -92,8 +78,64 @@ public class VentaDao implements Dao<VentaDto> {
 
     @Override
     public List<VentaDto> buscar(VentaDto obj, List<String> params) {
-        // TODO Auto-generated method stub
-        return null;
+        List<VentaDto> lista = new ArrayList<>();
+        try{
+            if (params != null && !params.isEmpty()) {
+                StringBuilder sql = new StringBuilder("SELECT * FROM Venta WHERE ");
+                for (int i = 0; i < params.size(); i++) {
+                    sql.append(params.get(i)).append(" = ?");
+                    if (i < params.size() - 1) {
+                        sql.append(" AND ");
+                    }
+                }
+
+                String query = sql.toString();
+
+                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
+                
+                int index = 1;
+                for (String param : params) {
+                    switch (param) {
+                        case "codigoVenta":
+                            stmt.setString(index++, obj.codigoVenta);
+                            break;
+                        case "fecha":
+                            stmt.setString(index++, CommonUtils.dateToString(obj.fecha));
+                            break;
+                        case "estado":
+                            stmt.setString(index++, obj.estado);
+                            break;    
+                        default:
+                            throw new IllegalArgumentException("Campo no soportado: " + param);
+                    }
+                }
+                
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    obj.ventaId = rs.getInt("ventaId");
+                    obj.vendedorId = rs.getInt("vendedorId");
+                    obj.medioPagoId = rs.getInt("medioPagoId");
+                    obj.clienteId = rs.getInt("clienteId");
+
+                    obj.codigoVenta = rs.getString("codigoVenta");
+                    obj.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
+                    obj.estado = rs.getString("estado");
+                    obj.montoPagado = rs.getFloat("montoPagado");
+
+                    obj.vendedor = new EmpleadoDao().buscar(obj.vendedorId);
+                    obj.medioPago = new MedioPagoDao().buscar(obj.medioPagoId);
+                    obj.cliente = new ClienteDao().buscar(obj.clienteId);
+
+                    lista.add(obj);
+                }
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return lista;
     }
 
     @Override

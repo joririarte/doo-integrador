@@ -9,6 +9,7 @@ import com.ventas.dto.PrecioDto;
 import com.ventas.dto.ProductoDto;
 import com.ventas.dto.StockDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
+import com.ventas.util.CommonUtils;
 
 public class ProductoDao implements Dao<ProductoDto> {
 
@@ -42,30 +43,30 @@ public class ProductoDao implements Dao<ProductoDto> {
     }
 
     @Override
-    public ProductoDto buscar(ProductoDto obj) {
+    public ProductoDto buscar(int id) {
         String sql = "SELECT * FROM Producto WHERE productoId = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.productoId);
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                ProductoDto obj = new ProductoDto();
                 obj.nombre = rs.getString("nombre");
                 obj.marca = rs.getString("marca");
                 obj.codigoBarras = rs.getString("codigoBarras");
 
                 obj.precio = new PrecioDao().listarPorProducto(obj.productoId);
                 obj.stock = new StockDao().listarPorProducto(obj.productoId);
-            } else {
-                obj = null;
+                return obj;
             }
-
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             e.printStackTrace();
         }
 
-        return obj;
+        return null;
     }
     
     @Override
@@ -75,25 +76,29 @@ public class ProductoDao implements Dao<ProductoDto> {
             if (params != null && !params.isEmpty()) {
                 StringBuilder sql = new StringBuilder("SELECT * FROM Producto WHERE ");
                 for (int i = 0; i < params.size(); i++) {
-                    sql.append(params.get(i)).append(" = ?");
+                    if(params.get(i).equals("codigoBarras")){
+                        sql.append(params.get(i)).append(" = ?");
+                    }
+                    else{
+                        sql.append(params.get(i)).append(" LIKE ?");
+                    }
                     if (i < params.size() - 1) {
                         sql.append(" AND ");
                     }
                 }
 
-                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
+                String query = sql.toString();
+
+                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
                 
                 int index = 1;
                 for (String param : params) {
                     switch (param) {
-                        case "productoId":
-                            stmt.setInt(index++, obj.productoId);
-                            break;
                         case "nombre":
-                            stmt.setString(index++, obj.nombre);
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.nombre));
                             break;
                         case "marca":
-                            stmt.setString(index++, obj.marca);
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.marca));
                             break;
                         case "codigoBarras":
                             stmt.setString(index++, obj.codigoBarras);
@@ -106,8 +111,7 @@ public class ProductoDao implements Dao<ProductoDto> {
                 ResultSet rs = stmt.executeQuery();
 
                 while (rs.next()) {
-                    ProductoDto dto = new ProductoDto();
-                    dto.productoId = rs.getInt("productoId");
+                    obj.productoId = rs.getInt("productoId");
                     obj.nombre = rs.getString("nombre");
                     obj.marca = rs.getString("marca");
                     obj.codigoBarras = rs.getString("codigoBarras");
@@ -115,7 +119,7 @@ public class ProductoDao implements Dao<ProductoDto> {
                     obj.precio = new PrecioDao().listarPorProducto(obj.productoId);
                     obj.stock = new StockDao().listarPorProducto(obj.productoId);
 
-                    lista.add(dto);
+                    lista.add(obj);
                 }
             }
         }
