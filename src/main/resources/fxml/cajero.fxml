@@ -52,7 +52,7 @@
 
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Medio de pago:"/>
-        <ComboBox fx:id="medioPagoComboBox"/>
+        <ComboBox fx:id="cbxMedioPago"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER_RIGHT">

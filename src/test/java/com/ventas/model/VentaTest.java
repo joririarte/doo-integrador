@@ -51,7 +51,6 @@ public class VentaTest {
 
         venta.setMontoPagado(3500f);
         assertEquals(200f, venta.calcularVuelto(), 0.001);
-    }
 
     @Test
     void calcularMontoTotal_listaNula() {
