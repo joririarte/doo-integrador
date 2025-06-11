@@ -1,7 +1,11 @@
 package com.ventas.controller;
 
 import com.ventas.model.*;
+import com.ventas.model.Cliente.ClienteBuilder;
+import com.ventas.model.DetalleVenta.DetalleVentaBuilder;
+import com.ventas.model.MedioPago.MedioPagoBuilder;
 import com.ventas.model.Producto.ProductoBuilder;
+import com.ventas.model.Venta.VentaBuilder;
 import com.ventas.dao.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -167,12 +171,56 @@ public class CajeroController {
     }
 
     private Producto buscarPorCodigoBarras(String codigoBarras){
-        Producto p = ProductoBuilder.getBuilder().conCodigoBarras(codigoBarras).build();
+        Producto p = ProductoBuilder.getBuilder()
+                                    .conCodigoBarras(codigoBarras)
+                                    .build();
         List<Producto> listado = p.buscarProducto(Arrays.asList("codigoBarras"));
         if(!listado.isEmpty()){
             p = listado.getFirst();
             return p;
         }
         return null;
+    }
+
+    private Cliente buscarClientePorNroCliente(String nroCliente){
+        Cliente c = ClienteBuilder.getBuilder()
+                                  .conNroCliente(nroCliente)
+                                  .build();
+        List<Cliente> listado = c.consultarCliente(Arrays.asList("nroCliente"));
+        if(!listado.isEmpty()){
+            c = listado.getFirst();
+            return c;
+        }
+        return null;
+    }
+
+    private Venta nuevaVenta(String codigoVenta, Empleado vendedor, Cliente cliente ){
+        Venta v = VentaBuilder.getBuilder()
+                              .conCodigoVenta(codigoVenta)
+                              .conVendedor(vendedor)
+                              .conCliente(cliente)
+                              .conFecha(new Date())
+                              .conEstado("NUEVA")
+                              .build();
+        return v;
+    }
+
+    private DetalleVenta nuevoDetalleVenta(String nombre, int cantidad, Producto producto){
+        DetalleVenta dv = DetalleVentaBuilder.getBuilder()
+                                              .conNombre(nombre)
+                                              .conCantidad(cantidad)
+                                              .conProducto(producto)
+                                              .build();
+        float precioVenta = producto.getPrecio().getFirst().getMonto();
+        dv.setPrecioVenta(precioVenta);
+        return dv;
+    }
+
+    private List<MedioPago> listarMedioPagoHabilitado(){
+        MedioPago mp = MedioPagoBuilder.getBuilder()
+                                       .conHabilitado(true)
+                                       .build();
+        List<MedioPago> listado = mp.consultarMedioPago(Arrays.asList("habilitado"));
+        return listado;                             
     }
 }
