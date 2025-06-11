@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ventas.dto.MedioPagoDto;
-import com.ventas.dto.ProductoDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
 import com.ventas.util.CommonUtils;
 
@@ -159,6 +158,9 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                             break;
                         case "nombre":
                             sql.append("nombre LIKE ?");
+                            break;
+                        case "habilitado":
+                            sql.append("habilitado = ?");
                             break;
                         default:
                             sql.append(params.get(i)).append(" = ?");
