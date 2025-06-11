@@ -99,7 +99,5 @@ public class VentaTest {
 
             assertFalse(venta.calcularMontoTotal() == 200f);
         }
-    }
-
 }
 
