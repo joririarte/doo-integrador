@@ -12,7 +12,6 @@ import com.ventas.factories.FabricaDao;
 public class DetalleVenta extends Modelo{
     private String nombre;
     private int cantidad;
-    private float descuentoRecargo;
     private float precioVenta;
     private Producto producto;
 
@@ -28,7 +27,6 @@ public class DetalleVenta extends Modelo{
         this();
         this.setNombre(builder.nombre);
         this.setCantidad(builder.cantidad);
-        this.setDescuentoRecargo(builder.descuentoRecargo);
         this.setPrecioVenta(builder.precioVenta);
         this.setProducto(builder.producto);
     }
@@ -40,7 +38,6 @@ public class DetalleVenta extends Modelo{
     public static class DetalleVentaBuilder {
         private String nombre;
         private int cantidad;
-        private float descuentoRecargo;
         private float precioVenta;
         private Producto producto;
 
@@ -55,11 +52,6 @@ public class DetalleVenta extends Modelo{
 
         public DetalleVentaBuilder conCantidad(int cantidad) {
             this.cantidad = cantidad;
-            return this;
-        }
-
-        public DetalleVentaBuilder conDescuentoRecargo(float descuentoRecargo) {
-            this.descuentoRecargo = descuentoRecargo;
             return this;
         }
 
@@ -89,10 +81,6 @@ public class DetalleVenta extends Modelo{
         this.cantidad = cantidad;
     }
 
-    public void setDescuentoRecargo(float descuentoRecargo) {
-        this.descuentoRecargo = descuentoRecargo;
-    }
-
     public void setPrecioVenta(float precioVenta) {
         this.precioVenta = precioVenta;
     }
@@ -107,10 +95,6 @@ public class DetalleVenta extends Modelo{
 
     public int getCantidad() {
         return cantidad;
-    }
-
-    public float getDescuentoRecargo() {
-        return descuentoRecargo;
     }
 
     public float getPrecioVenta() {

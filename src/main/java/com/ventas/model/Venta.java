@@ -164,6 +164,9 @@ public class Venta extends Modelo {
         for(DetalleVenta dv : this.detalleVenta){
             total += dv.calcularSubtotal();
         }
+        if(medioPago != null){
+            //aca deberia restar o sumar segun el descuento recargo
+        }
         return total; 
     }
 
