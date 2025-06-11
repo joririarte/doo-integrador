@@ -23,11 +23,20 @@ public class MainController {
             System.out.println("[INFO] Rol del usuario: " + user.getEmpleado().getCargo());
             usuarioLabel.setText("Usuario: " + user.getUsername() + " | Rol: " + user.getEmpleado().getCargo());
         }
-        mostrarInicio(); // Por defecto al iniciar
-    }
 
-    public void mostrarInicio() {
-        cargarVista("/fxml/admin.fxml");
+        // Cargar vista según el rol
+        String rol = user.getEmpleado().getCargo();
+        switch (rol) {
+            case "Administrador":
+                mostrarProductos();
+                break;
+            case "Cajero":
+                mostrarRegistrarVenta();
+                break;
+            default:
+                mostrarAlertaPermisoDenegado();
+                break;
+        }
     }
 
     public void mostrarVentas() {

@@ -23,9 +23,8 @@
     <!-- Sidebar izquierdo -->
     <left>
         <VBox spacing="10" style="-fx-background-color: #34495e; -fx-padding: 10;">
-            <Button text="Inicio" onAction="#mostrarInicio" maxWidth="Infinity" style="-fx-pref-width: 180;"/>
-            <Button text="Ventas" onAction="#mostrarVentas" maxWidth="Infinity" style="-fx-pref-width: 180;"/>
             <Button text="Productos" onAction="#mostrarProductos" maxWidth="Infinity" style="-fx-pref-width: 180;"/>
+            <Button text="Ventas" onAction="#mostrarVentas" maxWidth="Infinity" style="-fx-pref-width: 180;"/>
             <Button text="Registrar Venta" onAction="#mostrarRegistrarVenta" maxWidth="Infinity" style="-fx-pref-width: 180;"/>
             <Button text="Cerrar Sesión" onAction="#cerrarSesion" maxWidth="Infinity" style="-fx-pref-width: 180;"/>
         </VBox>
