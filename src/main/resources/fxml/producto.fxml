@@ -41,6 +41,4 @@
         <Button text="Cancelar" onAction="#cancelar"/>
     </HBox>
 
-    <Button text="Volver" onAction="#volverAlSelector" maxWidth="100"/>
-
 </VBox>
