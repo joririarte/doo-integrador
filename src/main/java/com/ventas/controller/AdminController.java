@@ -1,49 +1,55 @@
 package com.ventas.controller;
 
 import com.ventas.model.Producto;
+import com.ventas.model.Producto.ProductoBuilder;
 
-// import javafx.collections.FXCollections;
-// import javafx.collections.ObservableList;
-// import javafx.fxml.FXML;
-// import javafx.fxml.FXMLLoader;
-// import javafx.scene.Parent;
-// import javafx.scene.Scene;
-// import javafx.scene.control.*;
-// import javafx.scene.control.cell.PropertyValueFactory;
-// import javafx.scene.layout.HBox;
-// import javafx.stage.Modality;
-// import javafx.stage.Stage;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
-// import java.io.IOException;
-// import java.sql.*;
+import java.io.IOException;
+import java.sql.*;
+import java.util.List;
 
-// import com.ventas.dto.ProductoDto;
+import com.ventas.dto.ProductoDto;
 
  public class AdminController {
+    
+    @FXML private TableView<ProductoDto> tablaProductos;
+    @FXML private TableColumn<ProductoDto, String> nombreColumn;
+    @FXML private TableColumn<ProductoDto, String> marcaColumn;
+    @FXML private TableColumn<ProductoDto, String> codigoBarrasColumn;
+    @FXML private TableColumn<ProductoDto, Double> precioColumn;
+    @FXML private TableColumn<ProductoDto, Integer> stockColumn;
+    @FXML private TableColumn<ProductoDto, Void> accionColumn;
+    @FXML private Button btnRegistrarProducto;
+    
+    @FXML
+    public void initialize() {
+        // configurarColumnas();
+        // cargarProductos();
+
+        // btnRegistrarProducto.setOnAction(e -> abrirFormularioProducto());
+    }
+    
     private List<Producto> obtenerProductos(){
-        Producto p = p.listarProductos();
-        return null;
+        Producto p = ProductoBuilder.getBuilder().build();
+        return p.listarProductos();
     }
  }
 
-//     @FXML private TableView<ProductoDto> tablaProductos;
-//     @FXML private TableColumn<ProductoDto, String> nombreColumn;
-//     @FXML private TableColumn<ProductoDto, String> marcaColumn;
-//     @FXML private TableColumn<ProductoDto, String> codigoBarrasColumn;
-//     @FXML private TableColumn<ProductoDto, Double> precioColumn;
-//     @FXML private TableColumn<ProductoDto, Integer> stockColumn;
-//     @FXML private TableColumn<ProductoDto, Void> accionColumn;
-//     @FXML private Button btnRegistrarProducto;
 
 //     private final String DB_URL = "jdbc:sqlite:sistema.db";
 
-//     @FXML
-//     public void initialize() {
-//         configurarColumnas();
-//         cargarProductos();
-
-//         btnRegistrarProducto.setOnAction(e -> abrirFormularioProducto());
-//     }
+//     
 
 //     private void configurarColumnas() {
 //         nombreColumn.setCellValueFactory(new PropertyValueFactory<>("nombre"));
