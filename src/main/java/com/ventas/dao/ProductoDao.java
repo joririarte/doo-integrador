@@ -154,13 +154,19 @@ public class ProductoDao implements Dao<ProductoDto> {
                         case "monto":
                             {
                                 PrecioDao precioDao = new PrecioDao();
-                                precioDao.actualizar(obj.precio.getLast(), null);
+                                PrecioDto precio = obj.precio.getFirst();
+                                precio.productoId = obj.productoId;
+                                precio.precioId = obj.precio.size() + 1;
+                                precioDao.actualizar(precio, null);
                             }
                             break;
                         case "cantidad":
                             {
                                 StockDao stockDao = new StockDao();
-                                stockDao.actualizar(obj.stock.getLast(), null);
+                                StockDto stock = obj.stock.getFirst();
+                                stock.productoId = obj.productoId;
+                                stock.stockId = obj.stock.size() + 1;
+                                stockDao.actualizar(stock, null);
                             }
                             break;
                         default:
@@ -178,20 +184,25 @@ public class ProductoDao implements Dao<ProductoDto> {
                 stmt.setString(3, obj.codigoBarras);
                 stmt.executeUpdate();
                 
-                StockDao stockDao = new StockDao();
-                for (StockDto s : obj.stock){
-                    stockDao.actualizar(s, null);
-                }
-
-                PrecioDao precioDao = new PrecioDao();
-                for(PrecioDto p : obj.precio){
-                    precioDao.actualizar(p, null);
-                }
-
-
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
                     obj.productoId = rs.getInt(1);
+                    
+                    StockDao stockDao = new StockDao();
+                    int index = 1;
+                    for (StockDto s : obj.stock){
+                        s.productoId = obj.productoId;
+                        s.stockId = index++;
+                        stockDao.actualizar(s, null);
+                    }
+
+                    PrecioDao precioDao = new PrecioDao();
+                    index = 1;
+                    for(PrecioDto p : obj.precio){
+                        p.productoId = obj.productoId;
+                        p.precioId = index++;
+                        precioDao.actualizar(p, null);
+                    }
                 }
             }
 

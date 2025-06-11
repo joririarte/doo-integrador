@@ -39,7 +39,7 @@ public class StockDao implements Dao<StockDto> {
 
     public List<StockDto> listarPorProducto(int productoId) {
         List<StockDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Stock WHERE productoId = ? AND stockId = ?";
+        String sql = "SELECT * FROM Stock WHERE productoId = ? AND stockId = ? ORDER BY monto DESC";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -52,7 +52,6 @@ public class StockDao implements Dao<StockDto> {
                 dto.stockId = rs.getInt("stockId");
                 dto.cantidad = rs.getFloat("cantidad");
                 dto.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
-                dto.productoId = rs.getInt("producto_id");
 
                 lista.add(dto);
             }

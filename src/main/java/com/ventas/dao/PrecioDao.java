@@ -43,7 +43,7 @@ public class PrecioDao implements Dao<PrecioDto> {
 
     public List<PrecioDto> listarPorProducto(int productoId) {
         List<PrecioDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Precio WHERE productoId = ?";
+        String sql = "SELECT * FROM Precio WHERE productoId = ? ORDER BY monto DESC";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -56,7 +56,6 @@ public class PrecioDao implements Dao<PrecioDto> {
                 dto.precioId = rs.getInt("precioId");
                 dto.monto = rs.getFloat("monto");
                 dto.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
-                dto.productoId = productoId;
                 lista.add(dto);
             }
 
