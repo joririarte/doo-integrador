@@ -52,4 +52,54 @@ public class VentaTest {
         venta.setMontoPagado(3500f);
         assertEquals(200f, venta.calcularVuelto(), 0.001);
     }
+
+
+        @Test
+        void calcularMontoTotal_listaNula () {
+            Venta venta = Venta.VentaBuilder.getBuilder()
+                    .conCodigoVenta("TEST-NULL")
+                    .conDetalleVenta(null)
+                    .build();
+
+            assertThrows(NullPointerException.class, venta::calcularMontoTotal);
+        }
+
+        @Test
+        void calcularMontoTotal_conDetalleNulo_en_lista () {
+            List<DetalleVenta> detalle = new ArrayList<>();
+            detalle.add(null);
+
+            Venta venta = Venta.VentaBuilder.getBuilder()
+                    .conCodigoVenta("TEST-NULL-ELEM")
+                    .conDetalleVenta(detalle)
+                    .build();
+
+            assertThrows(NullPointerException.class, venta::calcularMontoTotal);
+        }
+
+        @Test
+        void calcularMontoTotal_valor_falso () {
+            Producto p = Producto.ProductoBuilder.getBuilder()
+                    .conNombre("Test")
+                    .build();
+            DetalleVenta d = DetalleVenta.DetalleVentaBuilder.getBuilder()
+                    .conNombre(p.getNombre())
+                    .conCantidad(1)
+                    .conPrecioVenta(100f)
+                    .conProducto(p)
+                    .build();
+
+            List<DetalleVenta> detalle = new ArrayList<>();
+            detalle.add(d);
+
+            Venta venta = Venta.VentaBuilder.getBuilder()
+                    .conCodigoVenta("TEST-VAL-FALSE")
+                    .conDetalleVenta(detalle)
+                    .build();
+
+            assertFalse(venta.calcularMontoTotal() == 200f);
+        }
+    }
+
 }
+
