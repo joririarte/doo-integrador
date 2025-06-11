@@ -53,6 +53,7 @@ public class VentaTest {
         assertEquals(200f, venta.calcularVuelto(), 0.001);
     }
 
+
         @Test
         void calcularMontoTotal_listaNula () {
             Venta venta = Venta.VentaBuilder.getBuilder()
@@ -99,3 +100,6 @@ public class VentaTest {
             assertFalse(venta.calcularMontoTotal() == 200f);
         }
     }
+
+}
+
