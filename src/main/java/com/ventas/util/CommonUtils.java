@@ -18,7 +18,6 @@ public class CommonUtils {
         } catch (ParseException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-            return null;
         }
     }
 
@@ -30,7 +29,6 @@ public class CommonUtils {
         } catch (ParseException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-            return null;
         }
     }
 

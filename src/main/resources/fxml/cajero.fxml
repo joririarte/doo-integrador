@@ -10,9 +10,16 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="N° Cliente:"/>
+        <TextField fx:id="txtNroCliente" promptText="Ingrese N° de cliente"/>
+        <Button text="Buscar" onAction="#buscarCliente"/>
+        <Label fx:id="lblNombreCliente" text="Cliente: -" style="-fx-font-weight: bold;"/>
+    </HBox>
+
     <Label text="Registrar Venta" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
-    <TextField fx:id="codigoBarrasField" promptText="Escanea o escribe el código de barras"/>
+    <TextField fx:id="txtCodigoBarras" promptText="Escanea o escribe el código de barras" />
 
     <GridPane hgap="10" vgap="10">
         <columnConstraints>
@@ -38,7 +45,7 @@
         </children>
     </GridPane>
 
-    <Button text="Agregar a la venta" fx:id="agregarButton"/>
+    <Button text="Agregar a la venta" fx:id="agregarButton" onAction="#agregarProducto"/>
 
     <TableView fx:id="tablaVenta" prefHeight="200">
         <columns>
@@ -55,9 +62,16 @@
         <ComboBox fx:id="cbxMedioPago"/>
     </HBox>
 
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Monto Pagado:"/>
+        <TextField fx:id="txtMontoPagado" promptText="Ingrese monto pagado"/>
+    </HBox>
+
+    <Label fx:id="lblTotal" text="Total: $0.00" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+
     <HBox spacing="10" alignment="CENTER_RIGHT">
-        <Button text="Confirmar Venta" fx:id="confirmarButton" />
-        <Button text="Cancelar" fx:id="cancelarButton" />
+        <Button text="Confirmar Venta" fx:id="btnConfirmarVenta" onAction="#confirmarVenta"/>
+        <Button text="Cancelar" fx:id="btnCancelarVenta" onAction="#cancelarVenta"/>
     </HBox>
 
 </VBox>
