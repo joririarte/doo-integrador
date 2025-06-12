@@ -1,0 +1,118 @@
+@startuml
+package "com.ventas" {
+
+    class App
+
+    package controller {
+        class LoginController
+        class MainController
+        class CajeroController
+        class AdminController
+        class AdminSelectorController
+        class VerVentasController
+        class ProductoFormularioController
+    }
+
+    package model {
+        class Modelo
+        class Persona
+        class Cliente
+        class Empleado
+        class Producto
+        class Stock
+        class Precio
+        class DescuentoRecargo
+        class DetalleVenta
+        class MedioPago
+        class Venta
+        class Usuario
+        class AppContext
+    }
+
+    package dao {
+        interface Dao
+        class ClienteDao
+        class EmpleadoDao
+        class ProductoDao
+        class VentaDao
+        class PrecioDao
+        class StockDao
+        class DetalleVentaDao
+        class DescuentoRecargoDao
+        class UsuarioDao
+        class MedioPagoDao
+    }
+
+    package dto {
+        class ClienteDto
+        class EmpleadoDto
+        class ProductoDto
+        class PrecioDto
+        class StockDto
+        class DetalleVentaDto
+        class DescuentoRecargoDto
+        class MedioPagoDto
+        class VentaDto
+        class UsuarioDto
+        class PersonaDto
+    }
+
+    package factories {
+        class FabricaDao
+    }
+
+    package db {
+        class DBInitializerV2
+    }
+
+    package singletonSqlConnection {
+        class ConexionSQLite
+    }
+
+    package util {
+        class CommonUtils
+        class SimpleTest
+    }
+}
+
+' inheritance hierarchy
+Modelo <|-- Persona
+Modelo <|-- Producto
+Modelo <|-- Stock
+Modelo <|-- Precio
+Modelo <|-- DescuentoRecargo
+Modelo <|-- DetalleVenta
+Modelo <|-- MedioPago
+Modelo <|-- Venta
+Modelo <|-- Usuario
+Persona <|-- Cliente
+Persona <|-- Empleado
+
+' model relationships
+Empleado "1" -- "*" Venta
+Cliente "1" -- "*" Venta
+Venta "1" -- "*" DetalleVenta
+DetalleVenta "*" -- "1" Producto
+Producto "1" -- "*" Precio
+Producto "1" -- "*" Stock
+MedioPago "*" -- "*" DescuentoRecargo
+Venta "1" -- "1" MedioPago
+Usuario "1" -- "1" Empleado
+AppContext --> Usuario : usuarioActual
+
+' dao usage
+Modelo --> Dao : dao
+FabricaDao --> Dao : crear()
+
+' controllers using models
+LoginController --> Usuario
+MainController --> Usuario
+CajeroController --> Producto
+CajeroController --> Venta
+AdminController --> Producto
+VerVentasController --> Venta
+
+' database
+DBInitializerV2 --> ConexionSQLite
+
+@enduml
