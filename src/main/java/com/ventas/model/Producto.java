@@ -162,6 +162,7 @@ public class Producto extends Modelo {
     public Producto actualizarProducto(List<String> params){
         try {
             ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
+            productoDto = (ProductoDto) this.dao.buscar(productoDto, Arrays.asList("codigoBarras")).getFirst();
             productoDto = (ProductoDto) this.dao.actualizar(productoDto, params);
             if(productoDto != null)
                 return this.mapper.map(productoDto, Producto.class);

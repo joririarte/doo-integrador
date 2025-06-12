@@ -39,11 +39,12 @@ public class StockDao implements Dao<StockDto> {
 
     public List<StockDto> listarPorProducto(int productoId) {
         List<StockDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Stock WHERE productoId = ? AND stockId = ? ORDER BY monto DESC";
+        String sql = "SELECT * FROM Stock WHERE productoId = ? ORDER BY fecha DESC";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
             stmt.setInt(1, productoId);
+
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
