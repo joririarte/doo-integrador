@@ -5,6 +5,7 @@ import com.ventas.dto.ProductoDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DetalleVentaDao implements Dao<DetalleVentaDto> {
@@ -75,7 +76,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
     public DetalleVentaDto actualizar(DetalleVentaDto obj, List<String> campos) {
         try {
             Connection conn = ConexionSQLite.getInstance().getConnection();
-
+            ProductoDto productoDto = new ProductoDao().buscar(obj.producto, Arrays.asList("codigoBarras")).getFirst();
             if (campos == null || campos.isEmpty()) {
                 // Insertar
                 String sql = "INSERT INTO DetalleVenta (ventaId, detalleVentaId, nombre, cantidad, precioVenta, productoId) VALUES (?, ?, ?, ?, ?, ?)";
@@ -85,7 +86,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
                     stmt.setString(3, obj.nombre);
                     stmt.setInt(4, obj.cantidad);
                     stmt.setFloat(5, obj.precioVenta);
-                    stmt.setInt(6, obj.productoId);
+                    stmt.setInt(6, productoDto.productoId);
                     stmt.executeUpdate();
                 }
             } else {

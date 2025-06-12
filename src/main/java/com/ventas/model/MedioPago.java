@@ -8,9 +8,12 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import com.ventas.dto.DescuentoRecargoDto;
 import com.ventas.dto.MedioPagoDto;
 import com.ventas.factories.FabricaDao;
+import com.ventas.model.Descuento.DescuentoBuilder;
+import com.ventas.model.Recargo.RecargoBuilder;
 
 public class MedioPago extends Modelo {
     private String nombre;
+    private String codigoMedioPago;
     private List<DescuentoRecargo> descuentoRecargo;
     private boolean habilitado;
     private Date fechaHabilitadoDesde;
@@ -30,6 +33,7 @@ public class MedioPago extends Modelo {
         this.setHabilitado(builder.habilitado);
         this.setFechaHabilitadoDesde(builder.fechaHabilitadoDesde);
         this.setFechaHabilitadoHasta(builder.fechaHabilitadoHasta);
+        this.setCodigoMedioPago(builder.codigoMedioPago);
     }
 
     //#endregion
@@ -38,6 +42,7 @@ public class MedioPago extends Modelo {
 
     public static class MedioPagoBuilder {
         private String nombre;
+        private String codigoMedioPago;
         private List<DescuentoRecargo> descuentoRecargo;
         private boolean habilitado;
         private Date fechaHabilitadoDesde;
@@ -69,6 +74,11 @@ public class MedioPago extends Modelo {
 
         public MedioPagoBuilder conFechaHabilitadoHasta(Date fechaHabilitadoHasta) {
             this.fechaHabilitadoHasta = fechaHabilitadoHasta;
+            return this;
+        }
+
+        public MedioPagoBuilder conCodigoMedioPago(String codigoMedioPago){
+            this.codigoMedioPago = codigoMedioPago;
             return this;
         }
 
@@ -124,6 +134,14 @@ public class MedioPago extends Modelo {
     public boolean checkFechaFin() { 
         return false; 
     }
+
+    public String getCodigoMedioPago() {
+        return codigoMedioPago;
+    }
+
+    public void setCodigoMedioPago(String codigoMedioPago) {
+        this.codigoMedioPago = codigoMedioPago;
+    }
     
     //#endregion
     
@@ -138,8 +156,10 @@ public class MedioPago extends Modelo {
     public List<MedioPago> listarMedioPagos(){
         try{
             List<MedioPagoDto> listado = this.dao.listarTodos();
-            if(!listado.isEmpty())
-                return Arrays.asList(this.mapper.map(listado, MedioPago[].class));
+            if(!listado.isEmpty()){
+                List<MedioPago> resultado = this.mapearMedioPagos(listado);
+                return resultado;
+            }
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -152,13 +172,7 @@ public class MedioPago extends Modelo {
             MedioPagoDto medioPagoDto = this.mapper.map(this, MedioPagoDto.class);
             List<MedioPagoDto> medioPagosDto = this.dao.buscar(medioPagoDto, params);
             if(!medioPagosDto.isEmpty()){
-                List<MedioPago> resultado = new ArrayList<>();
-                for(MedioPagoDto mpDto : medioPagosDto){
-                    MedioPago mp = this.mapper.map(mpDto, MedioPago.class);
-                    List<DescuentoRecargo> listaDescuentoRecargo = mapearPoliticas(mpDto.descuentoRecargo);
-                    mp.setDescuentoRecargo(listaDescuentoRecargo);
-                    resultado.add(mp);
-                }
+                List<MedioPago> resultado = this.mapearMedioPagos(medioPagosDto);
                 return resultado;
             }
         }
@@ -204,15 +218,51 @@ public class MedioPago extends Modelo {
         return null;
     }
     
+    public MedioPago mapearMedioPago(MedioPagoDto mpDto){
+        MedioPago mp = MedioPagoBuilder.getBuilder()
+                                           .conNombre(mpDto.nombre)
+                                           .conCodigoMedioPago(mpDto.codigoMedioPago)
+                                           .conHabilitado(mpDto.habilitado)
+                                           .conFechaHabilitadoDesde(mpDto.fechaHabilitadoDesde)
+                                           .conFechaHabilitadoHasta(mpDto.fechaHabilitadoHasta)
+                                           .build();                                            
+        List<DescuentoRecargo> listaDescuentoRecargo = mapearPoliticas(mpDto.descuentoRecargo);
+        mp.setDescuentoRecargo(listaDescuentoRecargo);
+        return mp;
+    }
+    
+    private List<MedioPago> mapearMedioPagos(List<MedioPagoDto> listaMedioPagoDtos){
+        List<MedioPago> resultado = new ArrayList<>();
+        for(MedioPagoDto mpDto : listaMedioPagoDtos){
+            MedioPago mp = mapearMedioPago(mpDto);
+            resultado.add(mp);
+        }
+        return resultado;
+    }
+
     private List<DescuentoRecargo> mapearPoliticas(List<DescuentoRecargoDto> descuentoRecargoDtos){
         List<DescuentoRecargo> descuentoRecargo = new ArrayList<>();
         for(DescuentoRecargoDto drDto : descuentoRecargoDtos){
             if(drDto.tipo.equals("Descuento")){
-                Descuento d = this.mapper.map(drDto, Descuento.class);
+                Descuento d = DescuentoBuilder.getBuilder()
+                                              .conNombre(drDto.nombre)
+                                              .conTipo(drDto.tipo)
+                                              .conMonto(drDto.monto)
+                                              .conHabilitado(drDto.habilitado)
+                                              .conFechaInicio(drDto.fechaInicio)
+                                              .conFechaFin(drDto.fechaFin)
+                                              .build();
                 descuentoRecargo.add(d);
             }
             else if(drDto.tipo.equals("Recargo")){
-                Recargo r = this.mapper.map(drDto, Recargo.class);
+                Recargo r = RecargoBuilder.getBuilder()
+                                          .conNombre(drDto.nombre)
+                                          .conTipo(drDto.tipo)
+                                          .conMonto(drDto.monto)
+                                          .conHabilitado(drDto.habilitado)
+                                          .conFechaInicio(drDto.fechaInicio)
+                                          .conFechaFin(drDto.fechaFin)
+                                          .build();
                 descuentoRecargo.add(r);
             }
         }

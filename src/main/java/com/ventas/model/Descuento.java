@@ -83,7 +83,7 @@ public class Descuento extends DescuentoRecargo {
 
     @Override
     public float aplicarPolitica(float monto) {
-        return monto + this.aplicarPolitica(monto);
+        return monto - this.calcularPolitica(monto);
     }
 
     @Override

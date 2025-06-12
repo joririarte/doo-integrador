@@ -176,7 +176,8 @@ public class ClienteDao implements Dao<ClienteDto> {
         List<ClienteDto> lista = new ArrayList<>();
         try{
             if (params != null && !params.isEmpty()) {
-                StringBuilder sql = new StringBuilder("SELECT * FROM Cliente WHERE ");
+                String query = "SELECT c.personaId, c.nroCliente, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email FROM Cliente AS c JOIN Persona AS p ON c.personaId = p.personaId WHERE ";
+                StringBuilder sql = new StringBuilder(query);
                 for (int i = 0; i < params.size(); i++) {
                     if(params.get(i).equals("fechaNacimiento")){
                         sql.append(params.get(i)).append(" = ?");
@@ -189,7 +190,7 @@ public class ClienteDao implements Dao<ClienteDto> {
                     }
                 }
 
-                String query = sql.toString();
+                query = sql.toString();
 
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
                 

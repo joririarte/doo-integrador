@@ -7,6 +7,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 
 import com.ventas.dto.VentaDto;
 import com.ventas.factories.FabricaDao;
+import com.ventas.model.MedioPago.MedioPagoBuilder;
 
 public class Venta extends Modelo {
     private String codigoVenta;
@@ -34,7 +35,10 @@ public class Venta extends Modelo {
         this.setMontoPagado(builder.montoPagado);
         this.setMedioPago(builder.medioPago);
         this.setCliente(builder.cliente);
-        this.setDetalleVenta(builder.detalleVenta);
+        if(builder.detalleVenta != null)
+            this.setDetalleVenta(builder.detalleVenta);
+        else
+            this.detalleVenta = new ArrayList<>();
     }
     //#endregion
 
@@ -159,20 +163,19 @@ public class Venta extends Modelo {
 
     //#region Business Methods
     
-    public float calcularMontoTotal() { 
+    public float calcularMontoTotal(DescuentoRecargo descuentoRecargo) { 
         float total = 0;
         for(DetalleVenta dv : this.detalleVenta){
             total += dv.calcularSubtotal();
         }
-        if(medioPago != null){
-            //aca deberia restar o sumar segun el descuento recargo
+        if(descuentoRecargo != null){
+            total = descuentoRecargo.aplicarPolitica(total);
         }
         return total; 
     }
 
-    public float calcularVuelto() { 
-        float total = this.calcularMontoTotal();
-        return this.montoPagado > total ? this.montoPagado - total : 0; 
+    public float calcularVuelto(float totalVenta) { 
+        return this.montoPagado > totalVenta ? this.montoPagado - totalVenta : 0; 
     }
     
     public void agregarDetalleVenta(DetalleVenta dv) {
@@ -249,7 +252,7 @@ public class Venta extends Modelo {
             VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
             ventaDto = (VentaDto) this.dao.actualizar(ventaDto, params);
             if(ventaDto != null)
-                return this.mapper.map(ventaDto, Venta.class);
+                return mapearVenta(ventaDto);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -268,5 +271,21 @@ public class Venta extends Modelo {
         return null;
     }
 
+    private Venta mapearVenta(VentaDto ventaDto){
+        Cliente c = this.mapper.map(ventaDto.cliente, Cliente.class);
+        Empleado e = this.mapper.map(ventaDto.vendedor, Empleado.class);
+        MedioPago mp = MedioPagoBuilder.getBuilder().build().mapearMedioPago(ventaDto.medioPago);
+        List<DetalleVenta> dv = Arrays.asList(this.mapper.map(ventaDto.detalleVenta, DetalleVenta[].class));
+        Venta v = VentaBuilder.getBuilder()
+                              .conCliente(c)
+                              .conVendedor(e)
+                              .conMedioPago(mp)
+                              .conCodigoVenta(ventaDto.codigoVenta)
+                              .conEstado(ventaDto.estado)
+                              .conFecha(ventaDto.fecha)
+                              .conDetalleVenta(dv)
+                              .build();
+        return v;
+    }
     //#endregion
 }

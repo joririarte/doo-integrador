@@ -1,12 +1,16 @@
 package com.ventas.dao;
 
 import com.ventas.dto.VentaDto;
+import com.ventas.dto.ClienteDto;
 import com.ventas.dto.DetalleVentaDto;
+import com.ventas.dto.EmpleadoDto;
+import com.ventas.dto.MedioPagoDto;
 import com.ventas.singletonSqlConnection.ConexionSQLite;
 import com.ventas.util.CommonUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class VentaDao implements Dao<VentaDto> {
@@ -147,17 +151,20 @@ public class VentaDao implements Dao<VentaDto> {
     public VentaDto actualizar(VentaDto obj, List<String> campos) {
         try {
             Connection conn = ConexionSQLite.getInstance().getConnection();
-
+            ClienteDto cliente = new ClienteDao().buscar(obj.cliente, Arrays.asList("nroCliente")).getFirst();
+            EmpleadoDto vendedor = new EmpleadoDao().buscar(obj.vendedor, Arrays.asList("legajo")).getFirst();
+            MedioPagoDto medioPago = new MedioPagoDao().buscar(obj.medioPago,Arrays.asList("codigoMedioPago")).getFirst();
             if (campos == null || campos.isEmpty()) {
                 // Insertar
-                String sql = "INSERT INTO Venta (vendedorId, fecha, estado, montoPagado, medioPagoId, clienteId) VALUES (?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO Venta (vendedorId, fecha, estado, montoPagado, medioPagoId, clienteId, codigoVenta) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                    stmt.setInt(1, obj.vendedorId);
+                    stmt.setInt(1, vendedor.personaId);
                     stmt.setString(2, CommonUtils.dateToString(obj.fecha));
                     stmt.setString(3, obj.estado);
                     stmt.setFloat(4, obj.montoPagado);
-                    stmt.setInt(5, obj.medioPagoId);
-                    stmt.setInt(6, obj.clienteId);
+                    stmt.setInt(5, medioPago.medioPagoId);
+                    stmt.setInt(6, cliente.personaId);
+                    stmt.setString(7, obj.codigoVenta);
                     stmt.executeUpdate();
 
                     ResultSet rs = stmt.getGeneratedKeys();
@@ -171,7 +178,7 @@ public class VentaDao implements Dao<VentaDto> {
                 for (DetalleVentaDto detalle : obj.detalleVenta) {
                     detalle.ventaId = obj.ventaId;
                     detalle.detalleVentaId = detalleId++;
-                    new DetalleVentaDao().actualizar(detalle, null);
+                    detalle = new DetalleVentaDao().actualizar(detalle, null);
                 }
 
             } else {
@@ -183,7 +190,7 @@ public class VentaDao implements Dao<VentaDto> {
                         sql.append(", ");
                     }
                 }
-                sql.append(" WHERE ventaId = ?");
+                sql.append(" WHERE codigoVenta = ?");
 
                 try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
                     for (int i = 0; i < campos.size(); i++) {

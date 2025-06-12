@@ -27,6 +27,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                 dto.habilitado = rs.getBoolean("habilitado");
                 dto.fechaHabilitadoDesde = CommonUtils.stringToDate(rs.getString("fechaHabilitadoDesde"));
                 dto.fechaHabilitadoHasta = CommonUtils.stringToDate(rs.getString("fechaHabilitadoHasta"));
+                dto.codigoMedioPago = rs.getString("codigoMedioPago");
 
                 // Relación: obtener lista de descuentos/recargos asociados
                 dto.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(dto.medioPagoId);
@@ -56,6 +57,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                 obj.fechaHabilitadoDesde = CommonUtils.stringToDate(rs.getString("fechaHabilitadoDesde"));
                 obj.fechaHabilitadoHasta = CommonUtils.stringToDate(rs.getString("fechaHabilitadoHasta"));
                 obj.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(obj.medioPagoId);
+                obj.codigoMedioPago = rs.getString("codigoMedioPago");
                 return obj;
 
             }
@@ -105,12 +107,13 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                 stmt.executeUpdate();
 
             } else {
-                String sqlInsert = "INSERT INTO MedioPago (nombre, habilitado, fechaHabilitadoDesde, fechaHabilitadoHasta) VALUES (?, ?, ?, ?)";
+                String sqlInsert = "INSERT INTO MedioPago (nombre, habilitado, fechaHabilitadoDesde, fechaHabilitadoHasta, codigoMedioPago) VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
                 stmt.setString(1, obj.nombre);
                 stmt.setBoolean(2, obj.habilitado);
                 stmt.setString(3, CommonUtils.dateToString(obj.fechaHabilitadoDesde));
                 stmt.setString(4, CommonUtils.dateToString(obj.fechaHabilitadoHasta));
+                stmt.setString(5, obj.codigoMedioPago);
 
                 stmt.executeUpdate();
 
@@ -129,11 +132,11 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
 
     @Override
     public MedioPagoDto borrar(MedioPagoDto obj) {
-        String sql = "DELETE FROM MedioPago WHERE medioPagoId = ?";
+        String sql = "DELETE FROM MedioPago WHERE codigoMedioPago = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
-            stmt.setInt(1, obj.medioPagoId);
+            stmt.setString(1, obj.codigoMedioPago);
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -161,6 +164,9 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                             break;
                         case "habilitado":
                             sql.append("habilitado = ?");
+                            break;
+                        case "codigoMedioPago":
+                            sql.append("codigoMedioPago = ?");
                             break;
                         default:
                             sql.append(params.get(i)).append(" = ?");
@@ -191,6 +197,9 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                         case "fechaHabilitadoHasta":
                             stmt.setString(index++, CommonUtils.dateToString(obj.fechaHabilitadoHasta));
                             break;
+                        case "codigoMedioPago":
+                            stmt.setString(index++, obj.codigoMedioPago);
+                            break;
                         default:
                             throw new IllegalArgumentException("Campo no soportado: " + param);
                     }
@@ -201,6 +210,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                 while (rs.next()) {
                     obj.medioPagoId = rs.getInt("medioPagoId");
                     obj.nombre = rs.getString("nombre");
+                    obj.codigoMedioPago = rs.getString("codigoMedioPago");
                     obj.habilitado = rs.getBoolean("habilitado");
                     obj.fechaHabilitadoDesde = CommonUtils.stringToDate(rs.getString("fechaHabilitadoDesde"));
                     obj.fechaHabilitadoHasta = CommonUtils.stringToDate(rs.getString("fechaHabilitadoHasta"));

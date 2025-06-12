@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
 -- Tabla MedioPago
 CREATE TABLE IF NOT EXISTS MedioPago (
     medioPagoId INTEGER PRIMARY KEY AUTOINCREMENT,
+    codigoMedioPago TEXT UNIQUE,
     nombre TEXT,
     habilitado BOOLEAN,
     fechaHabilitadoDesde TEXT,
@@ -109,9 +110,9 @@ CREATE TABLE IF NOT EXISTS Venta (
     montoPagado REAL,
     medioPagoId INTEGER,
     clienteId INTEGER,
-    FOREIGN KEY (vendedorId) REFERENCES Empleado(empleadoId),
+    FOREIGN KEY (vendedorId) REFERENCES Empleado(personaId),
     FOREIGN KEY (medioPagoId) REFERENCES MedioPago(medioPagoId),
-    FOREIGN KEY (clienteId) REFERENCES Cliente(clienteId)
+    FOREIGN KEY (clienteId) REFERENCES Cliente(personaId)
 );
 
 -- Tabla DetalleVenta
@@ -159,15 +160,15 @@ VALUES
 (3, 'admin', 'admin123', '2025-06-08 10:00:00'),
 (4, 'cajero', 'cajero123', '2025-06-08 09:00:00');
 
-INSERT INTO MedioPago (nombre, habilitado, fechaHabilitadoDesde, fechaHabilitadoHasta)
+INSERT INTO MedioPago (nombre, habilitado, fechaHabilitadoDesde, fechaHabilitadoHasta, codigoMedioPago)
 VALUES 
-('Efectivo', 1, '2024-01-01', '2030-12-31'),
-('Tarjeta de Credito', 1, '2024-01-01', '2030-12-31');
+('Efectivo', 1, '2024-01-01', '2030-12-31','EF-001'),
+('Tarjeta de Credito', 1, '2024-01-01', '2030-12-31','TC-001');
 
 INSERT INTO DescuentoRecargo (medioPagoId, descuentoRecargoId, nombre, tipo, monto, fechaInicio, fechaFin, habilitado)
 VALUES 
-(1, 1, 'Descuento 10% efectivo', 'Descuento', 10.0, '2024-01-01', '2030-12-31', 1),
-(2, 1, 'Recargo 5% tarjeta', 'Recargo', 5.0, '2024-01-01', '2030-12-31', 1);
+(1, 1, 'Descuento 10% efectivo', 'Descuento', 0.1, '2024-01-01', '2030-12-31', 1),
+(2, 1, 'Recargo 5% tarjeta', 'Recargo', 0.5, '2024-01-01', '2030-12-31', 1);
 
 INSERT INTO Producto (nombre, marca, codigoBarras)
 VALUES 
