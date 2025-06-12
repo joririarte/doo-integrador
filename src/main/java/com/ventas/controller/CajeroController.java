@@ -64,7 +64,7 @@ public class CajeroController {
 
         cantidadSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1000, 1));
 
-        ventaActual = new VentaBuilder()
+        ventaActual = VentaBuilder.getBuilder()
                 .conVendedor(empleadoLogueado)
                 .conFecha(new Date())
                 .conEstado("pendiente")
@@ -272,7 +272,7 @@ public class CajeroController {
         lblNombreCliente.setText("Cliente: -");
         txtNroCliente.clear();
 
-        ventaActual = new VentaBuilder()
+        ventaActual = VentaBuilder.getBuilder()
                 .conVendedor(empleadoLogueado)
                 .conFecha(new Date())
                 .conEstado("pendiente")

@@ -42,14 +42,20 @@ public class SimpleTest {
         
         System.out.println("-------------------- VENTA ------------------------");
         Venta venta = VentaBuilder.getBuilder()
-                                  .conCodigoVenta("C-003")
                                   .conCliente(cliente)
                                   .conVendedor(vendedor)
                                   .conEstado("NUEVA")
                                   .conFecha(new Date())
                                   .conMedioPago(listadoMedioPagos.getFirst())
                                   .build();
-
+        
+                                  List<Venta> listaVentas = venta.listarVentas();
+        if(listaVentas != null && !listaVentas.isEmpty()){
+            int siguienteVenta = listaVentas.size() + 1;
+            venta.setCodigoVenta("VEN-" + siguienteVenta);
+            System.out.println("CODIGO VENTA: " + venta.getCodigoVenta());
+        }
+        
         Producto p = ProductoBuilder.getBuilder()
                                      .conNombre("Galletitas Dulces").build();
         p = p.buscarProducto(Arrays.asList("nombre")).getFirst();
