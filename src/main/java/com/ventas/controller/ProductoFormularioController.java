@@ -25,26 +25,31 @@ public class ProductoFormularioController {
         this.productoExistente = producto;
 
         if (producto != null) {
-            // Modo edición: precargar los campos con datos del producto
+            System.out.println("[DEBUG] Modo edición. Producto existente: " + producto);
+
             nombreField.setText(producto.getNombre());
             marcaField.setText(producto.getMarca());
             codigoBarrasField.setText(producto.getCodigoBarras());
 
             if (producto.getPrecio() != null && !producto.getPrecio().isEmpty()) {
+                System.out.println("[DEBUG] Precio actual: " + producto.getPrecio().get(0).getMonto());
                 precioField.setText(String.valueOf(producto.getPrecio().get(0).getMonto()));
             } else {
                 precioField.setText("");
             }
 
             if (producto.getStock() != null && !producto.getStock().isEmpty()) {
+                System.out.println("[DEBUG] Stock actual: " + producto.getStock().get(0).getCantidad());
                 stockField.setText(String.valueOf(producto.getStock().get(0).getCantidad()));
             } else {
                 stockField.setText("");
             }
+        } else {
+            System.out.println("[DEBUG] Modo registro. Producto nuevo.");
         }
     }
 
-   @FXML
+    @FXML
     private void guardarProducto() {
         String nombre = nombreField.getText().trim();
         String marca = marcaField.getText().trim();
@@ -52,7 +57,11 @@ public class ProductoFormularioController {
         String precioStr = precioField.getText().trim();
         String stockStr = stockField.getText().trim();
 
+        System.out.println("[DEBUG] Datos ingresados: nombre=" + nombre + ", marca=" + marca +
+                           ", codigoBarras=" + codigoBarras + ", precio=" + precioStr + ", stock=" + stockStr);
+
         if (nombre.isEmpty() || marca.isEmpty() || codigoBarras.isEmpty() || precioStr.isEmpty() || stockStr.isEmpty()) {
+            System.out.println("[DEBUG] Campos incompletos.");
             mostrarAlerta("Error", "Por favor complete todos los campos.");
             return;
         }
@@ -64,29 +73,29 @@ public class ProductoFormularioController {
             precioValor = Float.parseFloat(precioStr);
             stockCantidad = Float.parseFloat(stockStr);
         } catch (NumberFormatException e) {
+            System.out.println("[DEBUG] Error de formato en precio o stock.");
             mostrarAlerta("Error", "Precio y stock deben ser números válidos.");
             return;
         }
 
-        // Buscar producto existente
-        Producto productoExistenteDB = this.buscarPorCodigoBarras(codigoBarras);
         Producto producto;
+        boolean esNuevo = (productoExistente == null);
+        System.out.println("[DEBUG] ¿Es nuevo? " + esNuevo);
 
-        if (productoExistenteDB != null) {
-            producto = productoExistenteDB;
+        if (!esNuevo) {
+            producto = productoExistente;
 
-            // Extraer precio y stock existentes
             Precio precioExistente = !producto.getPrecio().isEmpty() ? producto.getPrecio().get(0) : null;
             Stock stockExistente = !producto.getStock().isEmpty() ? producto.getStock().get(0) : null;
 
-            // Actualizar precio preservando ID
+            System.out.println("[DEBUG] Actualizando producto existente con ID: " + producto.getCodigoBarras());
+
             Precio precioActualizado = Precio.PrecioBuilder.getBuilder()
                 .conMonto(precioValor)
                 .conFecha(new Date())
                 .conMonto(precioExistente != null ? precioExistente.getMonto() : null)
                 .build();
 
-            // Actualizar stock preservando ID y productoId
             Stock stockActualizado = Stock.StockBuilder.getBuilder()
                 .conCantidad(stockCantidad)
                 .conFecha(new Date())
@@ -98,13 +107,14 @@ public class ProductoFormularioController {
             producto.setCodigoBarras(codigoBarras);
             producto.setPrecio(Arrays.asList(precioActualizado));
             producto.setStock(Arrays.asList(stockActualizado));
+
         } else {
+            System.out.println("[DEBUG] Registrando nuevo producto...");
             producto = new Producto();
             producto.setNombre(nombre);
             producto.setMarca(marca);
             producto.setCodigoBarras(codigoBarras);
 
-            // Nuevos
             Precio nuevoPrecio = Precio.PrecioBuilder.getBuilder()
                 .conMonto(precioValor)
                 .conFecha(new Date())
@@ -119,13 +129,14 @@ public class ProductoFormularioController {
             producto.setStock(Arrays.asList(nuevoStock));
         }
 
-        // Registrar o actualizar
-        Producto resultado = (productoExistenteDB == null)
+        Producto resultado = esNuevo
             ? producto.registrarProducto()
-            : producto.actualizarProducto(Collections.singletonList(codigoBarras));
+            : producto.actualizarProducto(Collections.singletonList(producto.getCodigoBarras()));
+
+        System.out.println("[DEBUG] Resultado de guardar: " + (resultado != null ? "Éxito" : "Fallo"));
 
         if (resultado != null) {
-            mostrarAlerta("Éxito", productoExistenteDB == null ? "Producto registrado correctamente." : "Producto actualizado correctamente.");
+            mostrarAlerta("Éxito", esNuevo ? "Producto registrado correctamente." : "Producto actualizado correctamente.");
             Stage stage = (Stage) nombreField.getScene().getWindow();
             stage.close();
         } else {
@@ -133,14 +144,15 @@ public class ProductoFormularioController {
         }
     }
 
-
     @FXML
     private void cancelar() {
+        System.out.println("[DEBUG] Cancelando operación...");
         Stage stage = (Stage) nombreField.getScene().getWindow();
         stage.close();
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {
+        System.out.println("[DEBUG] Mostrando alerta: " + titulo + " - " + mensaje);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
@@ -148,8 +160,8 @@ public class ProductoFormularioController {
         alert.showAndWait();
     }
 
-
     private Producto buscarPorCodigoBarras(String codigoBarras){
+        System.out.println("[DEBUG] Buscando producto por código de barras: " + codigoBarras);
         Producto p = ProductoBuilder.getBuilder()
                                     .conCodigoBarras(codigoBarras)
                                     .build();
@@ -157,8 +169,10 @@ public class ProductoFormularioController {
 
         if (listado != null && !listado.isEmpty()){
             p = listado.get(0);
+            System.out.println("[DEBUG] Producto encontrado: " + p);
             return p;
         }
+        System.out.println("[DEBUG] No se encontró producto con ese código de barras.");
         return null;
     }
 
