@@ -1,0 +1,22 @@
+@startuml
+title Clase SqlConnection (Patrón Singleton)
+
+class SqlConnection {
+  -url: String
+  -conn: Connection
+  -instance: SqlConnection
+  --
+  +getInstance(): SqlConnection
+  +getConnection(): Connection
+  +closeConnection(): void
+}
+
+note right of SqlConnection::getInstance
+  Devuelve la instancia única de SqlConnection.
+end note
+
+note right of SqlConnection::getConnection
+  Devuelve la conexión activa a la base de datos.
+end note
+
+@enduml
