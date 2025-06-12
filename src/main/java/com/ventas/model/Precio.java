@@ -83,8 +83,9 @@ public class Precio extends Modelo {
             if(!listado.isEmpty())
                 return Arrays.asList(this.mapper.map(listado, Precio[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -96,8 +97,9 @@ public class Precio extends Modelo {
             if(!preciosDto.isEmpty())
                 return Arrays.asList(this.mapper.map(preciosDto, Precio[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -110,6 +112,7 @@ public class Precio extends Modelo {
                 return this.mapper.map(precioDto, Precio.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -122,6 +125,7 @@ public class Precio extends Modelo {
                 return this.mapper.map(precioDto, Precio.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -134,6 +138,7 @@ public class Precio extends Modelo {
                 return this.mapper.map(precioDto, Precio.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }

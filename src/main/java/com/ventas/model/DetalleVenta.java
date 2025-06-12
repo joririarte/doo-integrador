@@ -118,8 +118,9 @@ public class DetalleVenta extends Modelo{
             List<DetalleVentaDto> listado = this.dao.listarTodos();
             if (!listado.isEmpty())
                 return Arrays.asList(this.mapper.map(listado, DetalleVenta[].class));
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -130,8 +131,9 @@ public class DetalleVenta extends Modelo{
             List<DetalleVentaDto> detalleVentasDto = this.dao.buscar(detalleVentaDto, params);
             if (!detalleVentasDto.isEmpty())
                 return Arrays.asList(this.mapper.map(detalleVentasDto, DetalleVenta[].class));
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -144,6 +146,7 @@ public class DetalleVenta extends Modelo{
                 return this.mapper.map(detalleVentaDto, DetalleVenta.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -156,6 +159,7 @@ public class DetalleVenta extends Modelo{
                 return this.mapper.map(detalleVentaDto, DetalleVenta.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -168,6 +172,7 @@ public class DetalleVenta extends Modelo{
                 return this.mapper.map(detalleVentaDto, DetalleVenta.class);;
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }

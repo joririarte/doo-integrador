@@ -34,6 +34,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -69,6 +70,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -134,6 +136,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;
@@ -150,6 +153,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;

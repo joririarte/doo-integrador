@@ -35,6 +35,7 @@ public class DBInitializerV2 {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

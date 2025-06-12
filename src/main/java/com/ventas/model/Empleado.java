@@ -160,8 +160,9 @@ public class Empleado extends Persona{
             if(!listado.isEmpty())
                 return Arrays.asList(this.mapper.map(listado, Empleado[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -173,8 +174,9 @@ public class Empleado extends Persona{
             if(!empleadosDto.isEmpty())
             return Arrays.asList(this.mapper.map(empleadosDto, Empleado[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -187,6 +189,7 @@ public class Empleado extends Persona{
                 return this.mapper.map(empleadoDto, Empleado.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -199,6 +202,7 @@ public class Empleado extends Persona{
                 return this.mapper.map(empleadoDto, Empleado.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -211,6 +215,7 @@ public class Empleado extends Persona{
                 return this.mapper.map(empleadoDto, Empleado.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }

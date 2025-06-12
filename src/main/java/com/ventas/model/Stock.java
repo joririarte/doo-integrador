@@ -83,8 +83,8 @@ public class Stock extends Modelo{
             if(!listado.isEmpty())
                 return Arrays.asList(this.mapper.map(listado, Stock[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
         }
         return null;
     }
@@ -96,8 +96,8 @@ public class Stock extends Modelo{
             if(!stocksDto.isEmpty())
                 return Arrays.asList(this.mapper.map(stocksDto, Stock[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
         }
         return null;
     }
@@ -110,6 +110,7 @@ public class Stock extends Modelo{
                 return this.mapper.map(stockDto, Stock.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -122,6 +123,7 @@ public class Stock extends Modelo{
                 return this.mapper.map(stockDto, Stock.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -134,6 +136,7 @@ public class Stock extends Modelo{
                 return this.mapper.map(stockDto, Stock.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }

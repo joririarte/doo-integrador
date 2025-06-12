@@ -39,6 +39,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return null;
@@ -117,6 +118,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;
@@ -145,6 +147,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
             conn.commit();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;
@@ -180,6 +183,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -269,8 +273,9 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
                 }
             }
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;

@@ -122,8 +122,9 @@ public class Usuario extends Modelo{
                 return this.mapper.map(user, Usuario.class);
             }
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }

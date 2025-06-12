@@ -31,6 +31,7 @@ public class PrecioDao implements Dao<PrecioDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -61,6 +62,7 @@ public class PrecioDao implements Dao<PrecioDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -110,6 +112,7 @@ public class PrecioDao implements Dao<PrecioDto> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;

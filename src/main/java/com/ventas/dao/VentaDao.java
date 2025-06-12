@@ -43,6 +43,7 @@ public class VentaDao implements Dao<VentaDto> {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return ventas;
@@ -75,6 +76,7 @@ public class VentaDao implements Dao<VentaDto> {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return dto;
@@ -140,8 +142,9 @@ public class VentaDao implements Dao<VentaDto> {
                 }
             }
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -210,6 +213,7 @@ public class VentaDao implements Dao<VentaDto> {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;
@@ -224,6 +228,7 @@ public class VentaDao implements Dao<VentaDto> {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;

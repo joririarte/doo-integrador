@@ -32,6 +32,7 @@ public class StockDao implements Dao<StockDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -59,6 +60,7 @@ public class StockDao implements Dao<StockDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -113,6 +115,7 @@ public class StockDao implements Dao<StockDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;

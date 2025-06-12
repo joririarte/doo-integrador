@@ -137,9 +137,9 @@ public class Producto extends Modelo {
             if(!p.isEmpty())
                 return Arrays.asList(this.mapper.map(p, Producto[].class));        
         }
-        catch (Exception ex){
-            ex.printStackTrace();
-            throw new RuntimeException(ex);   
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -150,9 +150,9 @@ public class Producto extends Modelo {
             if(!listado.isEmpty())
                 return Arrays.asList(this.mapper.map(listado, Producto[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
-            throw new RuntimeException(ex);   
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }

@@ -136,8 +136,9 @@ public class AdminController {
 
       cargarProductos();
 
-    } catch (IOException ex) {
-      ex.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 

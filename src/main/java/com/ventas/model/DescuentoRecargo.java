@@ -85,8 +85,9 @@ public abstract class DescuentoRecargo extends Modelo {
             if(!listado.isEmpty())
                 return Arrays.asList(this.mapper.map(listado, DescuentoRecargo[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -98,8 +99,9 @@ public abstract class DescuentoRecargo extends Modelo {
             if(!descuentoRecargosDto.isEmpty())
                 return Arrays.asList(this.mapper.map(descuentoRecargosDto, DescuentoRecargo[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -112,6 +114,7 @@ public abstract class DescuentoRecargo extends Modelo {
                 return this.mapper.map(descuentoRecargoDto, DescuentoRecargo.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -124,6 +127,7 @@ public abstract class DescuentoRecargo extends Modelo {
                 return this.mapper.map(descuentoRecargoDto, DescuentoRecargo.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -136,6 +140,7 @@ public abstract class DescuentoRecargo extends Modelo {
                 return this.mapper.map(descuentoRecargoDto, DescuentoRecargo.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }

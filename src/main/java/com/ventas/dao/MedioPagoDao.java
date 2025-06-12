@@ -36,6 +36,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -63,6 +64,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return null;
@@ -125,6 +127,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;
@@ -140,6 +143,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;
@@ -220,8 +224,9 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                 }
             }
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;

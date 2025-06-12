@@ -40,6 +40,7 @@ public class ProductoDao implements Dao<ProductoDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -67,6 +68,7 @@ public class ProductoDao implements Dao<ProductoDto> {
         } 
         catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return null;
@@ -126,8 +128,9 @@ public class ProductoDao implements Dao<ProductoDto> {
                 }
             }
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -241,6 +244,7 @@ public class ProductoDao implements Dao<ProductoDto> {
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;

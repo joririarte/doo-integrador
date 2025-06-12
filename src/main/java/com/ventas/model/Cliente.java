@@ -139,8 +139,9 @@ public class Cliente extends Persona {
             if(!listado.isEmpty())
                 return Arrays.asList(this.mapper.map(listado, Cliente[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -152,8 +153,9 @@ public class Cliente extends Persona {
             if(!clientesDto.isEmpty())
                 return Arrays.asList(this.mapper.map(clientesDto, Cliente[].class));
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -166,6 +168,7 @@ public class Cliente extends Persona {
                 return this.mapper.map(clienteDto, Cliente.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -178,6 +181,7 @@ public class Cliente extends Persona {
                 return this.mapper.map(clienteDto, Cliente.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -190,6 +194,7 @@ public class Cliente extends Persona {
                 return this.mapper.map(clienteDto, Cliente.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }

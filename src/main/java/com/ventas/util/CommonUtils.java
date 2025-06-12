@@ -17,6 +17,7 @@ public class CommonUtils {
             return sdfDate.parse(strDate);
         } catch (ParseException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
             return null;
         }
     }
@@ -28,6 +29,7 @@ public class CommonUtils {
             return sdfDateTime.parse(strDateTime);
         } catch (ParseException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
             return null;
         }
     }

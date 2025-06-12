@@ -33,6 +33,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;
@@ -61,6 +62,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
         } 
         catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -114,6 +116,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;
@@ -131,6 +134,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;
@@ -181,8 +185,9 @@ public class UsuarioDao implements Dao<UsuarioDto> {
                 }
             }
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return lista;

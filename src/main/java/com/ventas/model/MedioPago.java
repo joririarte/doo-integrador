@@ -161,8 +161,8 @@ public class MedioPago extends Modelo {
                 return resultado;
             }
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
         }
         return null;
     }
@@ -176,8 +176,9 @@ public class MedioPago extends Modelo {
                 return resultado;
             }
         }
-        catch (Exception ex){
-            ex.printStackTrace();
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -190,6 +191,7 @@ public class MedioPago extends Modelo {
                 return this.mapper.map(medioPagoDto, MedioPago.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -202,6 +204,7 @@ public class MedioPago extends Modelo {
                 return this.mapper.map(medioPagoDto, MedioPago.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -214,6 +217,7 @@ public class MedioPago extends Modelo {
                 return this.mapper.map(medioPagoDto, MedioPago.class);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
