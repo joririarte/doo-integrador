@@ -34,7 +34,7 @@ public class CajeroController {
 
     @FXML private Label lblTotal;
     @FXML private TextField txtMontoPagado;
-    @FXML private ComboBox<String> cbxMedioPago;
+    @FXML private ComboBox<MedioPago> cbxMedioPago;
     @FXML private Button btnConfirmarVenta;
     @FXML private Button btnCancelarVenta;
     @FXML private Button agregarButton;
@@ -77,15 +77,21 @@ public class CajeroController {
                 .build()
                 .listarMedioPagos();
 
-        List<String> nombresMediosPago = new ArrayList<>();
-        for (MedioPago medio : listadoMedioPagos) {
-            nombresMediosPago.add(medio.getNombre());
-        }
-
-        cbxMedioPago.setItems(FXCollections.observableArrayList(nombresMediosPago));
+        ObservableList<MedioPago> mediosPago = FXCollections.observableArrayList(listadoMedioPagos);
+        cbxMedioPago.setItems(mediosPago);
 
         txtCodigoBarras.setOnAction(event -> cargarDatosProducto());
         agregarButton.setOnAction(event -> agregarProducto());
+
+        cbxMedioPago.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(MedioPago item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getNombre());
+            }
+        });
+        cbxMedioPago.setButtonCell(cbxMedioPago.getCellFactory().call(null));
+
     }
 
     private void cargarDatosProducto() {
@@ -163,10 +169,11 @@ public class CajeroController {
               System.out.println("[DEBUG] Monto: " + montoPagado);
             if (ventaActual.cobrar(montoPagado)) {
                 ventaActual.setEstado("PAGADA");
+                ventaActual.setMontoPagado(montoPagado);
                 float vuelto = ventaActual.calcularVuelto(total);
                 ventaActual.setEstado("CONFIRMADA");
 
-                Venta ventaFinal = ventaActual.registrarVenta();
+                Venta ventaFinal = ventaActual.actualizararVenta(null);
 
                 if (ventaFinal != null) {
                     mostrarAlerta("Venta registrada con éxito. Vuelto: $" + vuelto);
@@ -202,25 +209,35 @@ public class CajeroController {
             return;
         }
 
-        Cliente cliente = ClienteBuilder.getBuilder()
-                .conNroCliente(nroCliente)
-                .build();
+        try {
+            Cliente cliente = ClienteBuilder.getBuilder()
+                    .conNroCliente(nroCliente)
+                    .build();
 
-        List<Cliente> resultado = cliente.consultarCliente(List.of("nroCliente"));
-        if (resultado != null && !resultado.isEmpty()) {
-            clienteActual = resultado.getFirst();
-            lblNombreCliente.setText("Cliente: " + clienteActual.getNombreApellido());
-            iniciarVentaConCliente(clienteActual);
-        } else {
-            mostrarAlerta("Cliente no encontrado");
+            List<Cliente> resultado = cliente.consultarCliente(List.of("nroCliente"));
+            if (resultado != null && !resultado.isEmpty()) {
+                cliente = resultado.getFirst();
+                clienteActual = cliente;
+                lblNombreCliente.setText("Cliente: " + clienteActual.getNombreApellido());
+                iniciarVentaConCliente(clienteActual);
+            } else {
+                mostrarAlerta("Cliente no encontrado");
+                clienteActual = null;
+                lblNombreCliente.setText("Cliente: -");
+            }
+
+        } catch (Exception e) {
+            mostrarAlerta("Error al buscar cliente: " + e.getMessage());
             clienteActual = null;
             lblNombreCliente.setText("Cliente: -");
         }
     }
 
     private void iniciarVentaConCliente(Cliente cliente) {
+        String codigoUnico = UUID.randomUUID().toString().substring(0, 8);
+
         ventaActual = VentaBuilder.getBuilder()
-                .conCodigoVenta("004")
+                .conCodigoVenta(codigoUnico)
                 .conVendedor(empleadoLogueado)
                 .conFecha(new Date())
                 .conEstado("pendiente")
@@ -238,12 +255,7 @@ public class CajeroController {
     }
 
     private MedioPago obtenerMedioPagoDesdeCombo() {
-        String seleccionado = cbxMedioPago.getValue();
-        if (seleccionado == null) return null;
-
-        MedioPago mp = new MedioPago();
-        mp.setNombre(seleccionado);
-        return mp;
+        return cbxMedioPago.getValue();
     }
 
     private void limpiarFormulario() {
