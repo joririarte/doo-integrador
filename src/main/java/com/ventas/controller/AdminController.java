@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -66,24 +67,33 @@ public class AdminController {
     });
     
     accionColumn.setCellFactory(col -> new TableCell<>() {
-      private final Button btnEditar = new Button("Editar");
-      {
-        btnEditar.setOnAction(event -> {
-        Producto producto = getTableView().getItems().get(getIndex());
-        abrirFormularioProducto(producto);
-        });
-      }
+        private final Button btnEditar = new Button("Editar");
+        private final Button btnEliminar = new Button("Eliminar");
+        private final HBox contenedorBotones = new HBox(10, btnEditar, btnEliminar); // espacio de 10px entre botones
 
-      @Override
-      protected void updateItem(Void item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty) {
-          setGraphic(null);
-        } else {
-          HBox contenedor = new HBox(5, btnEditar);
-          setGraphic(contenedor);
+        {
+            btnEditar.setOnAction(event -> {
+                Producto producto = getTableView().getItems().get(getIndex());
+                abrirFormularioProducto(producto);
+            });
+
+            btnEliminar.setOnAction(event -> {
+                Producto producto = getTableView().getItems().get(getIndex());
+                eliminarProducto(producto); // Tu método para eliminar
+            });
+
+            contenedorBotones.setAlignment(Pos.CENTER);
         }
-      }
+
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                setGraphic(contenedorBotones);
+            }
+        }
     });
   }
 
@@ -149,6 +159,16 @@ public class AdminController {
 
     } catch (IOException ex) {
       ex.printStackTrace();
+    }
+  }
+
+  protected void eliminarProducto(Producto producto) {
+    try{
+      producto.eliminarProducto();
+      cargarProductos();
+    }
+    catch (Exception e){
+      e.printStackTrace();
     }
   }
 }

@@ -91,6 +91,10 @@ public class Producto extends Modelo {
     public List<Stock> getStock() {
         return stock;
     }
+
+    public float getLastStock(){
+        return this.stock.getFirst().getCantidad();
+    }
     
     public void setStock(List<Stock> stock) {
         this.stock = stock;
@@ -100,6 +104,10 @@ public class Producto extends Modelo {
         return precio;
     }
     
+    public float getLastPrecio(){
+        return this.precio.getFirst().getMonto();
+    }
+
     public void setPrecio(List<Precio> precio) {
         this.precio = precio;
     }
@@ -131,6 +139,7 @@ public class Producto extends Modelo {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            throw new RuntimeException(ex);   
         }
         return null;
     }
@@ -143,6 +152,7 @@ public class Producto extends Modelo {
         }
         catch (Exception ex){
             ex.printStackTrace();
+            throw new RuntimeException(ex);   
         }
         return null;
     }
@@ -155,6 +165,7 @@ public class Producto extends Modelo {
                 return this.mapper.map(productoDto, Producto.class);  
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);   
         }
         return null;
     }
@@ -162,12 +173,12 @@ public class Producto extends Modelo {
     public Producto actualizarProducto(List<String> params){
         try {
             ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
-            productoDto = (ProductoDto) this.dao.buscar(productoDto, Arrays.asList("codigoBarras")).getFirst();
             productoDto = (ProductoDto) this.dao.actualizar(productoDto, params);
             if(productoDto != null)
                 return this.mapper.map(productoDto, Producto.class);
         } catch (Exception e) {
-            e.printStackTrace();        
+            e.printStackTrace(); 
+            throw new RuntimeException(e);       
         }
         return null;
     }
@@ -179,7 +190,8 @@ public class Producto extends Modelo {
             if(productoDto != null)
                 return this.mapper.map(productoDto, Producto.class);
         } catch (Exception e) {
-            e.printStackTrace();        
+            e.printStackTrace();   
+            throw new RuntimeException(e);        
         }
         return null;
     }

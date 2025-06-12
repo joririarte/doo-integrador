@@ -5,6 +5,7 @@ import java.util.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 
+import com.ventas.dto.DescuentoRecargoDto;
 import com.ventas.dto.MedioPagoDto;
 import com.ventas.factories.FabricaDao;
 
@@ -150,8 +151,16 @@ public class MedioPago extends Modelo {
         try{
             MedioPagoDto medioPagoDto = this.mapper.map(this, MedioPagoDto.class);
             List<MedioPagoDto> medioPagosDto = this.dao.buscar(medioPagoDto, params);
-            if(!medioPagosDto.isEmpty())
-                return Arrays.asList(this.mapper.map(medioPagosDto, MedioPago[].class));
+            if(!medioPagosDto.isEmpty()){
+                List<MedioPago> resultado = new ArrayList<>();
+                for(MedioPagoDto mpDto : medioPagosDto){
+                    MedioPago mp = this.mapper.map(mpDto, MedioPago.class);
+                    List<DescuentoRecargo> listaDescuentoRecargo = mapearPoliticas(mpDto.descuentoRecargo);
+                    mp.setDescuentoRecargo(listaDescuentoRecargo);
+                    resultado.add(mp);
+                }
+                return resultado;
+            }
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -195,5 +204,19 @@ public class MedioPago extends Modelo {
         return null;
     }
     
+    private List<DescuentoRecargo> mapearPoliticas(List<DescuentoRecargoDto> descuentoRecargoDtos){
+        List<DescuentoRecargo> descuentoRecargo = new ArrayList<>();
+        for(DescuentoRecargoDto drDto : descuentoRecargoDtos){
+            if(drDto.tipo.equals("Descuento")){
+                Descuento d = this.mapper.map(drDto, Descuento.class);
+                descuentoRecargo.add(d);
+            }
+            else if(drDto.tipo.equals("Recargo")){
+                Recargo r = this.mapper.map(drDto, Recargo.class);
+                descuentoRecargo.add(r);
+            }
+        }
+        return descuentoRecargo;
+    }
     //#endregion
 }

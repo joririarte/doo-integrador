@@ -52,11 +52,11 @@
 
   <build>
     <plugins>
-      <!--plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.3.0</version>
-      </plugin-->
+      </plugin>
 
       <!-- Plugin para ejecutar pruebas con JUnit 5 -->
       <plugin>

@@ -12,6 +12,7 @@ import com.ventas.factories.FabricaDao;
 
 public class Empleado extends Persona{
     private String cargo;
+    private String legajo;
 
     //#region Constructors
 
@@ -34,6 +35,7 @@ public class Empleado extends Persona{
         this.setEmail(builder.email);
         this.setTelefonos(builder.telefonos);
         this.setCargo(builder.cargo);
+        this.setLegajo(builder.legajo);
     }
 
     //#endregion
@@ -52,6 +54,7 @@ public class Empleado extends Persona{
         private String email;
         private List<String> telefonos;
         private String cargo;
+        private String legajo;
 
         public static EmpleadoBuilder getBuilder() {
             return new EmpleadoBuilder();
@@ -112,6 +115,11 @@ public class Empleado extends Persona{
             return this;
         }
 
+        public EmpleadoBuilder conLegajo(String legajo) {
+            this.legajo = legajo;
+            return this;
+        }
+
         public Empleado build() {
             return new Empleado(this);
         }
@@ -127,6 +135,14 @@ public class Empleado extends Persona{
     }
     public void setCargo(String cargo) {
         this.cargo = cargo;
+    }
+
+    public String getLegajo() {
+        return legajo;
+    }
+
+    public void setLegajo(String legajo) {
+        this.legajo = legajo;
     }
     
     //#endregion

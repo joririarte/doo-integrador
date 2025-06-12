@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS Persona (
 -- Tabla Cliente
 CREATE TABLE IF NOT EXISTS Cliente (
     personaId INTEGER PRIMARY KEY,
-    nroCliente TEXT,
+    nroCliente TEXT UNIQUE,
     FOREIGN KEY (personaId) REFERENCES Persona(personaId)
 );
 
@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS Cliente (
 CREATE TABLE IF NOT EXISTS Empleado (
     personaId INTEGER PRIMARY KEY,
     cargo TEXT,
+    legajo TEXT UNIQUE NOT NULL,
     FOREIGN KEY (personaId) REFERENCES Persona(personaId)
 );
 
@@ -75,7 +76,7 @@ CREATE TABLE IF NOT EXISTS Producto (
     productoId INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT,
     marca TEXT,
-    codigoBarras TEXT
+    codigoBarras TEXT UNIQUE
 );
 
 -- Tabla Precio
@@ -147,10 +148,10 @@ VALUES
 (2, 'CL002');
 
 -- Asumiendo personaId = 3 (Carlos) y 4 (Lucía)
-INSERT INTO Empleado (personaId, cargo)
+INSERT INTO Empleado (personaId, cargo, legajo)
 VALUES 
-(3, 'Administrador'),
-(4, 'Cajero');
+(3, 'Administrador', 'LEG-001'),
+(4, 'Cajero', 'LEG-002');
 
 -- Usamos mismo personaId como empleadoId (3 y 4)
 INSERT INTO Usuario (empleadoId, username, password, ultimoAcceso)

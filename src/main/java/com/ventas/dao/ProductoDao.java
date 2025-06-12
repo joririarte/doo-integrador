@@ -3,7 +3,10 @@ package com.ventas.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import javax.management.RuntimeErrorException;
 
 import com.ventas.dto.PrecioDto;
 import com.ventas.dto.ProductoDto;
@@ -133,49 +136,52 @@ public class ProductoDao implements Dao<ProductoDto> {
     @Override
     public ProductoDto actualizar(ProductoDto obj, List<String> params) {
         try {
-            if (params != null && !params.isEmpty() && obj.productoId > 0) {
-                StringBuilder sql = new StringBuilder("UPDATE Producto SET ");
-                for (int i = 0; i < params.size(); i++) {
-                    sql.append(params.get(i)).append(" = ?");
-                    if (i < params.size() - 1) {
-                        sql.append(", ");
-                    }
-                }
-                sql.append(" WHERE productoId = ?");
-                String query = sql.toString();
-                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
-
-                int index = 1;
+            if (params != null && !params.isEmpty()) {
                 for (String param : params) {
                     switch (param) {
                         case "nombre":
-                            stmt.setString(index++, obj.nombre);
+                            {
+                                String query = "UPDATE Producto SET nombre = ? WHERE codigoBarras = ?";
+                                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
+                                stmt.setString(1, obj.nombre);
+                                stmt.setString(2, obj.codigoBarras);
+                                stmt.executeUpdate();
+                            }
                             break;
-                        case "monto":
+                        case "marca":
+                            {
+                                String query = "UPDATE Producto SET marca = ? WHERE codigoBarras = ?";
+                                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
+                                stmt.setString(1, obj.marca);
+                                stmt.setString(2, obj.codigoBarras);
+                                stmt.executeUpdate();
+                            }
+                        case "precio":
                             {
                                 PrecioDao precioDao = new PrecioDao();
                                 PrecioDto precio = obj.precio.getFirst();
-                                precio.productoId = obj.productoId;
-                                precio.precioId = obj.precio.size() + 1;
+                                ProductoDto p = buscar(obj, Arrays.asList("codigoBarras")).getFirst();
+                                precio.productoId = p.productoId;
+                                precio.precioId = p.precio.size() + 1;
                                 precioDao.actualizar(precio, null);
+                                obj = this.buscar(p.productoId);
                             }
                             break;
-                        case "cantidad":
+                        case "stock":
                             {
                                 StockDao stockDao = new StockDao();
                                 StockDto stock = obj.stock.getFirst();
-                                stock.productoId = obj.productoId;
-                                stock.stockId = obj.stock.size() + 1;
+                                ProductoDto p = buscar(obj, Arrays.asList("codigoBarras")).getFirst();
+                                stock.productoId = p.productoId;
+                                stock.stockId = p.stock.size() + 1;
                                 stockDao.actualizar(stock, null);
+                                obj = this.buscar(p.productoId);
                             }
                             break;
                         default:
                             throw new IllegalArgumentException("Campo no soportado: " + param);
                     }
                 }
-
-                stmt.setInt(index, obj.productoId);
-                stmt.executeUpdate();
             } else {
                 String sqlInsert = "INSERT INTO Producto (nombre, marca, codigoBarras) VALUES (?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -208,6 +214,7 @@ public class ProductoDao implements Dao<ProductoDto> {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return obj;
@@ -218,6 +225,7 @@ public class ProductoDao implements Dao<ProductoDto> {
         String sql = "DELETE FROM Producto WHERE productoId = ?";
 
         try {
+            obj = this.buscar(obj, Arrays.asList("codigoBarras")).getFirst();
             StockDao stockDao = new StockDao();
             for(StockDto s : obj.stock){
                 stockDao.borrar(s);

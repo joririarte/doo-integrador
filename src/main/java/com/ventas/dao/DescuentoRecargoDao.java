@@ -46,7 +46,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
     public List<DescuentoRecargoDto> obtenerPorMedioPago(int medioPagoId) {
         List<DescuentoRecargoDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM DescuentoRecargo WHERE medioPagoId = ?";
+        String sql = "SELECT * FROM DescuentoRecargo WHERE medioPagoId = ? ORDER BY descuentoRecargoId DESC";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);

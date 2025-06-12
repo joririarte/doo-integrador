@@ -43,7 +43,7 @@ public class PrecioDao implements Dao<PrecioDto> {
 
     public List<PrecioDto> listarPorProducto(int productoId) {
         List<PrecioDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Precio WHERE productoId = ? ORDER BY fecha DESC";
+        String sql = "SELECT * FROM Precio WHERE productoId = ? ORDER BY precioId DESC";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);

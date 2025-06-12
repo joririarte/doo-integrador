@@ -10,85 +10,13 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import com.ventas.dto.DescuentoRecargoDto;
 import com.ventas.factories.FabricaDao;
 
-public class DescuentoRecargo extends Modelo {
+public abstract class DescuentoRecargo extends Modelo {
     private String nombre;
     private String tipo;
     private float monto;
     private Date fechaInicio;
     private Date fechaFin;
     private boolean habilitado;
-    
-    //#region Constructors
-    
-    public DescuentoRecargo() {
-        this.dao = FabricaDao.fabricar("DescuentoRecargoDao");
-        this.mapper = new ModelMapper();
-        mapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
-    }
-
-    public DescuentoRecargo(DescuentoRecargoBuilder builder) {
-        this(); 
-        this.setNombre(builder.nombre);
-        this.setTipo(builder.tipo);
-        this.setMonto(builder.monto);
-        this.setFechaInicio(builder.fechaInicio);
-        this.setFechaFin(builder.fechaFin);
-        this.setHabilitado(builder.habilitado);
-    }
-
-    //#endregion
-
-    //#region DescuentoRecargoBuilder
-
-    public static class DescuentoRecargoBuilder {
-        private String nombre;
-        private String tipo;
-        private float monto;
-        private Date fechaInicio;
-        private Date fechaFin;
-        private boolean habilitado;
-
-        public static DescuentoRecargoBuilder getBuilder() {
-            return new DescuentoRecargoBuilder();
-        }
-
-        public DescuentoRecargoBuilder conNombre(String nombre) {
-            this.nombre = nombre;
-            return this;
-        }
-
-        public DescuentoRecargoBuilder conTipo(String tipo) {
-            this.tipo = tipo;
-            return this;
-        }
-
-        public DescuentoRecargoBuilder conMonto(float monto) {
-            this.monto = monto;
-            return this;
-        }
-
-        public DescuentoRecargoBuilder conFechaInicio(Date fechaInicio) {
-            this.fechaInicio = fechaInicio;
-            return this;
-        }
-
-        public DescuentoRecargoBuilder conFechaFin(Date fechaFin) {
-            this.fechaFin = fechaFin;
-            return this;
-        }
-
-        public DescuentoRecargoBuilder conHabilitado(boolean habilitado) {
-            this.habilitado = habilitado;
-            return this;
-        }
-
-        public DescuentoRecargo build() {
-            return new DescuentoRecargo(this);
-        }
-    }
-
-
-    //#endregion
 
     //#region Getters y Setters
     public String getNombre() {
@@ -142,6 +70,14 @@ public class DescuentoRecargo extends Modelo {
     //#endregion
 
     //#region Business Methods
+
+    public float calcularPolitica(float monto){
+        return 0;
+    }
+
+    public float aplicarPolitica(float monto){
+        return monto;
+    }
 
     public List<DescuentoRecargo> listarDescuentoRecargos(){
         try{

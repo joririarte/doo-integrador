@@ -21,7 +21,7 @@ public class MainController {
         if (user != null) {
             System.out.println("[INFO] Usuario recuperado: " + user.getUsername());
             System.out.println("[INFO] Rol del usuario: " + user.getEmpleado().getCargo());
-            usuarioLabel.setText("Usuario: " + user.getUsername() + " | Rol: " + user.getEmpleado().getCargo());
+            usuarioLabel.setText("Usuario: " + user.getUsername()+ " | Legajo: " +user.getEmpleado().getLegajo() + " | Rol: " + user.getEmpleado().getCargo() + " | Ultimo Acceso: " + user.getUltimoAcceso()) ;
         }
 
         // Cargar vista según el rol

@@ -2,6 +2,7 @@ package com.ventas.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.ventas.dto.EmpleadoDto;
@@ -13,7 +14,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
 
     @Override
     public EmpleadoDto buscar(int id) {
-        String sql = "SELECT e.personaId, e.cargo, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
+        String sql = "SELECT e.personaId, e.cargo, e.legajo, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
                      "FROM Empleado AS e JOIN Persona AS p ON e.personaId = p.personaId WHERE e.personaId = ?";
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql)) {
@@ -33,6 +34,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
                 obj.fechaNacimiento = CommonUtils.stringToDate(rs.getString("fechaNacimiento"));
                 obj.domicilio = rs.getString("domicilio");
                 obj.email = rs.getString("email");
+                obj.legajo = rs.getString("legajo");
                 return obj;
             }
         } catch (Exception e) {
@@ -46,7 +48,9 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
     public EmpleadoDto actualizar(EmpleadoDto obj, List<String> params) {
         try (Connection conn = ConexionSQLite.getInstance().getConnection()) {
             conn.setAutoCommit(false);
-
+            
+            obj = this.buscar(obj, Arrays.asList("legajo")).getFirst();
+            
             // Verificamos si la persona ya existe
             String checkSql = "SELECT COUNT(*) FROM Persona WHERE personaId = ?";
             try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
@@ -124,9 +128,10 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
             conn.setAutoCommit(false);
 
             // Borrar Empleado
-            String deleteEmpleado = "DELETE FROM Empleado WHERE personaId=?";
+            obj = this.buscar(obj, Arrays.asList("legajo")).getFirst();
+            String deleteEmpleado = "DELETE FROM Empleado WHERE legajo=?";
             try (PreparedStatement stmt = conn.prepareStatement(deleteEmpleado)) {
-                stmt.setInt(1, obj.personaId);
+                stmt.setString(1, obj.legajo);
                 stmt.executeUpdate();
             }
 
@@ -148,7 +153,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
     @Override
     public List<EmpleadoDto> listarTodos() {
         List<EmpleadoDto> lista = new ArrayList<>();
-        String sql = "SELECT e.personaId, e.cargo, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
+        String sql = "SELECT e.personaId, e.cargo, e.legajo, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email " +
                      "FROM Empleado AS e JOIN Persona AS p ON e.personaId = p.personaId";
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -158,6 +163,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
                 EmpleadoDto obj = new EmpleadoDto();
                 obj.personaId = rs.getInt("personaId");
                 obj.cargo = rs.getString("cargo");
+                obj.legajo = rs.getString("legajo");
 
                 obj.nombreApellido = rs.getString("nombreApellido");
                 obj.tipoDocumento = rs.getString("tipoDocumento");
@@ -184,7 +190,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
         List<EmpleadoDto> lista = new ArrayList<>();
         try{
             if (params != null && !params.isEmpty()) {
-                StringBuilder sql = new StringBuilder("SELECT * FROM Empleado WHERE ");
+                StringBuilder sql = new StringBuilder("SELECT e.personaId, e.cargo, e.legajo, p.nombreApellido, p.tipoDocumento, p.nroDocumento, p.CUIT, p.condicionAfip, p.genero, p.fechaNacimiento, p.domicilio, p.email FROM Empleado AS e JOIN Persona AS p ON e.personaId = p.personaId WHERE ");
                 for (int i = 0; i < params.size(); i++) {
                     if(params.get(i).equals("fechaNacimiento")){
                         sql.append(params.get(i)).append(" = ?");
@@ -204,6 +210,9 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
                 int index = 1;
                 for (String param : params) {
                     switch (param) {
+                        case "legajo":
+                            stmt.setString(index++, CommonUtils.setWildcard(obj.legajo));
+                        break;
                         case "nombreApellido":
                             stmt.setString(index++, CommonUtils.setWildcard(obj.nombreApellido));
                             break;
@@ -244,6 +253,7 @@ public class EmpleadoDao implements Dao<EmpleadoDto> {
                 while (rs.next()) {
                     obj.personaId = rs.getInt("personaId");
                     obj.cargo = rs.getString("cargo");
+                    obj.legajo = rs.getString("legajo");
 
                     obj.nombreApellido = rs.getString("nombreApellido");
                     obj.tipoDocumento = rs.getString("tipoDocumento");
