@@ -175,7 +175,7 @@ public class CajeroController {
                                     .conCodigoBarras(codigoBarras)
                                     .build();
         List<Producto> listado = p.buscarProducto(Arrays.asList("codigoBarras"));
-        if(!listado.isEmpty()){
+        if(listado != null && !listado.isEmpty()){
             p = listado.getFirst();
             return p;
         }
@@ -187,7 +187,7 @@ public class CajeroController {
                                   .conNroCliente(nroCliente)
                                   .build();
         List<Cliente> listado = c.consultarCliente(Arrays.asList("nroCliente"));
-        if(!listado.isEmpty()){
+        if(listado != null && !listado.isEmpty()){
             c = listado.getFirst();
             return c;
         }

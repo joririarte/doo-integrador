@@ -31,7 +31,7 @@ public class SimpleTest {
         List<Producto> lista = p.buscarProducto(Arrays.asList("nombre"));
 
         System.out.println(lista.getFirst().getMarca());
-        System.out.println(lista.getFirst().getPrecio().getLast().getMonto());
+        System.out.println(lista.getFirst().getStock().getFirst().getCantidad());
 
         System.out.println("-------------------- USUARIO ------------------------");
         Usuario user = UsuarioBuilder.getBuilder().conUsername("admin").conPassword("admin123").build();

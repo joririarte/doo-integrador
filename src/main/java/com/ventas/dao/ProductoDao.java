@@ -142,8 +142,8 @@ public class ProductoDao implements Dao<ProductoDto> {
                     }
                 }
                 sql.append(" WHERE productoId = ?");
-
-                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
+                String query = sql.toString();
+                PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
 
                 int index = 1;
                 for (String param : params) {

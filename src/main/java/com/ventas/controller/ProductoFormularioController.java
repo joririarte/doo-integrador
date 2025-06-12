@@ -131,7 +131,7 @@ public class ProductoFormularioController {
 
         Producto resultado = esNuevo
             ? producto.registrarProducto()
-            : producto.actualizarProducto(Collections.singletonList(producto.getCodigoBarras()));
+            : producto.actualizarProducto(Arrays.asList("nombre", "monto", "cantidad"));
 
         System.out.println("[DEBUG] Resultado de guardar: " + (resultado != null ? "Éxito" : "Fallo"));
 
