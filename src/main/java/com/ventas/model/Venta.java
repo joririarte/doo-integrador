@@ -194,7 +194,10 @@ public class Venta extends Modelo {
         return false;
     }
 
-    private boolean checkCobro() { 
+    private boolean checkCobro() {
+        if(this.medioPago.getNombre().equals("Efectivo")){
+            return true;
+        } 
         try {
             // Simular espera entre 1 y 3 segundos
             int delay = (int) (Math.random() * 2000) + 1000; // de 1000 a 3000 ms

@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx" 
-            xmlns:fx="http://javafx.com/fxml" 
-            fx:controller="com.ventas.controller.LoginController"
-            prefWidth="400" 
-            prefHeight="200">
-    <children>
-        <Label text="Usuario:" layoutX="50" layoutY="40"/>
-        <TextField fx:id="usuarioField" layoutX="130" layoutY="35" />
-        <Label text="Contraseña:" layoutX="50" layoutY="80"/>
-        <PasswordField fx:id="contraseñaField" layoutX="130" layoutY="75" />
-        <Button text="Ingresar" layoutX="130" layoutY="120" onAction="#onLogin" />
-        <Label fx:id="mensajeLabel" layoutX="50" layoutY="160" textFill="red"/>
-    </children>
-</AnchorPane>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.ventas.controller.LoginController"
+           prefWidth="1000"
+           prefHeight="600">
+
+    <VBox alignment="CENTER">
+        <VBox spacing="20" alignment="CENTER" maxWidth="300"
+              style="-fx-background-color: #f0f0f0; -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-color: #ccc;">
+            
+            <GridPane hgap="10" vgap="10">
+                <Label text="Usuario:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                <TextField fx:id="usuarioField" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="200"/>
+
+                <Label text="Contraseña:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                <PasswordField fx:id="contraseñaField" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="200"/>
+            </GridPane>
+            <Label fx:id="mensajeLabel" textFill="red" visible="false"/>
+            <Button fx:id="iniciarSesionBtn" text="Ingresar" onAction="#onLogin" defaultButton="true"/>
+        </VBox>
+    </VBox>
+
+</StackPane>

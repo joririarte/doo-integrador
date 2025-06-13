@@ -13,12 +13,20 @@ import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.*;
+import javafx.collections.transformation.FilteredList;
+import javafx.util.StringConverter;
+
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CajeroController {
 
+    @FXML private ComboBox<Producto> comboProductos;
+    @FXML private ComboBox<Cliente> comboClientes;
+
     @FXML private TextField txtCodigoBarras;
+    @FXML private Button btnBuscarProducto;
     @FXML private Spinner<Integer> cantidadSpinner;
     @FXML private TextField nombreField;
     @FXML private TextField marcaField;
@@ -52,22 +60,16 @@ public class CajeroController {
 
     @FXML
     public void initialize() {
-        detallesObservable = FXCollections.observableArrayList();
-        tablaVenta.setItems(detallesObservable);
-
-        // Configurar columnas de la tabla
-        productoColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
-        marcaColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getProducto().getMarca()));
-        precioColumn.setCellValueFactory(cellData -> new SimpleFloatProperty(cellData.getValue().getPrecioVenta()).asObject());
-        cantidadColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getCantidad()).asObject());
-        subtotalColumn.setCellValueFactory(cellData -> new SimpleFloatProperty(cellData.getValue().calcularSubtotal()).asObject());
+        configurarTablaDetalleVenta();
+        configurarComboProductos();
+        configurarComboClientes();
 
         cantidadSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1000, 1));
 
         ventaActual = VentaBuilder.getBuilder()
                 .conVendedor(empleadoLogueado)
                 .conFecha(new Date())
-                .conEstado("pendiente")
+                .conEstado("PENDIENTE")
                 .conCliente(null)
                 .conDetalleVenta(new ArrayList<>())
                 .build();
@@ -80,6 +82,12 @@ public class CajeroController {
         ObservableList<MedioPago> mediosPago = FXCollections.observableArrayList(listadoMedioPagos);
         cbxMedioPago.setItems(mediosPago);
 
+        // comboProductos.getSelectionModel().selectedItemProperty().addListener((obs, oldProd, newProd) -> {
+        //     if (newProd != null) {
+        //         txtCodigoBarras.setText(newProd.getCodigoBarras());
+        //     }
+        // });
+        
         txtCodigoBarras.setOnAction(event -> cargarDatosProducto());
         agregarButton.setOnAction(event -> agregarProducto());
 
@@ -94,6 +102,7 @@ public class CajeroController {
 
     }
 
+    @FXML
     private void cargarDatosProducto() {
         String codigo = txtCodigoBarras.getText().trim();
         if (codigo.isEmpty()) return;
@@ -308,5 +317,142 @@ public class CajeroController {
                 .build();
         List<Producto> listado = p.buscarProducto(List.of("codigoBarras"));
         return (listado != null && !listado.isEmpty()) ? listado.getFirst() : null;
+    }
+
+    private void configurarTablaDetalleVenta() {
+        detallesObservable = FXCollections.observableArrayList();
+        tablaVenta.setItems(detallesObservable);
+
+        // Configurar columnas de la tabla
+        productoColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
+        marcaColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getProducto().getMarca()));
+        precioColumn.setCellValueFactory(cellData -> new SimpleFloatProperty(cellData.getValue().getPrecioVenta()).asObject());
+        cantidadColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getCantidad()).asObject());
+        subtotalColumn.setCellValueFactory(cellData -> new SimpleFloatProperty(cellData.getValue().calcularSubtotal()).asObject());
+        // Establecer anchos preferidos para cada columna
+        productoColumn.setPrefWidth(150);
+        marcaColumn.setPrefWidth(100);
+        precioColumn.setPrefWidth(80);
+        cantidadColumn.setPrefWidth(80);
+        subtotalColumn.setPrefWidth(100);
+
+        // Permitir que el usuario pueda redimensionar cada columna
+        productoColumn.setResizable(true);
+        marcaColumn.setResizable(true);
+        precioColumn.setResizable(true);
+        cantidadColumn.setResizable(true);
+        subtotalColumn.setResizable(true);
+
+        // Hacer que las columnas se ajusten proporcionalmente al ancho total de la tabla
+        tablaVenta.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    }
+
+    private void configurarComboProductos() {
+        Producto productoService = ProductoBuilder.getBuilder().build();
+        // Obtén la lista completa de productos (cambiá según tu método real)
+        List<Producto> todosProductos = productoService.listarProductos();
+
+        // Setear los items iniciales
+        comboProductos.getItems().setAll(todosProductos);
+
+        // Hacer editable
+        comboProductos.setEditable(true);
+
+        // Definir cómo mostrar cada producto en la lista desplegable
+        comboProductos.setCellFactory(lv -> new ListCell<Producto>() {
+            @Override
+            protected void updateItem(Producto item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : item.getNombre() + " (" + item.getMarca() + ")");
+            }
+        });
+
+        // Definir cómo mostrar el texto en el editor del combo
+        comboProductos.setConverter(new StringConverter<Producto>() {
+            @Override
+            public String toString(Producto producto) {
+                if (producto == null) return "";
+                txtCodigoBarras.setText(producto.getCodigoBarras());
+                return producto.getNombre() + "("+ producto.getMarca() +") -- $" + producto.getLastPrecio();
+            }
+            @Override
+            public Producto fromString(String string) {
+                // No lo usamos en este contexto
+                return null;
+            }
+        });
+
+        // Listener para filtrar productos mientras se escribe
+        comboProductos.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+            if (newText == null || newText.isEmpty()) {
+                comboProductos.getItems().setAll(todosProductos);
+                comboProductos.hide();
+            } else {
+                String textoFiltro = newText.toLowerCase();
+                List<Producto> filtrados = todosProductos.stream()
+                    .filter(p -> p.getCodigoBarras().toLowerCase().contains(textoFiltro)
+                            || p.getNombre().toLowerCase().contains(textoFiltro)
+                            || p.getMarca().toLowerCase().contains(textoFiltro))
+                    .collect(Collectors.toList());
+
+                comboProductos.getItems().setAll(filtrados);
+                comboProductos.show();
+            }
+        });
+    }
+
+    private void configurarComboClientes() {
+        Cliente clienteService = ClienteBuilder.getBuilder().build();
+        // Obtén la lista completa de productos (cambiá según tu método real)
+        List<Cliente> todosClientes = clienteService.listarClientes();
+
+        // Setear los items iniciales
+        comboClientes.getItems().setAll(todosClientes);
+
+        // Hacer editable
+        comboClientes.setEditable(true);
+
+        // Definir cómo mostrar cada producto en la lista desplegable
+        comboClientes.setCellFactory(lv -> new ListCell<Cliente>() {
+            @Override
+            protected void updateItem(Cliente item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : item.getNombreApellido() + " (" + item.getCUIT() + ")");
+            }
+        });
+
+        // Definir cómo mostrar el texto en el editor del combo
+        comboClientes.setConverter(new StringConverter<Cliente>() {
+            @Override
+            public String toString(Cliente cliente) {
+                if (cliente == null) return "";
+                txtNroCliente.setText(cliente.getNro_cliente());
+                return cliente.getNombreApellido() + "("+ cliente.getCUIT() +")";
+            }
+            @Override
+            public Cliente fromString(String string) {
+                // No lo usamos en este contexto
+                return null;
+            }
+        });
+
+        // Listener para filtrar productos mientras se escribe
+        comboClientes.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+            if (newText == null || newText.isEmpty()) {
+                comboClientes.getItems().setAll(todosClientes);
+                comboClientes.hide();
+            } else {
+                String textoFiltro = newText.toLowerCase();
+                List<Cliente> filtrados = todosClientes.stream()
+                    .filter(p -> p.getCUIT().toLowerCase().contains(textoFiltro)
+                            || p.getNombreApellido().toLowerCase().contains(textoFiltro)
+                            || p.getNroDocumento().toLowerCase().contains(textoFiltro)
+                            || p.getEmail().toLowerCase().contains(textoFiltro))
+                    .collect(Collectors.toList());
+
+                comboClientes.getItems().setAll(filtrados);
+                comboClientes.show();
+            }
+        });
     }
 }

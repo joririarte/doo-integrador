@@ -12,48 +12,64 @@
 
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="N° Cliente:"/>
-        <TextField fx:id="txtNroCliente" promptText="Ingrese N° de cliente"/>
+        <TextField fx:id="txtNroCliente" editable="false" disable="true"/>
+        <ComboBox fx:id="comboClientes" minWidth="160" editable="true" promptText="Escribe para buscar un cliente" />
         <Button text="Buscar" onAction="#buscarCliente"/>
         <Label fx:id="lblNombreCliente" text="Cliente: -" style="-fx-font-weight: bold;"/>
     </HBox>
 
     <Label text="Registrar Venta" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-
-    <TextField fx:id="txtCodigoBarras" promptText="Escanea o escribe el código de barras" />
+    
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Código de Barras:" />
+        <TextField fx:id="txtCodigoBarras" minWidth="80" editable="false" disable="true" />
+        <ComboBox fx:id="comboProductos" minWidth="160" editable="true" promptText="Escanea o escribe el producto" />
+        <Button text="Buscar Producto" fx:id="btnBuscarProducto" onAction="#cargarDatosProducto"/>
+    </HBox>
 
     <GridPane hgap="10" vgap="10">
         <columnConstraints>
-            <ColumnConstraints halignment="RIGHT"/>
-            <ColumnConstraints/>
+            <ColumnConstraints hgrow="NEVER" minWidth="80"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+            <ColumnConstraints hgrow="NEVER" minWidth="80"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
         </columnConstraints>
 
         <children>
+            <!-- Fila 1: Nombre y Marca -->
             <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
             <TextField fx:id="nombreField" editable="false" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-            <Label text="Marca:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <TextField fx:id="marcaField" editable="false" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Marca:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+            <TextField fx:id="marcaField" editable="false" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
 
-            <Label text="Precio:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <TextField fx:id="precioField" editable="false" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <!-- Fila 2: Precio y Stock -->
+            <Label text="Precio:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="precioField" editable="false" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-            <Label text="Stock:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <TextField fx:id="stockField" editable="false" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label text="Stock:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+            <TextField fx:id="stockField" editable="false" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
 
-            <Label text="Cantidad:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-            <Spinner fx:id="cantidadSpinner" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            <!-- Fila 3: Cantidad y Botón -->
+            <Label text="Cantidad:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Spinner fx:id="cantidadSpinner" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Button text="Agregar a la venta" fx:id="agregarButton"
+                    onAction="#agregarProducto"
+                    GridPane.rowIndex="2" GridPane.columnIndex="3"
+                    GridPane.columnSpan="1" maxWidth="Infinity"/>
         </children>
     </GridPane>
 
     <Button text="Agregar a la venta" fx:id="agregarButton" onAction="#agregarProducto"/>
 
-    <TableView fx:id="tablaVenta" prefHeight="200">
+    <TableView fx:id="tablaVenta" prefHeight="200" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="productoColumn" text="Producto"/>
-            <TableColumn fx:id="marcaColumn" text="Marca"/>
-            <TableColumn fx:id="precioColumn" text="Precio"/>
-            <TableColumn fx:id="cantidadColumn" text="Cantidad"/>
-            <TableColumn fx:id="subtotalColumn" text="Subtotal"/>
+            <TableColumn fx:id="productoColumn" text="Producto" prefWidth="150"/>
+            <TableColumn fx:id="marcaColumn" text="Marca" prefWidth="100"/>
+            <TableColumn fx:id="precioColumn" text="Precio" prefWidth="80"/>
+            <TableColumn fx:id="cantidadColumn" text="Cantidad" prefWidth="80"/>
+            <TableColumn fx:id="subtotalColumn" text="Subtotal" prefWidth="100"/>
         </columns>
     </TableView>
 

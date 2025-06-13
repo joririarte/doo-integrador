@@ -16,62 +16,72 @@ public class LoginController {
     @FXML private TextField usuarioField;
     @FXML private PasswordField contraseñaField;
     @FXML private Label mensajeLabel;
+    @FXML private Button iniciarSesionBtn;
+
+    @FXML
+    public void initialize(){
+        iniciarSesionBtn.setDisable(false);
+        mensajeLabel.setVisible(false);
+        usuarioField.setEditable(true);
+        contraseñaField.setEditable(true);
+    }
 
     @FXML
     public void onLogin() {
         String usuario = usuarioField.getText();
         String contraseña = contraseñaField.getText();
+        toggleInputs();
+        if(usuario.isEmpty() || contraseña.isEmpty()){
+            toggleInputs();
+            mostrarAlerta("Debes completar los campos");
+            return;
+        }
+        try{
+            Usuario user = UsuarioBuilder.getBuilder()
+                                        .conUsername(usuario)
+                                        .conPassword(contraseña)
+                                        .build();
+            user = user.iniciarSesion(); 
 
-        System.out.println("Intentando login con usuario: " + usuario + " y contraseña: " + contraseña);
-
-        Usuario user = UsuarioBuilder.getBuilder()
-                                    .conUsername(usuario)
-                                    .conPassword(contraseña)
-                                    .build();
-        user = user.iniciarSesion(); 
-
-        if (user != null) {
-            System.out.println("Login exitoso");
-            String rol = user.getEmpleado().getCargo();
-            System.out.println("Rol detectado: " + rol);
-
-            AppContext.setUsuarioActual(user);
-
-            try {
-                if ("Administrador".equals(rol)) {
-                    System.out.println("Cargando vista de administrador...");
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
-                    Stage stage = (Stage) usuarioField.getScene().getWindow();
-                    stage.setScene(new Scene(loader.load()));
-                    stage.setTitle("Seleccionar acción Admin");
-                } else {
-                    String fxml = switch (rol) {
-                        case "Cajero" -> "/fxml/main.fxml";
-                        default -> null;
-                    };
-
-                    System.out.println("FXML para rol: " + fxml);
-
-                    if (fxml != null) {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
-                        Stage stage = (Stage) usuarioField.getScene().getWindow();
-                        stage.setScene(new Scene(loader.load())); 
-                        System.out.println("Vista cargada correctamente.");
-                    } else {
-                        mensajeLabel.setText("Rol no reconocido.");
-                        System.out.println("Rol no reconocido: " + rol);
-                    }
-                }
-
-            } catch (IOException ex) {
-                System.out.println("Error cargando la vista: " + ex.getMessage());
-                ex.printStackTrace();
+            if (user != null) {
+                String rol = user.getEmpleado().getCargo();
+                AppContext.setUsuarioActual(user);
+                cargarVista("/fxml/main.fxml", "Dashboard - " + rol); 
+            } 
+            else {
+                mostrarAlerta("Credenciales incorrectas.");
             }
-
-        } else {
-            mensajeLabel.setText("Credenciales incorrectas.");
-            System.out.println("Usuario no encontrado o credenciales incorrectas.");
+        } 
+        catch (IOException ex) {
+            mostrarAlerta("Ocurrio un error");
+            System.out.println("Error cargando la vista: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        catch (Exception ex){
+            mostrarAlerta("Ocurrio un error");
+            System.out.println("Error: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        finally{
+            toggleInputs();
         }
     }
 
+    private void cargarVista(String vista, String titulo) throws IOException{
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(vista));
+        Stage stage = (Stage) usuarioField.getScene().getWindow();
+        stage.setScene(new Scene(loader.load()));
+        stage.setTitle(titulo);
+    }
+
+    private void mostrarAlerta(String mensaje){
+        mensajeLabel.setVisible(true);
+        mensajeLabel.setText(mensaje);
+    }
+
+    private void toggleInputs(){
+        usuarioField.setDisable(!usuarioField.isDisable());
+        contraseñaField.setDisable(!contraseñaField.isDisable());
+        iniciarSesionBtn.setDisable(!iniciarSesionBtn.isDisable());
+    }
 }
