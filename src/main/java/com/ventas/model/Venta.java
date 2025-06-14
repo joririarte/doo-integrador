@@ -7,6 +7,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 
 import com.ventas.dto.VentaDto;
 import com.ventas.factories.FabricaDao;
+import com.ventas.factories.FabricaDescuentoRecargo;
 import com.ventas.model.MedioPago.MedioPagoBuilder;
 
 public class Venta extends Modelo {
@@ -16,6 +17,8 @@ public class Venta extends Modelo {
     private String estado;
     private float montoPagado;
     private MedioPago medioPago;
+    private DescuentoRecargo descuentoRecargo;
+
     private Cliente cliente;
     private List<DetalleVenta> detalleVenta;
 
@@ -34,6 +37,7 @@ public class Venta extends Modelo {
         this.setEstado(builder.estado);
         this.setMontoPagado(builder.montoPagado);
         this.setMedioPago(builder.medioPago);
+        this.setDescuentoRecargo(builder.descuentoRecargo);
         this.setCliente(builder.cliente);
         if(builder.detalleVenta != null)
             this.setDetalleVenta(builder.detalleVenta);
@@ -51,6 +55,7 @@ public class Venta extends Modelo {
         private String estado;
         private float montoPagado;
         private MedioPago medioPago;
+        private DescuentoRecargo descuentoRecargo;
         private Cliente cliente;
         private List<DetalleVenta> detalleVenta;
 
@@ -88,6 +93,11 @@ public class Venta extends Modelo {
             return this;
         }
 
+        public VentaBuilder conDescuentoRecargo(DescuentoRecargo descuentoRecargo) {
+            this.descuentoRecargo = descuentoRecargo;
+            return this;
+        }
+
         public VentaBuilder conCliente(Cliente cliente) {
             this.cliente = cliente;
             return this;
@@ -107,6 +117,14 @@ public class Venta extends Modelo {
     //#endregion
 
     //#region Getters y Setters
+
+    public DescuentoRecargo getDescuentoRecargo() {
+        return descuentoRecargo;
+    }
+
+    public void setDescuentoRecargo(DescuentoRecargo descuentoRecargo) {
+        this.descuentoRecargo = descuentoRecargo;
+    }
 
     public String getCodigoVenta() {
         return codigoVenta;
@@ -163,13 +181,13 @@ public class Venta extends Modelo {
 
     //#region Business Methods
     
-    public float calcularMontoTotal(DescuentoRecargo descuentoRecargo) { 
+    public float calcularMontoTotal() { 
         float total = 0;
         for(DetalleVenta dv : this.detalleVenta){
             total += dv.calcularSubtotal();
         }
-        if(descuentoRecargo != null){
-            total = descuentoRecargo.aplicarPolitica(total);
+        if(this.descuentoRecargo != null){
+            total = this.descuentoRecargo.aplicarPolitica(total);
         }
         return total; 
     }
@@ -187,16 +205,16 @@ public class Venta extends Modelo {
     }
     
     public Boolean cobrar(float monto) {
-        if(this.checkCobro()){
+        if(this.checkCobro(monto)){
             this.setMontoPagado(monto);
             return true;
         }
         return false;
     }
 
-    private boolean checkCobro() {
+    private boolean checkCobro(float monto) {
         if(this.medioPago.getNombre().equals("Efectivo")){
-            return true;
+            return monto > calcularMontoTotal();
         } 
         try {
             // Simular espera entre 1 y 3 segundos
@@ -208,18 +226,27 @@ public class Venta extends Modelo {
         }
 
         // Generar resultado aleatorio
-        return Math.random() < 0.5;
+        return Math.random() < 0.5 && monto > calcularMontoTotal();
     }
 
     public void cancelar() {
         this.estado = "cancelada";
     }
 
+    public String getNextCodigoVenta(){
+        return String.format("VEN-%010d", listarVentas().size() + 1);
+    }
+
     public List<Venta> listarVentas() {
         try {
             List<VentaDto> listado = this.dao.listarTodos();
-            if (!listado.isEmpty())
-                return Arrays.asList(this.mapper.map(listado, Venta[].class));
+            if (!listado.isEmpty()){
+                List<Venta> ventas = new ArrayList<>();
+                for(VentaDto v : listado){
+                    ventas.add(mapearVenta(v));
+                }
+                return ventas;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -283,15 +310,21 @@ public class Venta extends Modelo {
         Cliente c = this.mapper.map(ventaDto.cliente, Cliente.class);
         Empleado e = this.mapper.map(ventaDto.vendedor, Empleado.class);
         MedioPago mp = MedioPagoBuilder.getBuilder().build().mapearMedioPago(ventaDto.medioPago);
+        DescuentoRecargo dr = null;
+        if(ventaDto.descuentoRecargo != null)
+             dr = FabricaDescuentoRecargo.fabricar(ventaDto.descuentoRecargo);
+
         List<DetalleVenta> dv = Arrays.asList(this.mapper.map(ventaDto.detalleVenta, DetalleVenta[].class));
         Venta v = VentaBuilder.getBuilder()
                               .conCliente(c)
                               .conVendedor(e)
                               .conMedioPago(mp)
+                              .conDescuentoRecargo(dr)
                               .conCodigoVenta(ventaDto.codigoVenta)
                               .conEstado(ventaDto.estado)
                               .conFecha(ventaDto.fecha)
                               .conDetalleVenta(dv)
+                              .conMontoPagado(ventaDto.montoPagado)
                               .build();
         return v;
     }

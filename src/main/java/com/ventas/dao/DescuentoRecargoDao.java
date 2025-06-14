@@ -14,7 +14,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
     @Override
     public List<DescuentoRecargoDto> listarTodos() {
         List<DescuentoRecargoDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM DescuentoRecargo";
+        String sql = "SELECT * FROM DescuentoRecargo ORDER BY habilitado DESC";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -23,7 +23,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
             while (rs.next()) {
                 DescuentoRecargoDto dto = new DescuentoRecargoDto();
                 dto.medioPagoId = rs.getInt("medioPagoId");
-                dto.descuentoRecargoId = rs.getInt("descuentoRecargoId");
+                dto.codigoDescuentoRecargo = rs.getString("codigoDescuentoRecargo");
                 dto.nombre = rs.getString("nombre");
                 dto.tipo = rs.getString("tipo");
                 dto.monto = rs.getFloat("monto");
@@ -47,7 +47,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
     public List<DescuentoRecargoDto> obtenerPorMedioPago(int medioPagoId) {
         List<DescuentoRecargoDto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM DescuentoRecargo WHERE medioPagoId = ? ORDER BY descuentoRecargoId DESC";
+        String sql = "SELECT * FROM DescuentoRecargo WHERE medioPagoId = ? ORDER BY habilitado DESC";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
@@ -57,7 +57,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
             while (rs.next()) {
                 DescuentoRecargoDto dto = new DescuentoRecargoDto();
                 dto.medioPagoId = rs.getInt("medioPagoId");
-                dto.descuentoRecargoId = rs.getInt("descuentoRecargoId");
+                dto.codigoDescuentoRecargo = rs.getString("codigoDescuentoRecargo");
                 dto.nombre = rs.getString("nombre");
                 dto.tipo = rs.getString("tipo");
                 dto.monto = rs.getFloat("monto");
@@ -80,7 +80,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
     @Override
     public DescuentoRecargoDto actualizar(DescuentoRecargoDto obj, List<String> params) {
         try {
-            if (params != null && !params.isEmpty() && obj.medioPagoId > 0 && obj.descuentoRecargoId > 0) {
+            if (params != null && !params.isEmpty() && obj.medioPagoId > 0 && !obj.codigoDescuentoRecargo.isEmpty()) {
                 StringBuilder sql = new StringBuilder("UPDATE DescuentoRecargo SET ");
                 for (int i = 0; i < params.size(); i++) {
                     sql.append(params.get(i)).append(" = ?");
@@ -88,7 +88,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
                         sql.append(", ");
                     }
                 }
-                sql.append(" WHERE medioPagoId = ? AND descuentoRecargoId = ?");
+                sql.append(" WHERE medioPagoId = ? AND codigoDescuentoRecargo = ?");
 
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql.toString());
 
@@ -116,14 +116,15 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
                 }
 
                 stmt.setInt(index, obj.medioPagoId);
-                stmt.setInt(index++, obj.descuentoRecargoId);
+                stmt.setString(index++, obj.codigoDescuentoRecargo);
                 stmt.executeUpdate();
 
             } else {
-                String sqlInsert = "INSERT INTO DescuentoRecargo (medioPagoId, descuentoRecargoId, nombre, tipo, monto, fechaInicio, fechaFin, habilitado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                int nextDescuentoRecargo = obtenerPorMedioPago(obj.medioPagoId).size() + 1;
+                String sqlInsert = "INSERT INTO DescuentoRecargo (medioPagoId, codigoDescuentoRecargo, nombre, tipo, monto, fechaInicio, fechaFin, habilitado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
                 stmt.setInt(1, obj.medioPagoId);
-                stmt.setInt(2, obj.descuentoRecargoId);
+                stmt.setInt(2, nextDescuentoRecargo);
                 stmt.setString(3, obj.nombre);
                 stmt.setString(4, obj.tipo);
                 stmt.setFloat(5, obj.monto);
@@ -144,12 +145,12 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
 
     @Override
     public DescuentoRecargoDto borrar(DescuentoRecargoDto obj) {
-        String sql = "DELETE FROM DescuentoRecargo WHERE medioPagoId = ? AND descuentoRecargoId = ?";
+        String sql = "DELETE FROM DescuentoRecargo WHERE medioPagoId = ? AND codigoDescuentoRecargo = ?";
 
         try {
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql);
             stmt.setInt(1, obj.medioPagoId);
-            stmt.setInt(1, obj.descuentoRecargoId);
+            stmt.setString(2, obj.codigoDescuentoRecargo);
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

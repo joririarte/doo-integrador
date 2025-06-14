@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 
 import com.ventas.factories.FabricaDao;
+import com.ventas.model.Descuento.DescuentoBuilder;
 
 public class Recargo extends DescuentoRecargo {
     //#region Constructors
@@ -24,6 +25,7 @@ public class Recargo extends DescuentoRecargo {
         this.setFechaInicio(builder.fechaInicio);
         this.setFechaFin(builder.fechaFin);
         this.setHabilitado(builder.habilitado);
+        this.setCodigoDescuentoRecargo(builder.codigoRecargo);
     }
 
     //#endregion
@@ -31,6 +33,7 @@ public class Recargo extends DescuentoRecargo {
     //#region RecargoBuilder
 
     public static class RecargoBuilder {
+        String codigoRecargo;
         private String nombre;
         private String tipo;
         private float monto;
@@ -40,6 +43,11 @@ public class Recargo extends DescuentoRecargo {
 
         public static RecargoBuilder getBuilder() {
             return new RecargoBuilder();
+        }
+        
+        public RecargoBuilder conCodigoRecargo(String codigoRecargo){
+            this.codigoRecargo = codigoRecargo;
+            return this;
         }
 
         public RecargoBuilder conNombre(String nombre) {

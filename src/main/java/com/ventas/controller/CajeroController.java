@@ -1,5 +1,6 @@
 package com.ventas.controller;
 
+import com.ventas.factories.FabricaDescuentoRecargo;
 import com.ventas.model.*;
 import com.ventas.model.Cliente.ClienteBuilder;
 import com.ventas.model.DetalleVenta.DetalleVentaBuilder;
@@ -26,7 +27,6 @@ public class CajeroController {
     @FXML private ComboBox<Cliente> comboClientes;
 
     @FXML private TextField txtCodigoBarras;
-    @FXML private Button btnBuscarProducto;
     @FXML private Spinner<Integer> cantidadSpinner;
     @FXML private TextField nombreField;
     @FXML private TextField marcaField;
@@ -43,14 +43,13 @@ public class CajeroController {
     @FXML private Label lblTotal;
     @FXML private TextField txtMontoPagado;
     @FXML private ComboBox<MedioPago> cbxMedioPago;
+    @FXML private ComboBox<DescuentoRecargo> cbxDescuentoRecargo;
     @FXML private Button btnConfirmarVenta;
     @FXML private Button btnCancelarVenta;
     @FXML private Button agregarButton;
 
-    @FXML private TextField txtNroCliente;
     @FXML private Label lblNombreCliente;
 
-    private Cliente clienteActual;
     private Venta ventaActual;
     private ObservableList<DetalleVenta> detallesObservable;
 
@@ -70,39 +69,18 @@ public class CajeroController {
                 .conVendedor(empleadoLogueado)
                 .conFecha(new Date())
                 .conEstado("PENDIENTE")
-                .conCliente(null)
                 .conDetalleVenta(new ArrayList<>())
                 .build();
+        ventaActual.setCodigoVenta(ventaActual.getNextCodigoVenta());
 
-        List<MedioPago> listadoMedioPagos = MedioPagoBuilder.getBuilder()
-                .conHabilitado(true)
-                .build()
-                .listarMedioPagos();
-
-        ObservableList<MedioPago> mediosPago = FXCollections.observableArrayList(listadoMedioPagos);
-        cbxMedioPago.setItems(mediosPago);
-
-        // comboProductos.getSelectionModel().selectedItemProperty().addListener((obs, oldProd, newProd) -> {
-        //     if (newProd != null) {
-        //         txtCodigoBarras.setText(newProd.getCodigoBarras());
-        //     }
-        // });
+        configurarComboMedioPagos();
+        
         
         txtCodigoBarras.setOnAction(event -> cargarDatosProducto());
         agregarButton.setOnAction(event -> agregarProducto());
 
-        cbxMedioPago.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(MedioPago item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.getNombre());
-            }
-        });
-        cbxMedioPago.setButtonCell(cbxMedioPago.getCellFactory().call(null));
-
     }
 
-    @FXML
     private void cargarDatosProducto() {
         String codigo = txtCodigoBarras.getText().trim();
         if (codigo.isEmpty()) return;
@@ -118,6 +96,56 @@ public class CajeroController {
             mostrarAlerta("Producto no encontrado");
             limpiarCamposProducto();
         }
+    }
+
+    private void configurarComboMedioPagos(){
+        List<MedioPago> listadoMedioPagos = MedioPagoBuilder.getBuilder()
+                                                            .conHabilitado(true)
+                                                            .build()
+                                                            .listarMedioPagos();
+
+        ObservableList<MedioPago> mediosPago = FXCollections.observableArrayList(listadoMedioPagos);
+        cbxMedioPago.setItems(mediosPago);
+        
+        cbxMedioPago.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(MedioPago item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getNombre());
+            }
+        });
+        cbxMedioPago.setButtonCell(cbxMedioPago.getCellFactory().call(null));
+        cbxMedioPago.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                ventaActual.setMedioPago(newVal);
+                configurarComboDescuentoRecargo(newVal);
+            } else {
+                cbxDescuentoRecargo.getItems().clear();
+            }
+        });
+
+    }
+
+    private void configurarComboDescuentoRecargo(MedioPago mp){
+        ObservableList<DescuentoRecargo> descuentoRecargos = FXCollections.observableArrayList(mp.getDescuentoRecargo());
+        cbxDescuentoRecargo.setItems(descuentoRecargos);
+        
+        cbxDescuentoRecargo.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(DescuentoRecargo item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getNombre());
+            }
+        });
+        cbxDescuentoRecargo.setButtonCell(cbxDescuentoRecargo.getCellFactory().call(null));
+        cbxDescuentoRecargo.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                ventaActual.setDescuentoRecargo(newVal);
+                actualizarTotal();
+            } else {
+                cbxDescuentoRecargo.getItems().clear();
+            }
+        });
     }
 
     public void agregarProducto() {
@@ -159,27 +187,23 @@ public class CajeroController {
     @FXML
     public void confirmarVenta() {
         try {
-            float montoPagado = Float.parseFloat(txtMontoPagado.getText());
-            MedioPago medioPago = obtenerMedioPagoDesdeCombo();
-
-            if (medioPago == null) {
+            ventaActual.setEstado("EN COBRO");
+            if (ventaActual.getMedioPago() == null) {
                 mostrarAlerta("Seleccione un medio de pago");
                 return;
             }
-
-            ventaActual.setMedioPago(medioPago);
-            List<DescuentoRecargo> descuentoRecargos = medioPago.getDescuentoRecargo();
-            DescuentoRecargo descuentoRecargo = (descuentoRecargos != null && !descuentoRecargos.isEmpty()) ? descuentoRecargos.getFirst() : null;
-
-            float total = ventaActual.calcularMontoTotal(descuentoRecargo);
-            ventaActual.setEstado("EN COBRO");
-
-
-              System.out.println("[DEBUG] Monto: " + montoPagado);
+        
+            if (ventaActual.getDescuentoRecargo() == null && obtenerDescuentoRecargoDesdeCombo() != null) {
+                mostrarAlerta("Seleccione Descuento/ Recargo");
+                return;
+            }
+            
+            float montoPagado = Float.parseFloat(txtMontoPagado.getText());
+            
             if (ventaActual.cobrar(montoPagado)) {
                 ventaActual.setEstado("PAGADA");
                 ventaActual.setMontoPagado(montoPagado);
-                float vuelto = ventaActual.calcularVuelto(total);
+                float vuelto = ventaActual.calcularVuelto(ventaActual.calcularMontoTotal());
                 ventaActual.setEstado("CONFIRMADA");
 
                 Venta ventaFinal = ventaActual.actualizararVenta(null);
@@ -193,7 +217,10 @@ public class CajeroController {
 
             } else {
                 ventaActual.setEstado("CANCELADA");
-                mostrarAlerta("El monto pagado es insuficiente");
+                if(ventaActual.getMedioPago().getNombre().equals("Efectivo"))
+                    mostrarAlerta("El monto pagado es insuficiente");
+                else
+                    mostrarAlerta("Ocurrio un error en el cobro, por favor intente de nuevo");
             }
 
         } catch (NumberFormatException ex) {
@@ -210,61 +237,17 @@ public class CajeroController {
         limpiarFormulario();
     }
 
-    @FXML
-    public void buscarCliente() {
-        String nroCliente = txtNroCliente.getText().trim();
-        if (nroCliente.isEmpty()) {
-            mostrarAlerta("Debe ingresar el número de cliente");
-            return;
-        }
-
-        try {
-            Cliente cliente = ClienteBuilder.getBuilder()
-                    .conNroCliente(nroCliente)
-                    .build();
-
-            List<Cliente> resultado = cliente.consultarCliente(List.of("nroCliente"));
-            if (resultado != null && !resultado.isEmpty()) {
-                cliente = resultado.getFirst();
-                clienteActual = cliente;
-                lblNombreCliente.setText("Cliente: " + clienteActual.getNombreApellido());
-                iniciarVentaConCliente(clienteActual);
-            } else {
-                mostrarAlerta("Cliente no encontrado");
-                clienteActual = null;
-                lblNombreCliente.setText("Cliente: -");
-            }
-
-        } catch (Exception e) {
-            mostrarAlerta("Error al buscar cliente: " + e.getMessage());
-            clienteActual = null;
-            lblNombreCliente.setText("Cliente: -");
-        }
-    }
-
-    private void iniciarVentaConCliente(Cliente cliente) {
-        String codigoUnico = UUID.randomUUID().toString().substring(0, 8);
-
-        ventaActual = VentaBuilder.getBuilder()
-                .conCodigoVenta(codigoUnico)
-                .conVendedor(empleadoLogueado)
-                .conFecha(new Date())
-                .conEstado("pendiente")
-                .conCliente(cliente)
-                .conDetalleVenta(new ArrayList<>())
-                .build();
-    }
-
     private void actualizarTotal() {
-        float total = 0;
-        for (DetalleVenta d : ventaActual.getDetalleVenta()) {
-            total += d.calcularSubtotal();
-        }
+        float total = ventaActual.calcularMontoTotal();
         lblTotal.setText(String.format("Total: $%.2f", total));
     }
 
     private MedioPago obtenerMedioPagoDesdeCombo() {
         return cbxMedioPago.getValue();
+    }
+
+    private DescuentoRecargo obtenerDescuentoRecargoDesdeCombo() {
+        return cbxDescuentoRecargo.getValue();
     }
 
     private void limpiarFormulario() {
@@ -276,10 +259,10 @@ public class CajeroController {
         cantidadSpinner.getValueFactory().setValue(1);
         txtMontoPagado.clear();
         cbxMedioPago.getSelectionModel().clearSelection();
+        cbxDescuentoRecargo.getSelectionModel().clearSelection();
         detallesObservable.clear();
         lblTotal.setText("Total: $0.00");
         lblNombreCliente.setText("Cliente: -");
-        txtNroCliente.clear();
 
         ventaActual = VentaBuilder.getBuilder()
                 .conVendedor(empleadoLogueado)
@@ -348,110 +331,51 @@ public class CajeroController {
     }
 
     private void configurarComboProductos() {
-        Producto productoService = ProductoBuilder.getBuilder().build();
-        // Obtén la lista completa de productos (cambiá según tu método real)
-        List<Producto> todosProductos = productoService.listarProductos();
+        Producto clienteService = ProductoBuilder.getBuilder().build();
+        List<Producto> todosProductos = clienteService.listarProductos();
+        comboProductos.setItems(FXCollections.observableArrayList(todosProductos));
 
-        // Setear los items iniciales
-        comboProductos.getItems().setAll(todosProductos);
-
-        // Hacer editable
-        comboProductos.setEditable(true);
-
-        // Definir cómo mostrar cada producto en la lista desplegable
         comboProductos.setCellFactory(lv -> new ListCell<Producto>() {
             @Override
             protected void updateItem(Producto item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "" : item.getNombre() + " (" + item.getMarca() + ")");
+                setText(empty || item == null ? null : item.getNombre() + " (" + item.getMarca() + ") $" + item.getLastPrecio());
             }
         });
 
-        // Definir cómo mostrar el texto en el editor del combo
-        comboProductos.setConverter(new StringConverter<Producto>() {
-            @Override
-            public String toString(Producto producto) {
-                if (producto == null) return "";
-                txtCodigoBarras.setText(producto.getCodigoBarras());
-                return producto.getNombre() + "("+ producto.getMarca() +") -- $" + producto.getLastPrecio();
-            }
-            @Override
-            public Producto fromString(String string) {
-                // No lo usamos en este contexto
-                return null;
-            }
-        });
+        comboProductos.setButtonCell(comboProductos.getCellFactory().call(null));
 
-        // Listener para filtrar productos mientras se escribe
-        comboProductos.getEditor().textProperty().addListener((obs, oldText, newText) -> {
-            if (newText == null || newText.isEmpty()) {
-                comboProductos.getItems().setAll(todosProductos);
-                comboProductos.hide();
+        comboProductos.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                txtCodigoBarras.setText(newVal.getCodigoBarras());
+                cargarDatosProducto();
             } else {
-                String textoFiltro = newText.toLowerCase();
-                List<Producto> filtrados = todosProductos.stream()
-                    .filter(p -> p.getCodigoBarras().toLowerCase().contains(textoFiltro)
-                            || p.getNombre().toLowerCase().contains(textoFiltro)
-                            || p.getMarca().toLowerCase().contains(textoFiltro))
-                    .collect(Collectors.toList());
-
-                comboProductos.getItems().setAll(filtrados);
-                comboProductos.show();
+                cbxDescuentoRecargo.getItems().clear();
             }
         });
     }
 
     private void configurarComboClientes() {
         Cliente clienteService = ClienteBuilder.getBuilder().build();
-        // Obtén la lista completa de productos (cambiá según tu método real)
         List<Cliente> todosClientes = clienteService.listarClientes();
+        comboClientes.setItems(FXCollections.observableArrayList(todosClientes));
 
-        // Setear los items iniciales
-        comboClientes.getItems().setAll(todosClientes);
-
-        // Hacer editable
-        comboClientes.setEditable(true);
-
-        // Definir cómo mostrar cada producto en la lista desplegable
         comboClientes.setCellFactory(lv -> new ListCell<Cliente>() {
             @Override
             protected void updateItem(Cliente item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "" : item.getNombreApellido() + " (" + item.getCUIT() + ")");
+                setText(empty || item == null ? null : item.getNombreApellido() + " (" + item.getCUIT() + ")");
             }
         });
 
-        // Definir cómo mostrar el texto en el editor del combo
-        comboClientes.setConverter(new StringConverter<Cliente>() {
-            @Override
-            public String toString(Cliente cliente) {
-                if (cliente == null) return "";
-                txtNroCliente.setText(cliente.getNro_cliente());
-                return cliente.getNombreApellido() + "("+ cliente.getCUIT() +")";
-            }
-            @Override
-            public Cliente fromString(String string) {
-                // No lo usamos en este contexto
-                return null;
-            }
-        });
+        comboClientes.setButtonCell(comboClientes.getCellFactory().call(null));
 
-        // Listener para filtrar productos mientras se escribe
-        comboClientes.getEditor().textProperty().addListener((obs, oldText, newText) -> {
-            if (newText == null || newText.isEmpty()) {
-                comboClientes.getItems().setAll(todosClientes);
-                comboClientes.hide();
+        comboClientes.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                lblNombreCliente.setText("Cliente: " + newVal.getNroCliente());
+                ventaActual.setCliente(newVal);
             } else {
-                String textoFiltro = newText.toLowerCase();
-                List<Cliente> filtrados = todosClientes.stream()
-                    .filter(p -> p.getCUIT().toLowerCase().contains(textoFiltro)
-                            || p.getNombreApellido().toLowerCase().contains(textoFiltro)
-                            || p.getNroDocumento().toLowerCase().contains(textoFiltro)
-                            || p.getEmail().toLowerCase().contains(textoFiltro))
-                    .collect(Collectors.toList());
-
-                comboClientes.getItems().setAll(filtrados);
-                comboClientes.show();
+                cbxDescuentoRecargo.getItems().clear();
             }
         });
     }

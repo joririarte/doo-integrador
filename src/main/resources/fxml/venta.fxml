@@ -17,20 +17,27 @@
 
     <center>
         <SplitPane orientation="VERTICAL" dividerPositions="0.5">
-            <TableView fx:id="tablaVentas" prefHeight="200.0" prefWidth="600.0">
+            <TableView fx:id="tablaVentas" onMouseClicked="#seleccionarVenta">
                 <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="200"/>
-                    <TableColumn fx:id="fechaColumn" text="Fecha" prefWidth="200"/>
-                    <TableColumn fx:id="totalColumn" text="Total" prefWidth="200"/>
+                    <TableColumn fx:id="codigoColumn" text="Código" />
+                    <TableColumn fx:id="vendedorColumn" text="Vendedor" />
+                    <TableColumn fx:id="clienteColumn" text="Cliente" />
+                    <TableColumn fx:id="fechaColumn" text="Fecha" />
+                    <TableColumn fx:id="estadoColumn" text="Estado" />
+                    <TableColumn fx:id="medioPagoColumn" text="Medio de Pago" />
+                    <TableColumn fx:id="descuentoRecargoColumn" text="Descuento/Recargo" />
+                    <TableColumn fx:id="montoPagadoColumn" text="Monto Pagado" />
+                    <TableColumn fx:id="totalColumn" text="Total" />
+                    <TableColumn fx:id="vueltoColumn" text="Vuelto"/> 
                 </columns>
             </TableView>
 
-            <TableView fx:id="tablaDetalles" prefHeight="200.0" prefWidth="600.0">
+            <TableView fx:id="tablaDetalleVenta" prefHeight="200.0" prefWidth="600.0">
                 <columns>
                     <TableColumn fx:id="productoColumn" text="Producto" prefWidth="150"/>
-                    <TableColumn fx:id="marcaColumn" text="Marca" prefWidth="150"/>
-                    <TableColumn fx:id="precioColumn" text="Precio" prefWidth="100"/>
-                    <TableColumn fx:id="cantidadColumn" text="Cantidad" prefWidth="100"/>
+                    <TableColumn fx:id="marcaColumn" text="Marca" prefWidth="100"/>
+                    <TableColumn fx:id="precioColumn" text="Precio" prefWidth="80"/>
+                    <TableColumn fx:id="cantidadColumn" text="Cantidad" prefWidth="80"/>
                     <TableColumn fx:id="subtotalColumn" text="Subtotal" prefWidth="100"/>
                 </columns>
             </TableView>

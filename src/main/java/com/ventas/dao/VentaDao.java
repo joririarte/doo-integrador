@@ -2,6 +2,7 @@ package com.ventas.dao;
 
 import com.ventas.dto.VentaDto;
 import com.ventas.dto.ClienteDto;
+import com.ventas.dto.DescuentoRecargoDto;
 import com.ventas.dto.DetalleVentaDto;
 import com.ventas.dto.EmpleadoDto;
 import com.ventas.dto.MedioPagoDto;
@@ -32,11 +33,22 @@ public class VentaDao implements Dao<VentaDto> {
                 dto.montoPagado = rs.getFloat("montoPagado");
                 dto.medioPagoId = rs.getInt("medioPagoId");
                 dto.clienteId = rs.getInt("clienteId");
+                dto.codigoVenta = rs.getString("codigoVenta");
+                dto.codigoDescuentoRecargo = rs.getString("codigoDescuentoRecargo");
 
                 // Cargar detalle de venta
                 dto.detalleVenta = new DetalleVentaDao().obtenerPorVenta(dto.ventaId);
                 dto.cliente = new ClienteDao().buscar(dto.clienteId);
                 dto.vendedor = new EmpleadoDao().buscar(dto.vendedorId);
+                dto.medioPago = new MedioPagoDao().buscar(dto.medioPagoId);
+                List<DescuentoRecargoDto> listado = new DescuentoRecargoDao().obtenerPorMedioPago(dto.medioPagoId);
+                if(listado != null && !listado.isEmpty()){
+                    dto.descuentoRecargo = listado.stream()
+                                                    .filter(
+                                                        dr -> dr.codigoDescuentoRecargo.equals(dto.codigoDescuentoRecargo)
+                                                    )
+                                                    .findFirst().get();
+                }
 
                 ventas.add(dto);
             }
@@ -51,7 +63,6 @@ public class VentaDao implements Dao<VentaDto> {
 
     @Override
     public VentaDto buscar(int id) {
-        VentaDto dto = null;
         String sql = "SELECT * FROM Venta WHERE ventaId = ?";
 
         try (PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sql)) {
@@ -59,7 +70,7 @@ public class VentaDao implements Dao<VentaDto> {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                dto = new VentaDto();
+                final VentaDto dto = new VentaDto();
                 dto.ventaId = rs.getInt("ventaId");
                 dto.vendedorId = rs.getInt("vendedorId");
                 dto.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
@@ -67,11 +78,21 @@ public class VentaDao implements Dao<VentaDto> {
                 dto.montoPagado = rs.getFloat("montoPagado");
                 dto.medioPagoId = rs.getInt("medioPagoId");
                 dto.clienteId = rs.getInt("clienteId");
+                dto.codigoVenta = rs.getString("codigoVenta");
+                dto.codigoDescuentoRecargo = rs.getString("codigoDescuentoRecargo");
 
                 // Detalles
                 dto.detalleVenta = new DetalleVentaDao().obtenerPorVenta(dto.ventaId);
                 dto.cliente = new ClienteDao().buscar(dto.clienteId);
                 dto.vendedor = new EmpleadoDao().buscar(dto.vendedorId);
+                dto.medioPago = new MedioPagoDao().buscar(dto.medioPagoId);
+                
+                List<DescuentoRecargoDto> listado = new DescuentoRecargoDao().obtenerPorMedioPago(dto.medioPagoId);
+                dto.descuentoRecargo = listado.stream()
+                                                .filter(
+                                                    dr -> dr.codigoDescuentoRecargo.equals(dto.codigoDescuentoRecargo)
+                                                 )
+                                                .findFirst().get();
             }
 
         } catch (SQLException e) {
@@ -79,7 +100,7 @@ public class VentaDao implements Dao<VentaDto> {
             throw new RuntimeException(e);
         }
 
-        return dto;
+        return null;
     }
 
     @Override
@@ -128,6 +149,7 @@ public class VentaDao implements Dao<VentaDto> {
                     obj.vendedorId = rs.getInt("vendedorId");
                     obj.medioPagoId = rs.getInt("medioPagoId");
                     obj.clienteId = rs.getInt("clienteId");
+                    obj.codigoDescuentoRecargo = rs.getString("codigoDescuentoRecargo");
 
                     obj.codigoVenta = rs.getString("codigoVenta");
                     obj.fecha = CommonUtils.stringToDate(rs.getString("fecha"));
@@ -137,6 +159,13 @@ public class VentaDao implements Dao<VentaDto> {
                     obj.vendedor = new EmpleadoDao().buscar(obj.vendedorId);
                     obj.medioPago = new MedioPagoDao().buscar(obj.medioPagoId);
                     obj.cliente = new ClienteDao().buscar(obj.clienteId);
+                    
+                    List<DescuentoRecargoDto> listado = new DescuentoRecargoDao().obtenerPorMedioPago(obj.medioPagoId);
+                    obj.descuentoRecargo = listado.stream()
+                                                  .filter(
+                                                    dr -> dr.codigoDescuentoRecargo.equals(obj.codigoDescuentoRecargo)
+                                                   )
+                                                  .findFirst().get();
 
                     lista.add(obj);
                 }
@@ -159,15 +188,17 @@ public class VentaDao implements Dao<VentaDto> {
             MedioPagoDto medioPago = new MedioPagoDao().buscar(obj.medioPago,Arrays.asList("codigoMedioPago")).getFirst();
             if (campos == null || campos.isEmpty()) {
                 // Insertar
-                String sql = "INSERT INTO Venta (vendedorId, fecha, estado, montoPagado, medioPagoId, clienteId, codigoVenta) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO Venta (vendedorId, codigoVenta, fecha, estado, montoPagado, medioPagoId, codigoDescuentoRecargo, clienteId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                     stmt.setInt(1, vendedor.personaId);
-                    stmt.setString(2, CommonUtils.dateToString(obj.fecha));
-                    stmt.setString(3, obj.estado);
-                    stmt.setFloat(4, obj.montoPagado);
-                    stmt.setInt(5, medioPago.medioPagoId);
-                    stmt.setInt(6, cliente.personaId);
-                    stmt.setString(7, obj.codigoVenta);
+                    stmt.setString(2, obj.codigoVenta);
+                    stmt.setString(3, CommonUtils.dateToString(obj.fecha));
+                    stmt.setString(4, obj.estado);
+                    stmt.setFloat(5, obj.montoPagado);
+                    stmt.setInt(6, medioPago.medioPagoId);
+                    stmt.setString(7, obj.codigoDescuentoRecargo);
+                    stmt.setInt(8, cliente.personaId);
+                    
                     stmt.executeUpdate();
 
                     ResultSet rs = stmt.getGeneratedKeys();

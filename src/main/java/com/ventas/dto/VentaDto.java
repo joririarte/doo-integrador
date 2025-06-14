@@ -11,6 +11,8 @@ public class VentaDto {
     public float montoPagado;
     public int medioPagoId;
     public MedioPagoDto medioPago;
+    public String codigoDescuentoRecargo;
+    public DescuentoRecargoDto descuentoRecargo;
     public int clienteId;
     public ClienteDto cliente;
     public List<DetalleVentaDto> detalleVenta;

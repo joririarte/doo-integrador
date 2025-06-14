@@ -61,14 +61,14 @@ CREATE TABLE IF NOT EXISTS MedioPago (
 -- Tabla DescuentoRecargo
 CREATE TABLE IF NOT EXISTS DescuentoRecargo (
     medioPagoId INTEGER NOT NULL,
-    descuentoRecargoId INTEGER NOT NULL,
+    codigoDescuentoRecargo TEXT NOT NULL,
     nombre TEXT,
     tipo TEXT,
     monto REAL,
     fechaInicio TEXT,
     fechaFin TEXT,
     habilitado BOOLEAN,
-    PRIMARY KEY (medioPagoId, descuentoRecargoId),
+    PRIMARY KEY (medioPagoId, codigoDescuentoRecargo),
     FOREIGN KEY (medioPagoId) REFERENCES MedioPago(medioPagoId)
 );
 
@@ -109,10 +109,12 @@ CREATE TABLE IF NOT EXISTS Venta (
     estado TEXT,
     montoPagado REAL,
     medioPagoId INTEGER,
+    codigoDescuentoRecargo TEXT,
     clienteId INTEGER,
     FOREIGN KEY (vendedorId) REFERENCES Empleado(personaId),
     FOREIGN KEY (medioPagoId) REFERENCES MedioPago(medioPagoId),
     FOREIGN KEY (clienteId) REFERENCES Cliente(personaId)
+    FOREIGN KEY (medioPagoId, codigoDescuentoRecargo) REFERENCES DescuentoRecargo(medioPagoId, codigoDescuentoRecargo)
 );
 
 -- Tabla DetalleVenta
@@ -163,12 +165,13 @@ VALUES
 INSERT INTO MedioPago (nombre, habilitado, fechaHabilitadoDesde, fechaHabilitadoHasta, codigoMedioPago)
 VALUES 
 ('Efectivo', 1, '2024-01-01', '2030-12-31','EF-001'),
-('Tarjeta de Credito', 1, '2024-01-01', '2030-12-31','TC-001');
+('Tarjeta de Credito', 1, '2024-01-01', '2030-12-31','TC-001'),
+('Tarjeta de Debito', 1, '2024-01-01', '2030-12-31','TD-001');
 
-INSERT INTO DescuentoRecargo (medioPagoId, descuentoRecargoId, nombre, tipo, monto, fechaInicio, fechaFin, habilitado)
+INSERT INTO DescuentoRecargo (medioPagoId, codigoDescuentoRecargo, nombre, tipo, monto, fechaInicio, fechaFin, habilitado)
 VALUES 
-(1, 1, 'Descuento 10% efectivo', 'Descuento', 0.1, '2024-01-01', '2030-12-31', 1),
-(2, 1, 'Recargo 5% tarjeta', 'Recargo', 0.5, '2024-01-01', '2030-12-31', 1);
+(1, 'DR-D-1', 'Descuento 10%', 'Descuento', 0.1, '2024-01-01', '2030-12-31', 1),
+(2, 'DR-R-1', 'Recargo 5%', 'Recargo', 0.5, '2024-01-01', '2030-12-31', 1);
 
 INSERT INTO Producto (nombre, marca, codigoBarras)
 VALUES 
@@ -198,9 +201,9 @@ VALUES
 (3, 1, 80, '2025-06-01');
 
 -- Venta realizada por Lucía (empleadoId = 4) al cliente Juan (clienteId = 1) con efectivo (medioPagoId = 1)
-INSERT INTO Venta (vendedorId, codigoVenta, fecha, estado, montoPagado, medioPagoId, clienteId)
+INSERT INTO Venta (vendedorId, codigoVenta, fecha, estado, montoPagado, medioPagoId, codigoDescuentoRecargo, clienteId)
 VALUES 
-(4,'C-001', '2025-06-08 11:00:00', 'Confirmada', 3000.0, 1, 1);
+(4,'VEN-0000000001', '2025-06-08 11:00:00', 'CONFIRMADA', 3000.0, 1, 'DR-D-1', 1);
 
 -- Supongamos ventaId autogenerado es 1
 

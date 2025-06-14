@@ -9,8 +9,11 @@ import org.modelmapper.config.Configuration.AccessLevel;
 
 import com.ventas.dto.DescuentoRecargoDto;
 import com.ventas.factories.FabricaDao;
+import com.ventas.model.Descuento.DescuentoBuilder;
+import com.ventas.model.Recargo.RecargoBuilder;
 
 public abstract class DescuentoRecargo extends Modelo {
+    private String codigoDescuentoRecargo;
     private String nombre;
     private String tipo;
     private float monto;
@@ -19,6 +22,15 @@ public abstract class DescuentoRecargo extends Modelo {
     private boolean habilitado;
 
     //#region Getters y Setters
+
+    public String getCodigoDescuentoRecargo() {
+        return codigoDescuentoRecargo;
+    }
+
+    public void setCodigoDescuentoRecargo(String codigoDescuentoRecargo) {
+        this.codigoDescuentoRecargo = codigoDescuentoRecargo;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -119,7 +131,7 @@ public abstract class DescuentoRecargo extends Modelo {
         return null;
     }
 
-    public DescuentoRecargo actualizararDescuentoRecargo(List<String> params) {
+    public DescuentoRecargo actualizarDescuentoRecargo(List<String> params) {
         try {
             DescuentoRecargoDto descuentoRecargoDto = this.mapper.map(this, DescuentoRecargoDto.class);
             descuentoRecargoDto = (DescuentoRecargoDto) this.dao.actualizar(descuentoRecargoDto, params);
@@ -144,7 +156,6 @@ public abstract class DescuentoRecargo extends Modelo {
         }
         return null;
     }
-
     //#endregion
 
 }

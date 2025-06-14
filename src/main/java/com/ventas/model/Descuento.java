@@ -24,6 +24,7 @@ public class Descuento extends DescuentoRecargo {
         this.setFechaInicio(builder.fechaInicio);
         this.setFechaFin(builder.fechaFin);
         this.setHabilitado(builder.habilitado);
+        this.setCodigoDescuentoRecargo(builder.codigoDescuento);
     }
 
     //#endregion
@@ -31,6 +32,7 @@ public class Descuento extends DescuentoRecargo {
     //#region DescuentoBuilder
 
     public static class DescuentoBuilder {
+        private String codigoDescuento;
         private String nombre;
         private String tipo;
         private float monto;
@@ -40,6 +42,11 @@ public class Descuento extends DescuentoRecargo {
 
         public static DescuentoBuilder getBuilder() {
             return new DescuentoBuilder();
+        }
+
+        public DescuentoBuilder conCodigoDescuento(String codigoDescuento){
+            this.codigoDescuento = codigoDescuento;
+            return this;
         }
 
         public DescuentoBuilder conNombre(String nombre) {

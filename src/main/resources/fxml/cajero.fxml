@@ -9,22 +9,16 @@
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
-
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="N° Cliente:"/>
-        <TextField fx:id="txtNroCliente" editable="false" disable="true"/>
-        <ComboBox fx:id="comboClientes" minWidth="160" editable="true" promptText="Escribe para buscar un cliente" />
-        <Button text="Buscar" onAction="#buscarCliente"/>
-        <Label fx:id="lblNombreCliente" text="Cliente: -" style="-fx-font-weight: bold;"/>
-    </HBox>
-
     <Label text="Registrar Venta" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <ComboBox fx:id="comboClientes" minWidth="160" promptText="Selecciona un Cliente" />
+        <Label fx:id="lblNombreCliente" text="N° Cliente: -" style="-fx-font-weight: bold;"/>
+    </HBox>
     
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Código de Barras:" />
         <TextField fx:id="txtCodigoBarras" minWidth="80" editable="false" disable="true" />
-        <ComboBox fx:id="comboProductos" minWidth="160" editable="true" promptText="Escanea o escribe el producto" />
-        <Button text="Buscar Producto" fx:id="btnBuscarProducto" onAction="#cargarDatosProducto"/>
+        <ComboBox fx:id="comboProductos" minWidth="160" promptText="Buscar Productos" />
     </HBox>
 
     <GridPane hgap="10" vgap="10">
@@ -61,8 +55,6 @@
         </children>
     </GridPane>
 
-    <Button text="Agregar a la venta" fx:id="agregarButton" onAction="#agregarProducto"/>
-
     <TableView fx:id="tablaVenta" prefHeight="200" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="productoColumn" text="Producto" prefWidth="150"/>
@@ -76,6 +68,9 @@
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Medio de pago:"/>
         <ComboBox fx:id="cbxMedioPago"/>
+        
+        <Label text="Descuento/Recargo:"/>
+        <ComboBox fx:id="cbxDescuentoRecargo" prefWidth="80"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER_LEFT">

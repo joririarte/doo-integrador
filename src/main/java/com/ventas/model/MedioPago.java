@@ -8,6 +8,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import com.ventas.dto.DescuentoRecargoDto;
 import com.ventas.dto.MedioPagoDto;
 import com.ventas.factories.FabricaDao;
+import com.ventas.factories.FabricaDescuentoRecargo;
 import com.ventas.model.Descuento.DescuentoBuilder;
 import com.ventas.model.Recargo.RecargoBuilder;
 
@@ -247,28 +248,8 @@ public class MedioPago extends Modelo {
     private List<DescuentoRecargo> mapearPoliticas(List<DescuentoRecargoDto> descuentoRecargoDtos){
         List<DescuentoRecargo> descuentoRecargo = new ArrayList<>();
         for(DescuentoRecargoDto drDto : descuentoRecargoDtos){
-            if(drDto.tipo.equals("Descuento")){
-                Descuento d = DescuentoBuilder.getBuilder()
-                                              .conNombre(drDto.nombre)
-                                              .conTipo(drDto.tipo)
-                                              .conMonto(drDto.monto)
-                                              .conHabilitado(drDto.habilitado)
-                                              .conFechaInicio(drDto.fechaInicio)
-                                              .conFechaFin(drDto.fechaFin)
-                                              .build();
-                descuentoRecargo.add(d);
-            }
-            else if(drDto.tipo.equals("Recargo")){
-                Recargo r = RecargoBuilder.getBuilder()
-                                          .conNombre(drDto.nombre)
-                                          .conTipo(drDto.tipo)
-                                          .conMonto(drDto.monto)
-                                          .conHabilitado(drDto.habilitado)
-                                          .conFechaInicio(drDto.fechaInicio)
-                                          .conFechaFin(drDto.fechaFin)
-                                          .build();
-                descuentoRecargo.add(r);
-            }
+            DescuentoRecargo dr = FabricaDescuentoRecargo.fabricar(drDto);
+            descuentoRecargo.add(dr);
         }
         return descuentoRecargo;
     }

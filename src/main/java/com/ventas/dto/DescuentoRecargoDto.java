@@ -3,7 +3,7 @@ package com.ventas.dto;
 import java.util.Date;
 public class DescuentoRecargoDto {
     public int medioPagoId;
-    public int descuentoRecargoId;
+    public String codigoDescuentoRecargo;
     public String nombre;
     public String tipo;
     public float monto;

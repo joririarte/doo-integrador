@@ -122,7 +122,7 @@ public class Cliente extends Persona {
     //#endregion
 
     //#region Getters y Setters
-    public String getNro_cliente() {
+    public String getNroCliente() {
         return nroCliente;
     }
 
