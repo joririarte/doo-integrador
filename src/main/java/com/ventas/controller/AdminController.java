@@ -100,7 +100,7 @@ public class AdminController {
   private void cargarProductos() {
     ObservableList<Producto> productos = FXCollections.observableArrayList();
 
-    List<Producto> lista = productoService.listarProductos();
+    List<Producto> lista = productoService.listar();
 
     if (lista != null) {
         productos.addAll(lista);
@@ -165,7 +165,7 @@ public class AdminController {
 
   protected void eliminarProducto(Producto producto) {
     try{
-      producto.eliminarProducto();
+      producto.eliminar();
       cargarProductos();
     }
     catch (Exception e){

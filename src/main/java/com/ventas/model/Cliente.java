@@ -10,7 +10,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import com.ventas.dto.ClienteDto;
 import com.ventas.factories.FabricaDao;
 
-public class Cliente extends Persona {
+public class Cliente extends Persona<Cliente> {
     private String nroCliente;
 
     //#region Constructors
@@ -132,8 +132,8 @@ public class Cliente extends Persona {
     //#endregion
 
     //#region Business Methods
-
-    public List<Cliente> listarClientes(){
+    @Override
+    public List<Cliente> listar(){
         try{
             List<ClienteDto> listado = this.dao.listarTodos();
             if(!listado.isEmpty())
@@ -146,7 +146,8 @@ public class Cliente extends Persona {
         return null;
     }
 
-    public List<Cliente> consultarCliente(List<String> params){ 
+    @Override
+    public List<Cliente> buscar(List<String> params){ 
         try{
             ClienteDto clienteDto = this.mapper.map(this, ClienteDto.class);
             List<ClienteDto> clientesDto = this.dao.buscar(clienteDto, params);
@@ -159,8 +160,9 @@ public class Cliente extends Persona {
         }
         return null;
     }
-
-    public Cliente registrarCliente(){
+    
+    @Override
+    public Cliente registrar(){
         try {
             ClienteDto clienteDto = this.mapper.map(this, ClienteDto.class);
             clienteDto = (ClienteDto) this.dao.actualizar(clienteDto,null);
@@ -173,7 +175,8 @@ public class Cliente extends Persona {
         return null;
     }
 
-    public Cliente actualizararCliente(List<String> params) {
+    @Override
+    public Cliente actualizar(List<String> params) {
         try {
             ClienteDto clienteDto = this.mapper.map(this, ClienteDto.class);
             clienteDto = (ClienteDto) this.dao.actualizar(clienteDto, params);
@@ -186,7 +189,8 @@ public class Cliente extends Persona {
         return null;
     }
 
-    public Cliente eliminarCliente(){
+    @Override
+    public Cliente eliminar(){
         try {
             ClienteDto clienteDto = this.mapper.map(this,ClienteDto.class);
             clienteDto = (ClienteDto) this.dao.borrar(clienteDto);

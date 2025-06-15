@@ -1,5 +1,7 @@
 package com.ventas.model;
 
+import com.ventas.dto.ClienteDto;
+import com.ventas.dto.ProductoDto;
 import com.ventas.dto.UsuarioDto;
 import com.ventas.factories.FabricaDao;
 
@@ -10,7 +12,7 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 
-public class Usuario extends Modelo{
+public class Usuario extends Modelo<Usuario>{
     private String username;
     private String password;
     private Empleado empleado;
@@ -110,15 +112,12 @@ public class Usuario extends Modelo{
     //#region Business Methods
 
     public Usuario iniciarSesion(){
-        try {
-            UsuarioDto user = this.mapper.map(this, UsuarioDto.class);
-            List<UsuarioDto> response = this.dao.buscar(user, Arrays.asList("username","password")); 
-            if(!response.isEmpty() && response.size() == 1){
-                user = response.getFirst();
-                this.ultimoAcceso = user.ultimoAcceso;
+        try{
+            List<Usuario> users = this.buscar(Arrays.asList("username","password"));
+            if(users != null && !users.isEmpty() && users.size() == 1){
+                Usuario user = users.getFirst();
                 user.ultimoAcceso = new Date();
-                this.dao.actualizar(user, Arrays.asList("ultimoAcceso"));
-                user.ultimoAcceso = this.ultimoAcceso;
+                user.actualizar(Arrays.asList("ultimoAcceso"));
                 return this.mapper.map(user, Usuario.class);
             }
         }
@@ -126,7 +125,55 @@ public class Usuario extends Modelo{
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+
         return null;
+    }
+
+    @Override
+    public List<Usuario> listar() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'listar'");
+    }
+
+    @Override
+    public List<Usuario> buscar(List<String> params) {
+        try{
+            UsuarioDto usuarioDto = this.mapper.map(this, UsuarioDto.class);
+            List<UsuarioDto> clientesDto = this.dao.buscar(usuarioDto, params);
+            if(!clientesDto.isEmpty())
+                return Arrays.asList(this.mapper.map(clientesDto, Usuario[].class));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public Usuario registrar() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'registrar'");
+    }
+
+    @Override
+    public Usuario actualizar(List<String> params) {
+        try {
+            UsuarioDto usuarioDto = this.mapper.map(this, UsuarioDto.class);
+            usuarioDto = (UsuarioDto) this.dao.actualizar(usuarioDto, params);
+            if(usuarioDto != null)
+                return this.mapper.map(usuarioDto, Usuario.class);
+        } catch (Exception e) {
+            e.printStackTrace(); 
+            throw new RuntimeException(e);       
+        }
+        return null;
+    }
+
+    @Override
+    public Usuario eliminar() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'eliminar'");
     }
     //#endregion
 }

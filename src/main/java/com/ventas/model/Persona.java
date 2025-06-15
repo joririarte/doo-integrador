@@ -2,7 +2,7 @@ package com.ventas.model;
 
 import java.util.*;
 
-public abstract class Persona extends Modelo{
+public abstract class Persona<T> extends Modelo<T>{
     private String nombreApellido;
     private String tipoDocumento;
     private String nroDocumento;

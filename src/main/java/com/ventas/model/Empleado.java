@@ -10,7 +10,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import com.ventas.dto.EmpleadoDto;
 import com.ventas.factories.FabricaDao;
 
-public class Empleado extends Persona{
+public class Empleado extends Persona<Empleado>{
     private String cargo;
     private String legajo;
 
@@ -154,7 +154,8 @@ public class Empleado extends Persona{
     public void generarInformeStockGeneral() {}
     public void generarInformeStockProducto(Producto p) {}
 
-    public List<Empleado> listarEmpleados(){
+    @Override
+    public List<Empleado> listar(){
         try{
             List<EmpleadoDto> listado = this.dao.listarTodos();
             if(!listado.isEmpty())
@@ -167,7 +168,8 @@ public class Empleado extends Persona{
         return null;
     }
 
-    public List<Empleado> consultarEmpleado(List<String> params){
+    @Override
+    public List<Empleado> buscar(List<String> params){
         try{
             EmpleadoDto empleadoDto = this.mapper.map(this, EmpleadoDto.class);
             List<EmpleadoDto> empleadosDto = this.dao.buscar(empleadoDto, params);
@@ -181,7 +183,8 @@ public class Empleado extends Persona{
         return null;
     }
 
-    public Empleado registrarEmpleado(){
+    @Override
+    public Empleado registrar(){
         try {
             EmpleadoDto empleadoDto = this.mapper.map(this, EmpleadoDto.class);
             empleadoDto = (EmpleadoDto) this.dao.actualizar(empleadoDto,null);
@@ -194,7 +197,8 @@ public class Empleado extends Persona{
         return null;
     }
 
-    public Empleado actualizararEmpleado(List<String> params) {
+    @Override
+    public Empleado actualizar(List<String> params) {
         try {
             EmpleadoDto empleadoDto = this.mapper.map(this, EmpleadoDto.class);
             empleadoDto = (EmpleadoDto) this.dao.actualizar(empleadoDto, params);
@@ -207,7 +211,8 @@ public class Empleado extends Persona{
         return null;
     }
 
-    public Empleado eliminarEmpleado(){
+    @Override
+    public Empleado eliminar(){
         try {
             EmpleadoDto empleadoDto = this.mapper.map(this,EmpleadoDto.class);
             empleadoDto = (EmpleadoDto) this.dao.borrar(empleadoDto);

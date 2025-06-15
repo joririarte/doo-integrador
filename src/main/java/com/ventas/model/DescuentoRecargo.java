@@ -12,7 +12,7 @@ import com.ventas.factories.FabricaDao;
 import com.ventas.model.Descuento.DescuentoBuilder;
 import com.ventas.model.Recargo.RecargoBuilder;
 
-public abstract class DescuentoRecargo extends Modelo {
+public abstract class DescuentoRecargo extends Modelo<DescuentoRecargo> {
     private String codigoDescuentoRecargo;
     private String nombre;
     private String tipo;
@@ -91,7 +91,8 @@ public abstract class DescuentoRecargo extends Modelo {
         return monto;
     }
 
-    public List<DescuentoRecargo> listarDescuentoRecargos(){
+    @Override
+    public List<DescuentoRecargo> listar(){
         try{
             List<DescuentoRecargoDto> listado = this.dao.listarTodos();
             if(!listado.isEmpty())
@@ -104,7 +105,8 @@ public abstract class DescuentoRecargo extends Modelo {
         return null;
     }
 
-    public List<DescuentoRecargo> consultarDescuentoRecargo(List<String> params){ 
+    @Override
+    public List<DescuentoRecargo> buscar(List<String> params){ 
         try{
             DescuentoRecargoDto descuentoRecargoDto = this.mapper.map(this, DescuentoRecargoDto.class);
             List<DescuentoRecargoDto> descuentoRecargosDto = this.dao.buscar(descuentoRecargoDto, params);
@@ -118,7 +120,8 @@ public abstract class DescuentoRecargo extends Modelo {
         return null;
     }
 
-    public DescuentoRecargo registrarDescuentoRecargo(){
+    @Override
+    public DescuentoRecargo registrar(){
         try {
             DescuentoRecargoDto descuentoRecargoDto = this.mapper.map(this, DescuentoRecargoDto.class);
             descuentoRecargoDto = (DescuentoRecargoDto) this.dao.actualizar(descuentoRecargoDto,null);
@@ -131,7 +134,8 @@ public abstract class DescuentoRecargo extends Modelo {
         return null;
     }
 
-    public DescuentoRecargo actualizarDescuentoRecargo(List<String> params) {
+    @Override
+    public DescuentoRecargo actualizar(List<String> params) {
         try {
             DescuentoRecargoDto descuentoRecargoDto = this.mapper.map(this, DescuentoRecargoDto.class);
             descuentoRecargoDto = (DescuentoRecargoDto) this.dao.actualizar(descuentoRecargoDto, params);
@@ -144,7 +148,8 @@ public abstract class DescuentoRecargo extends Modelo {
         return null;
     }
 
-    public DescuentoRecargo eliminarDescuentoRecargo(){
+    @Override
+    public DescuentoRecargo eliminar(){
         try {
             DescuentoRecargoDto descuentoRecargoDto = this.mapper.map(this,DescuentoRecargoDto.class);
             descuentoRecargoDto = (DescuentoRecargoDto) this.dao.borrar(descuentoRecargoDto);

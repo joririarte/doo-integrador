@@ -9,7 +9,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import com.ventas.dto.DetalleVentaDto;
 import com.ventas.factories.FabricaDao;
 
-public class DetalleVenta extends Modelo{
+public class DetalleVenta extends Modelo<DetalleVenta>{
     private String nombre;
     private int cantidad;
     private float precioVenta;
@@ -113,7 +113,8 @@ public class DetalleVenta extends Modelo{
         return this.cantidad * this.getPrecioVenta();
     }
     
-    public List<DetalleVenta> listarDetalleVentas() {
+    @Override
+    public List<DetalleVenta> listar() {
         try {
             List<DetalleVentaDto> listado = this.dao.listarTodos();
             if (!listado.isEmpty())
@@ -125,7 +126,8 @@ public class DetalleVenta extends Modelo{
         return null;
     }
 
-    public List<DetalleVenta> consultarDetalleVenta(List<String> params) {
+    @Override
+    public List<DetalleVenta> buscar(List<String> params) {
         try {
             DetalleVentaDto detalleVentaDto = this.mapper.map(this, DetalleVentaDto.class);
             List<DetalleVentaDto> detalleVentasDto = this.dao.buscar(detalleVentaDto, params);
@@ -138,7 +140,8 @@ public class DetalleVenta extends Modelo{
         return null;
     }
 
-    public DetalleVenta registrarDetalleVenta() {
+    @Override
+    public DetalleVenta registrar() {
         try {
             DetalleVentaDto detalleVentaDto = this.mapper.map(this, DetalleVentaDto.class);
             detalleVentaDto = (DetalleVentaDto) this.dao.actualizar(detalleVentaDto, null);
@@ -151,7 +154,8 @@ public class DetalleVenta extends Modelo{
         return null;
     }
 
-    public DetalleVenta actualizararDetalleVenta(List<String> params) {
+    @Override
+    public DetalleVenta actualizar(List<String> params) {
         try {
             DetalleVentaDto detalleVentaDto = this.mapper.map(this, DetalleVentaDto.class);
             detalleVentaDto = (DetalleVentaDto) this.dao.actualizar(detalleVentaDto, params);
@@ -164,7 +168,8 @@ public class DetalleVenta extends Modelo{
         return null;
     }
 
-    public DetalleVenta eliminarDetalleVenta() {
+    @Override
+    public DetalleVenta eliminar() {
         try {
             DetalleVentaDto detalleVentaDto = this.mapper.map(this, DetalleVentaDto.class);
             detalleVentaDto = (DetalleVentaDto) this.dao.borrar(detalleVentaDto);

@@ -10,7 +10,7 @@ import com.ventas.factories.FabricaDao;
 import com.ventas.factories.FabricaDescuentoRecargo;
 import com.ventas.model.MedioPago.MedioPagoBuilder;
 
-public class Venta extends Modelo {
+public class Venta extends Modelo<Venta> {
     private String codigoVenta;
     private Empleado vendedor;
     private Date fecha;
@@ -234,10 +234,11 @@ public class Venta extends Modelo {
     }
 
     public String getNextCodigoVenta(){
-        return String.format("VEN-%010d", listarVentas().size() + 1);
+        return String.format("VEN-%010d", listar().size() + 1);
     }
 
-    public List<Venta> listarVentas() {
+    @Override
+    public List<Venta> listar() {
         try {
             List<VentaDto> listado = this.dao.listarTodos();
             if (!listado.isEmpty()){
@@ -254,7 +255,8 @@ public class Venta extends Modelo {
         return null;
     }
 
-    public List<Venta> consultarVenta(List<String> params) {
+    @Override
+    public List<Venta> buscar(List<String> params) {
         try {
             VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
             List<VentaDto> ventasDto = this.dao.buscar(ventaDto, params);
@@ -267,12 +269,13 @@ public class Venta extends Modelo {
         return null;
     }
 
-    public Venta registrarVenta() {
+    @Override
+    public Venta registrar() {
         try {
             VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
             ventaDto = (VentaDto) this.dao.actualizar(ventaDto, null);
             if(ventaDto != null)
-                return this.mapper.map(ventaDto, Venta.class);
+                return mapearVenta(ventaDto);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -280,7 +283,8 @@ public class Venta extends Modelo {
         return null;
     }
 
-    public Venta actualizararVenta(List<String> params) {
+    @Override
+    public Venta actualizar(List<String> params) {
         try {
             VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
             ventaDto = (VentaDto) this.dao.actualizar(ventaDto, params);
@@ -293,7 +297,8 @@ public class Venta extends Modelo {
         return null;
     }
 
-    public Venta eliminarVenta() {
+    @Override
+    public Venta eliminar() {
         try {
             VentaDto ventaDto = this.mapper.map(this, VentaDto.class);
             ventaDto = (VentaDto) this.dao.borrar(ventaDto);

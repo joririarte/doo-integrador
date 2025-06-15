@@ -130,7 +130,7 @@ public class ProductoFormularioController {
         Producto p = ProductoBuilder.getBuilder()
                                     .conCodigoBarras(codigoBarras)
                                     .build();
-        List<Producto> listado = p.buscarProducto(Arrays.asList("codigoBarras"));
+        List<Producto> listado = p.buscar(Arrays.asList("codigoBarras"));
 
         if (listado != null && !listado.isEmpty()){
             p = listado.get(0);
@@ -172,7 +172,7 @@ public class ProductoFormularioController {
             params.add("stock");
         }
 
-        this.productoExistente = this.productoExistente.actualizarProducto(params);
+        this.productoExistente = this.productoExistente.actualizar(params);
         return this.productoExistente != null;
     }
 
@@ -196,7 +196,7 @@ public class ProductoFormularioController {
             producto.setPrecio(Arrays.asList(nuevoPrecio));
             producto.setStock(Arrays.asList(nuevoStock));
 
-            this.productoExistente = producto.registrarProducto();
+            this.productoExistente = producto.registrar();
         return producto != null;
     }
 

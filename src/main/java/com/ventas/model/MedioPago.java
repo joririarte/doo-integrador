@@ -12,7 +12,7 @@ import com.ventas.factories.FabricaDescuentoRecargo;
 import com.ventas.model.Descuento.DescuentoBuilder;
 import com.ventas.model.Recargo.RecargoBuilder;
 
-public class MedioPago extends Modelo {
+public class MedioPago extends Modelo<MedioPago> {
     private String nombre;
     private String codigoMedioPago;
     private List<DescuentoRecargo> descuentoRecargo;
@@ -154,7 +154,8 @@ public class MedioPago extends Modelo {
     
     public void checkFechaInicio() {}
 
-    public List<MedioPago> listarMedioPagos(){
+    @Override
+    public List<MedioPago> listar(){
         try{
             List<MedioPagoDto> listado = this.dao.listarTodos();
             if(!listado.isEmpty()){
@@ -168,7 +169,8 @@ public class MedioPago extends Modelo {
         return null;
     }
 
-    public List<MedioPago> consultarMedioPago(List<String> params){ 
+    @Override
+    public List<MedioPago> buscar(List<String> params){ 
         try{
             MedioPagoDto medioPagoDto = this.mapper.map(this, MedioPagoDto.class);
             List<MedioPagoDto> medioPagosDto = this.dao.buscar(medioPagoDto, params);
@@ -184,7 +186,8 @@ public class MedioPago extends Modelo {
         return null;
     }
 
-    public MedioPago registrarMedioPago(){
+    @Override
+    public MedioPago registrar(){
         try {
             MedioPagoDto medioPagoDto = this.mapper.map(this, MedioPagoDto.class);
             medioPagoDto = (MedioPagoDto) this.dao.actualizar(medioPagoDto,null);
@@ -197,7 +200,8 @@ public class MedioPago extends Modelo {
         return null;
     }
 
-    public MedioPago actualizararMedioPago(List<String> params) {
+    @Override
+    public MedioPago actualizar(List<String> params) {
         try {
             MedioPagoDto medioPagoDto = this.mapper.map(this, MedioPagoDto.class);
             medioPagoDto = (MedioPagoDto) this.dao.actualizar(medioPagoDto, params);
@@ -210,7 +214,8 @@ public class MedioPago extends Modelo {
         return null;
     }
     
-    public MedioPago eliminarMedioPago(){
+    @Override
+    public MedioPago eliminar(){
         try {
             MedioPagoDto medioPagoDto = this.mapper.map(this,MedioPagoDto.class);
             medioPagoDto = (MedioPagoDto) this.dao.borrar(medioPagoDto);

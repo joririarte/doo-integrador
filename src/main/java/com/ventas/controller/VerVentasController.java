@@ -106,7 +106,7 @@ public class VerVentasController {
 
         // Cargar datos
         Venta ventaService = VentaBuilder.getBuilder().build();
-        List<Venta> ventas = ventaService.listarVentas();
+        List<Venta> ventas = ventaService.listar();
         tablaVentas.setItems(FXCollections.observableArrayList(ventas));
     }
 

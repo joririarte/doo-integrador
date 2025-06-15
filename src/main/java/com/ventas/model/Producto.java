@@ -8,7 +8,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import com.ventas.dto.ProductoDto;
 import com.ventas.factories.FabricaDao;
 
-public class Producto extends Modelo {
+public class Producto extends Modelo<Producto> {
     private String nombre;
     private List<Stock> stock;
     private List<Precio> precio;
@@ -130,7 +130,8 @@ public class Producto extends Modelo {
     //#endregion
     
     //#region Business Methods
-    public List<Producto> buscarProducto(List<String> params){
+    @Override
+    public List<Producto> buscar(List<String> params){
         try{
             ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
             List<ProductoDto> p = this.dao.buscar(productoDto, params);
@@ -144,7 +145,8 @@ public class Producto extends Modelo {
         return null;
     }
 
-    public List<Producto> listarProductos(){
+    @Override
+    public List<Producto> listar(){
         try{
             List<ProductoDto> listado = this.dao.listarTodos();
             if(!listado.isEmpty())
@@ -157,7 +159,8 @@ public class Producto extends Modelo {
         return null;
     }
 
-    public Producto registrarProducto(){
+    @Override
+    public Producto registrar(){
         try {
             ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
             productoDto = (ProductoDto) this.dao.actualizar(productoDto, null);
@@ -170,7 +173,8 @@ public class Producto extends Modelo {
         return null;
     }
 
-    public Producto actualizarProducto(List<String> params){
+    @Override
+    public Producto actualizar(List<String> params){
         try {
             ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
             productoDto = (ProductoDto) this.dao.actualizar(productoDto, params);
@@ -183,7 +187,8 @@ public class Producto extends Modelo {
         return null;
     }
 
-    public Producto eliminarProducto(){
+    @Override
+    public Producto eliminar(){
         try {
             ProductoDto productoDto = this.mapper.map(this, ProductoDto.class);
             productoDto = (ProductoDto) this.dao.borrar(productoDto);

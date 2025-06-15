@@ -10,7 +10,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import com.ventas.dto.StockDto;
 import com.ventas.factories.FabricaDao;
 
-public class Stock extends Modelo{
+public class Stock extends Modelo<Stock>{
     private float cantidad;
     private Date fecha;
     
@@ -76,8 +76,8 @@ public class Stock extends Modelo{
     //#endregion Getters Y Setters
 
     //#region Business Methods
-
-    public List<Stock> listarStocks(){
+    @Override
+    public List<Stock> listar(){
         try{
             List<StockDto> listado = this.dao.listarTodos();
             if(!listado.isEmpty())
@@ -89,7 +89,8 @@ public class Stock extends Modelo{
         return null;
     }
 
-    public List<Stock> consultarStock(List<String> params){ 
+    @Override
+    public List<Stock> buscar(List<String> params){ 
         try{
             StockDto stockDto = this.mapper.map(this, StockDto.class);
             List<StockDto> stocksDto = this.dao.buscar(stockDto, params);
@@ -102,7 +103,8 @@ public class Stock extends Modelo{
         return null;
     }
 
-    public Stock registrarStock(){
+    @Override
+    public Stock registrar(){
         try {
             StockDto stockDto = this.mapper.map(this, StockDto.class);
             stockDto = (StockDto) this.dao.actualizar(stockDto,null);
@@ -115,7 +117,8 @@ public class Stock extends Modelo{
         return null;
     }
 
-    public Stock actualizararStock(List<String> params) {
+    @Override
+    public Stock actualizar(List<String> params) {
         try {
             StockDto stockDto = this.mapper.map(this, StockDto.class);
             stockDto = (StockDto) this.dao.actualizar(stockDto, params);
@@ -128,7 +131,8 @@ public class Stock extends Modelo{
         return null;
     }
 
-    public Stock eliminarStock(){
+    @Override
+    public Stock eliminar(){
         try {
             StockDto stockDto = this.mapper.map(this,StockDto.class);
             stockDto = (StockDto) this.dao.borrar(stockDto);

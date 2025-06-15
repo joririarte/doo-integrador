@@ -70,7 +70,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
     @Override
     public UsuarioDto actualizar(UsuarioDto obj, List<String> params) {
         try {
-            if (params != null && !params.isEmpty() && obj.empleadoId > 0) {
+            if (params != null && !params.isEmpty()) {
                 StringBuilder sql = new StringBuilder("UPDATE Usuario SET ");
             for (int i = 0; i < params.size(); i++) {
                 sql.append(params.get(i)).append(" = ?");
@@ -78,7 +78,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
                     sql.append(", ");
                 }
             }
-            sql.append(" WHERE empleadoId = ?");
+            sql.append(" WHERE username = ?");
 
             String query = sql.toString();
             PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(query);
@@ -98,7 +98,7 @@ public class UsuarioDao implements Dao<UsuarioDto> {
                 }
             }
 
-            stmt.setInt(index, obj.empleadoId);
+            stmt.setString(index, obj.username);
             stmt.executeUpdate();
             } else {
                 String sqlInsert = "INSERT INTO Usuario (empleadoId, username, password, ultimoAcceso) VALUES (?, ?, ?, ?)";

@@ -10,7 +10,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import com.ventas.dto.PrecioDto;
 import com.ventas.factories.FabricaDao;
 
-public class Precio extends Modelo {
+public class Precio extends Modelo<Precio> {
     private float monto;
     private Date fecha;
 
@@ -77,7 +77,8 @@ public class Precio extends Modelo {
 
     //#region Business Methods
 
-    public List<Precio> listarPrecios(){
+    @Override
+    protected List<Precio> listar(){
         try{
             List<PrecioDto> listado = this.dao.listarTodos();
             if(!listado.isEmpty())
@@ -90,7 +91,8 @@ public class Precio extends Modelo {
         return null;
     }
 
-    public List<Precio> consultarPrecio(List<String> params){ 
+    @Override
+    protected List<Precio> buscar(List<String> params){ 
         try{
             PrecioDto precioDto = this.mapper.map(this, PrecioDto.class);
             List<PrecioDto> preciosDto = this.dao.buscar(precioDto, params);
@@ -104,7 +106,8 @@ public class Precio extends Modelo {
         return null;
     }
 
-    public Precio registrarPrecio(){
+    @Override
+    protected Precio registrar(){
         try {
             PrecioDto precioDto = this.mapper.map(this, PrecioDto.class);
             precioDto = (PrecioDto) this.dao.actualizar(precioDto,null);
@@ -117,7 +120,8 @@ public class Precio extends Modelo {
         return null;
     }
 
-    public Precio actualizararPrecio(List<String> params) {
+    @Override
+    protected Precio actualizar(List<String> params) {
         try {
             PrecioDto precioDto = this.mapper.map(this, PrecioDto.class);
             precioDto = (PrecioDto) this.dao.actualizar(precioDto, params);
@@ -130,7 +134,8 @@ public class Precio extends Modelo {
         return null;
     }
 
-    public Precio eliminarPrecio(){
+    @Override
+    protected Precio eliminar(){
         try {
             PrecioDto precioDto = this.mapper.map(this,PrecioDto.class);
             precioDto = (PrecioDto) this.dao.borrar(precioDto);

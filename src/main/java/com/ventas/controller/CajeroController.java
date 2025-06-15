@@ -102,7 +102,7 @@ public class CajeroController {
         List<MedioPago> listadoMedioPagos = MedioPagoBuilder.getBuilder()
                                                             .conHabilitado(true)
                                                             .build()
-                                                            .listarMedioPagos();
+                                                            .listar();
 
         ObservableList<MedioPago> mediosPago = FXCollections.observableArrayList(listadoMedioPagos);
         cbxMedioPago.setItems(mediosPago);
@@ -206,7 +206,7 @@ public class CajeroController {
                 float vuelto = ventaActual.calcularVuelto(ventaActual.calcularMontoTotal());
                 ventaActual.setEstado("CONFIRMADA");
 
-                Venta ventaFinal = ventaActual.actualizararVenta(null);
+                Venta ventaFinal = ventaActual.registrar();
 
                 if (ventaFinal != null) {
                     mostrarAlerta("Venta registrada con éxito. Vuelto: $" + vuelto);
@@ -285,7 +285,7 @@ public class CajeroController {
             Empleado empleado = EmpleadoBuilder.getBuilder()
                     .conLegajo(user.getEmpleado().getLegajo())
                     .build();
-            List<Empleado> resultado = empleado.consultarEmpleado(List.of("legajo"));
+            List<Empleado> resultado = empleado.buscar(List.of("legajo"));
             if (resultado != null && !resultado.isEmpty()) {
                 return resultado.getFirst();
             }
@@ -298,7 +298,7 @@ public class CajeroController {
         Producto p = ProductoBuilder.getBuilder()
                 .conCodigoBarras(codigoBarras)
                 .build();
-        List<Producto> listado = p.buscarProducto(List.of("codigoBarras"));
+        List<Producto> listado = p.buscar(List.of("codigoBarras"));
         return (listado != null && !listado.isEmpty()) ? listado.getFirst() : null;
     }
 
@@ -332,7 +332,7 @@ public class CajeroController {
 
     private void configurarComboProductos() {
         Producto clienteService = ProductoBuilder.getBuilder().build();
-        List<Producto> todosProductos = clienteService.listarProductos();
+        List<Producto> todosProductos = clienteService.listar();
         comboProductos.setItems(FXCollections.observableArrayList(todosProductos));
 
         comboProductos.setCellFactory(lv -> new ListCell<Producto>() {
@@ -357,7 +357,7 @@ public class CajeroController {
 
     private void configurarComboClientes() {
         Cliente clienteService = ClienteBuilder.getBuilder().build();
-        List<Cliente> todosClientes = clienteService.listarClientes();
+        List<Cliente> todosClientes = clienteService.listar();
         comboClientes.setItems(FXCollections.observableArrayList(todosClientes));
 
         comboClientes.setCellFactory(lv -> new ListCell<Cliente>() {
