@@ -1,4 +1,6 @@
-package com.ventas.model;
+package com.ventas.controller;
+
+import com.ventas.model.Usuario;
 
 public class AppContext {
     private static Usuario usuarioActual;

@@ -45,7 +45,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
         return null;
     }
 
-    public List<DescuentoRecargoDto> obtenerPorMedioPago(int medioPagoId) {
+    public List<DescuentoRecargoDto> listarPorMedioPago(int medioPagoId) {
         List<DescuentoRecargoDto> lista = new ArrayList<>();
         String sql = "SELECT * FROM DescuentoRecargo WHERE medioPagoId = ? ORDER BY habilitado DESC";
 
@@ -120,7 +120,7 @@ public class DescuentoRecargoDao implements Dao<DescuentoRecargoDto> {
                 stmt.executeUpdate();
 
             } else {
-                int nextDescuentoRecargo = obtenerPorMedioPago(obj.medioPagoId).size() + 1;
+                int nextDescuentoRecargo = listarPorMedioPago(obj.medioPagoId).size() + 1;
                 String sqlInsert = "INSERT INTO DescuentoRecargo (medioPagoId, codigoDescuentoRecargo, nombre, tipo, monto, fechaInicio, fechaFin, habilitado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement stmt = ConexionSQLite.getInstance().getConnection().prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
                 stmt.setInt(1, obj.medioPagoId);

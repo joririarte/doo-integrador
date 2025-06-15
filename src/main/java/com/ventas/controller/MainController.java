@@ -1,6 +1,5 @@
 package com.ventas.controller;
 
-import com.ventas.model.AppContext;
 import com.ventas.model.Usuario;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

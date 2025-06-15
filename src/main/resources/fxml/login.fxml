@@ -18,7 +18,7 @@
                 <TextField fx:id="usuarioField" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="200"/>
 
                 <Label text="Contraseña:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-                <PasswordField fx:id="contraseñaField" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="200"/>
+                <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="200"/>
             </GridPane>
             <Label fx:id="mensajeLabel" textFill="red" visible="false"/>
             <Button fx:id="iniciarSesionBtn" text="Ingresar" onAction="#onLogin" defaultButton="true"/>

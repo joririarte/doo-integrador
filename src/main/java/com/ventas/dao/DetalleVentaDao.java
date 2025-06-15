@@ -43,7 +43,7 @@ public class DetalleVentaDao implements Dao<DetalleVentaDto> {
         return null;
     }
     
-    public List<DetalleVentaDto> obtenerPorVenta(int ventaId) {
+    public List<DetalleVentaDto> listarPorVenta(int ventaId) {
         DetalleVentaDto dto = null;
         List<DetalleVentaDto> lista = new ArrayList<>();
         String sql = "SELECT * FROM DetalleVenta WHERE ventaId = ?";

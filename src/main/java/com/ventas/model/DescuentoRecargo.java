@@ -91,6 +91,9 @@ public abstract class DescuentoRecargo extends Modelo<DescuentoRecargo> {
         return monto;
     }
 
+    //#endregion
+
+    //#region AccessMethods
     @Override
     public List<DescuentoRecargo> listar(){
         try{

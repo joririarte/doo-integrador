@@ -200,10 +200,6 @@ public class Venta extends Modelo<Venta> {
         this.detalleVenta.add(dv);
     }
     
-    public void obtenerMedioPago(MedioPago mp) { 
-        this.setMedioPago(mp); 
-    }
-    
     public Boolean cobrar(float monto) {
         if(this.checkCobro(monto)){
             this.setMontoPagado(monto);
@@ -236,6 +232,10 @@ public class Venta extends Modelo<Venta> {
     public String getNextCodigoVenta(){
         return String.format("VEN-%010d", listar().size() + 1);
     }
+
+    //#endregion
+
+    //#region AccessMethods
 
     @Override
     public List<Venta> listar() {

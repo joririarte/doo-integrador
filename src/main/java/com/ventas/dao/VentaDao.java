@@ -37,11 +37,11 @@ public class VentaDao implements Dao<VentaDto> {
                 dto.codigoDescuentoRecargo = rs.getString("codigoDescuentoRecargo");
 
                 // Cargar detalle de venta
-                dto.detalleVenta = new DetalleVentaDao().obtenerPorVenta(dto.ventaId);
+                dto.detalleVenta = new DetalleVentaDao().listarPorVenta(dto.ventaId);
                 dto.cliente = new ClienteDao().buscar(dto.clienteId);
                 dto.vendedor = new EmpleadoDao().buscar(dto.vendedorId);
                 dto.medioPago = new MedioPagoDao().buscar(dto.medioPagoId);
-                List<DescuentoRecargoDto> listado = new DescuentoRecargoDao().obtenerPorMedioPago(dto.medioPagoId);
+                List<DescuentoRecargoDto> listado = new DescuentoRecargoDao().listarPorMedioPago(dto.medioPagoId);
                 if(listado != null && !listado.isEmpty()){
                     dto.descuentoRecargo = listado.stream()
                                                     .filter(
@@ -82,12 +82,12 @@ public class VentaDao implements Dao<VentaDto> {
                 dto.codigoDescuentoRecargo = rs.getString("codigoDescuentoRecargo");
 
                 // Detalles
-                dto.detalleVenta = new DetalleVentaDao().obtenerPorVenta(dto.ventaId);
+                dto.detalleVenta = new DetalleVentaDao().listarPorVenta(dto.ventaId);
                 dto.cliente = new ClienteDao().buscar(dto.clienteId);
                 dto.vendedor = new EmpleadoDao().buscar(dto.vendedorId);
                 dto.medioPago = new MedioPagoDao().buscar(dto.medioPagoId);
                 
-                List<DescuentoRecargoDto> listado = new DescuentoRecargoDao().obtenerPorMedioPago(dto.medioPagoId);
+                List<DescuentoRecargoDto> listado = new DescuentoRecargoDao().listarPorMedioPago(dto.medioPagoId);
                 dto.descuentoRecargo = listado.stream()
                                                 .filter(
                                                     dr -> dr.codigoDescuentoRecargo.equals(dto.codigoDescuentoRecargo)
@@ -160,7 +160,7 @@ public class VentaDao implements Dao<VentaDto> {
                     obj.medioPago = new MedioPagoDao().buscar(obj.medioPagoId);
                     obj.cliente = new ClienteDao().buscar(obj.clienteId);
                     
-                    List<DescuentoRecargoDto> listado = new DescuentoRecargoDao().obtenerPorMedioPago(obj.medioPagoId);
+                    List<DescuentoRecargoDto> listado = new DescuentoRecargoDao().listarPorMedioPago(obj.medioPagoId);
                     obj.descuentoRecargo = listado.stream()
                                                   .filter(
                                                     dr -> dr.codigoDescuentoRecargo.equals(obj.codigoDescuentoRecargo)

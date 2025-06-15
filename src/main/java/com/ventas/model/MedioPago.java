@@ -131,10 +131,6 @@ public class MedioPago extends Modelo<MedioPago> {
     public void setFechaHabilitadoHasta(Date fechaHabilitadoHasta) {
         this.fechaHabilitadoHasta = fechaHabilitadoHasta;
     }
-    
-    public boolean checkFechaFin() { 
-        return false; 
-    }
 
     public String getCodigoMedioPago() {
         return codigoMedioPago;
@@ -148,11 +144,23 @@ public class MedioPago extends Modelo<MedioPago> {
     
     //#region Busines Methods
     
-    public void deshabilitar() {}
+    public void deshabilitar() {
+        this.habilitado = false;
+    }
     
-    public void habilitar() {}
+    public void habilitar() {
+        this.habilitado = true;
+    }
     
-    public void checkFechaInicio() {}
+    public Boolean checkFechaInicio() {
+        return new Date().after(this.fechaHabilitadoDesde);
+    }
+    public Boolean checkFechaFin() {
+        return new Date().before(this.fechaHabilitadoHasta);
+    }
+    //#endregion
+
+    //#region Access Methods
 
     @Override
     public List<MedioPago> listar(){

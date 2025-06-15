@@ -112,7 +112,9 @@ public class DetalleVenta extends Modelo<DetalleVenta>{
     public float calcularSubtotal() {
         return this.cantidad * this.getPrecioVenta();
     }
-    
+    //#endregion
+
+    //#region AccesMethods
     @Override
     public List<DetalleVenta> listar() {
         try {

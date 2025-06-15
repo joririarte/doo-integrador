@@ -8,13 +8,12 @@ import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
 
-import com.ventas.model.AppContext;
 import com.ventas.model.Usuario;
 import com.ventas.model.Usuario.UsuarioBuilder;
 
 public class LoginController {
     @FXML private TextField usuarioField;
-    @FXML private PasswordField contraseñaField;
+    @FXML private PasswordField passwordField;
     @FXML private Label mensajeLabel;
     @FXML private Button iniciarSesionBtn;
 
@@ -23,15 +22,15 @@ public class LoginController {
         iniciarSesionBtn.setDisable(false);
         mensajeLabel.setVisible(false);
         usuarioField.setEditable(true);
-        contraseñaField.setEditable(true);
+        passwordField.setEditable(true);
     }
 
     @FXML
     public void onLogin() {
         String usuario = usuarioField.getText();
-        String contraseña = contraseñaField.getText();
+        String password = passwordField.getText();
         toggleInputs();
-        if(usuario.isEmpty() || contraseña.isEmpty()){
+        if(usuario.isEmpty() || password.isEmpty()){
             toggleInputs();
             mostrarAlerta("Debes completar los campos");
             return;
@@ -39,7 +38,7 @@ public class LoginController {
         try{
             Usuario user = UsuarioBuilder.getBuilder()
                                         .conUsername(usuario)
-                                        .conPassword(contraseña)
+                                        .conPassword(password)
                                         .build();
             user = user.iniciarSesion(); 
 
@@ -81,7 +80,7 @@ public class LoginController {
 
     private void toggleInputs(){
         usuarioField.setDisable(!usuarioField.isDisable());
-        contraseñaField.setDisable(!contraseñaField.isDisable());
+        passwordField.setDisable(!passwordField.isDisable());
         iniciarSesionBtn.setDisable(!iniciarSesionBtn.isDisable());
     }
 }

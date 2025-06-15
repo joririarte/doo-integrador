@@ -129,7 +129,7 @@ public class Producto extends Modelo<Producto> {
     }
     //#endregion
     
-    //#region Business Methods
+    //#region Access Methods
     @Override
     public List<Producto> buscar(List<String> params){
         try{

@@ -30,7 +30,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                 dto.codigoMedioPago = rs.getString("codigoMedioPago");
 
                 // Relación: obtener lista de descuentos/recargos asociados
-                dto.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(dto.medioPagoId);
+                dto.descuentoRecargo = new DescuentoRecargoDao().listarPorMedioPago(dto.medioPagoId);
 
                 lista.add(dto);
             }
@@ -57,7 +57,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                 obj.habilitado = rs.getBoolean("habilitado");
                 obj.fechaHabilitadoDesde = CommonUtils.stringToDate(rs.getString("fechaHabilitadoDesde"));
                 obj.fechaHabilitadoHasta = CommonUtils.stringToDate(rs.getString("fechaHabilitadoHasta"));
-                obj.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(obj.medioPagoId);
+                obj.descuentoRecargo = new DescuentoRecargoDao().listarPorMedioPago(obj.medioPagoId);
                 obj.codigoMedioPago = rs.getString("codigoMedioPago");
                 return obj;
 
@@ -218,7 +218,7 @@ public class MedioPagoDao implements Dao<MedioPagoDto> {
                     obj.habilitado = rs.getBoolean("habilitado");
                     obj.fechaHabilitadoDesde = CommonUtils.stringToDate(rs.getString("fechaHabilitadoDesde"));
                     obj.fechaHabilitadoHasta = CommonUtils.stringToDate(rs.getString("fechaHabilitadoHasta"));
-                    obj.descuentoRecargo = new DescuentoRecargoDao().obtenerPorMedioPago(obj.medioPagoId);
+                    obj.descuentoRecargo = new DescuentoRecargoDao().listarPorMedioPago(obj.medioPagoId);
 
                     lista.add(obj);
                 }
