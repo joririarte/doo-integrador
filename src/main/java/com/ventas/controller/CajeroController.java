@@ -182,6 +182,7 @@ public class CajeroController {
         stockField.clear();
         cantidadSpinner.getValueFactory().setValue(1);
         productoSeleccionado = null;
+        comboProductos.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -251,6 +252,7 @@ public class CajeroController {
     }
 
     private void limpiarFormulario() {
+        comboClientes.getSelectionModel().clearSelection();
         txtCodigoBarras.clear();
         nombreField.clear();
         marcaField.clear();
