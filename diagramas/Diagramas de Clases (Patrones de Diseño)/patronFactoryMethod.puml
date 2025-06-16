@@ -1,0 +1,35 @@
+@startuml
+title Patron Factory Method - Sistema de Ventas
+package dao {
+   interface Dao {}
+   class ClaseConcretaDao{}
+    ClaseConcretaDao ..|> Dao : implementa
+}
+package modelo {
+  abstract class Modelo {
+    +dao: dao.Dao 
+  }
+  abstract class Persona {}
+  class Cliente {}
+  class Empleado {}
+  class Producto {}
+
+  Modelo <|.. Producto
+  Persona ..|> Modelo
+  Persona <|.. Cliente
+  Persona <|.. Empleado
+  Modelo ..> dao.Dao : usa
+}
+
+package factories {
+  class FabricaDao {
+    +fabricar(tipo: String): dao.Dao
+  }
+
+  ' Relación entre las fábricas y las clases de persona
+  FabricaDao <-- Cliente : usa
+  FabricaDao <-- Empleado : usa
+  FabricaDao <-- Producto : usa
+  FabricaDao ..> dao.ClaseConcretaDao : crea
+}
+@enduml

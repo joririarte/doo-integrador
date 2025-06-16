@@ -1,0 +1,11 @@
+@startuml name Diagrama Estado Empleado
+title Diagrama de Estado - Empleado
+
+[*] --> Cajero
+[*] --> JefeAdmin
+
+Cajero --> JefeAdmin : ascender()
+Cajero --> [*]
+JefeAdmin --> [*]
+
+@enduml

@@ -1,0 +1,257 @@
+
+@startuml
+title Clases DTO y Dao con Detalle
+scale max 800x1100
+skinparam dpi 150
+
+package modelo {
+  ' Clases abstractas y comunes
+  abstract class Modelo {
+    +dao: Dao<T>
+  }
+}
+
+package dao {
+
+  interface Dao<T> {
+    +listarTodos(): List<T>
+    +buscar(int: id): T
+    +buscar(obj: T, params: List<String>): List<T>
+    +actualizar(obj: T, params: List<String>): T
+    +borrar(obj: T): T
+  }
+
+  Dao <-- Modelo : "implementa"
+' DAOs con métodos de la interfaz Dao<T>
+}
+
+newpage
+title Clases DTO y Dao con Detalle
+scale max 800x1100
+skinparam dpi 150
+
+package dao{
+class PersonaDao {
+  - conn: SqlConnection
+}
+
+class ClienteDao {
+  - conn: SqlConnection
+}
+
+class EmpleadoDao {
+  - conn: SqlConnection
+}
+
+class UsuarioDao {
+  - conn: SqlConnection
+}
+
+class VentaDao {
+  - conn: SqlConnection
+}
+
+class DetalleVentaDao {
+  - conn: SqlConnection
+  +listarPorVenta(id: Int) List<DetalleVentaDto>
+}
+
+
+class ProductoDao {
+  - conn: SqlConnection
+}
+
+class PrecioDao {
+  - conn: SqlConnection
+  +listarPorProducto(id: Int) List<PrecioDto>
+}
+
+class StockDao {
+  - conn: SqlConnection
+  +listarPorProducto(id: Int) List<StockDto>
+}
+
+class MedioPagoDao {
+  - conn: SqlConnection
+}
+
+class DescuentoRecargoDao {
+  - conn: SqlConnection
+  +listarPorMedioPago(id: Int) List<DescuentoRecargoDto>
+}
+
+' Relaciones con la interfaz Dao
+Dao <|.. PersonaDao
+Dao <|.. ClienteDao
+Dao <|.. EmpleadoDao
+Dao <|.. UsuarioDao
+Dao <|.. VentaDao
+Dao <|.. DetalleVentaDao
+Dao <|.. ProductoDao
+Dao <|.. PrecioDao
+Dao <|.. StockDao
+Dao <|.. MedioPagoDao
+Dao <|.. DescuentoRecargoDao
+
+}
+
+newpage
+title Clases DTO
+scale max 800x1100
+skinparam dpi 150
+package dtos{
+  ' DTOs con atributos
+  class PersonaDto {
+    +personaId: int
+    +nombreApellido: String
+    +tipoDocumento: String
+    +nroDocumento: String
+    +CUIT: String
+    +condicionAfip: String
+    +genero: String
+    +fechaNacimiento: Date
+    +domicilio: String
+    +email: String
+    +telefonos: List<String>
+  }
+
+  class ClienteDto {
+    +nroCliente: String
+  }
+
+  class EmpleadoDto {
+    +cargo: String
+    +legajo: String
+  }
+
+  class UsuarioDto {
+    +login: String
+    +password: String
+    +ultimoAcceso: Date
+    +empleadoId: int
+    +empleado: EmpleadoDto
+  }
+
+  class VentaDto {
+    +ventaId: int
+    +codigoVenta: String
+    +vendedorId: int
+    +vendedor: EmpleadoDto
+    +fecha: Date
+    +estado: String
+    +montoPagado: float
+    +medioPagoId: int
+    +medioPago: MedioPagoDto
+    +descuentoRecargo: DescuentoRecargoDto
+    +clienteId: int
+    +cliente: ClienteDto
+    +detalleVenta: List<DetalleVentaDto>
+  }
+
+  class DetalleVentaDto {
+    +ventaId: int
+    +detalleVentaId: int
+    +nombre: String
+    +cantidad: int
+    +descuentoRecargo: float
+    +precioVenta: float
+    +productoId: int
+    +producto: ProductoDto
+  }
+
+  class ProductoDto {
+    +productoId: int
+    +nombre: String
+    +marca: String
+    +codigoBarras: String
+    +stock: List<StockDto>
+    +precio: List<PrecioDto>
+  }
+
+  class PrecioDto {
+    +productoId: int
+    +precioId: int
+    +monto: float
+    +fecha: Date
+  }
+
+  class StockDto {
+    +productoId: int
+    +stockId: int
+    +cantidad: float
+    +fecha: Date
+  }
+
+  class MedioPagoDto {
+    +medioPagoId: int
+    +codigoMedioPago: String
+    +nombre: String
+    +descuentoRecargo: List<DescuentoRecargoDto>
+    +habilitado: boolean
+    +fechaHabilitadoDesde: Date
+    +fechaHabilitadoHasta: Date
+  }
+
+  class DescuentoRecargoDto {
+    +medioPagoId: int
+    +codigoDescuentoRecargo: String
+    +nombre: String
+    +tipo: String
+    +monto: float
+    +fechaInicio: Date
+    +fechaFin: Date
+    +habilitado: boolean
+  }
+
+  ' Relaciones entre Dao y DTO
+  PersonaDao ..> PersonaDto
+  ClienteDao ..> ClienteDto
+  EmpleadoDao ..> EmpleadoDto
+  UsuarioDao ..> UsuarioDto
+  VentaDao ..> VentaDto
+  DetalleVentaDao ..> DetalleVentaDto
+  ProductoDao ..> ProductoDto
+  PrecioDao ..> PrecioDto
+  StockDao ..> StockDto
+  MedioPagoDao ..> MedioPagoDto
+  DescuentoRecargoDao ..> DescuentoRecargoDto
+
+}
+
+newpage
+title Clases de Conexión a Base de Datos
+scale max 800x1100
+skinparam dpi 150
+package singletonSqlConnection {
+    class SqlConnection {
+    -url: String
+    -conn: Connection
+    -instance: SqlConnection
+    --
+    +getInstance(): SqlConnection
+    +getConnection(): Connection
+    +closeConnection(): void
+  }
+
+  note right of SqlConnection::getInstance
+    Devuelve la instancia única de SqlConnection.
+  end note
+
+  note right of SqlConnection::getConnection
+    Devuelve la conexión activa a la base de datos.
+  end note
+
+  ' Relaciones entre DAOs y SqlConnection
+  SqlConnection "1" <-- "1..*" PersonaDao
+  SqlConnection "1" <-- "1..*" ClienteDao
+  SqlConnection "1" <-- "1..*" EmpleadoDao
+  SqlConnection "1" <-- "1..*" UsuarioDao
+  SqlConnection "1" <-- "1..*" VentaDao
+  SqlConnection "1" <-- "1..*" DetalleVentaDao
+  SqlConnection "1" <-- "1..*" ProductoDao
+  SqlConnection "1" <-- "1..*" PrecioDao
+  SqlConnection "1" <-- "1..*" StockDao
+  SqlConnection "1" <-- "1..*" MedioPagoDao
+  SqlConnection "1" <-- "1..*" DescuentoRecargoDao
+}
+@enduml

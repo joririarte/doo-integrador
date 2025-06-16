@@ -1,0 +1,486 @@
+@startuml
+title Diagrama de Clases - Sistema de Ventas
+
+' Configuración de estilo (opcional)
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+' Clases
+package modelo {
+  abstract class modelo{
+    +dao : Dao 
+  }
+
+  abstract class Persona {
+    -nombreApellido: String
+    -tipoDocumento: String
+    -nroDocumento: String
+    -CUIT: String
+    -condicionAfip: String
+    -genero: String
+    -fechaNacimiento: Date
+    -domicilio: String
+    -email: String
+    -telefonos: List<String>
+  }
+
+  class Cliente {
+    -nro_cliente: String
+  }
+
+  class Empleado {
+    -cargo: String
+    +generarInformeVentaDiaria(): void
+    +generarInformeVentaCajero(c: Empleado): void
+    +generarInformeStockGeneral(): void
+    +generarInformeStockProducto(p: Producto): void
+  }
+
+  class Usuario {
+    -login: String
+    -password: String
+    -ultimoAcceso: Date
+    -empleado: Empleado
+  }
+
+  class Venta {
+    -vendedor: Empleado
+    -fecha: Date
+    -estado: String
+    -montoPagado: float
+    -medioPago: MedioPago
+    -cliente: Cliente
+    -detalleVenta: List<DetalleVenta>
+    +calcularMontoTotal(): float
+    +calcularVuelto(): float
+    +setCliente(): void
+    +agregarDetalleProducto(): void
+    +obtenerMedioPago(): MedioPago
+    +cobrar(): void
+    +checkCobro(): Boolean
+    +cancelar(): void
+  }
+
+  class MedioPago {
+    -nombre: String
+    -descuentoRecargo: List<DescuentoRecargo>
+    -habilitado: boolean
+    -fechaHabilitadoDesde: Date
+    -fechaHabilitadoHasta: Date
+    +checkFechaFin(): Boolean
+    +deshabilitar(): void
+    +habilitar(): void
+    +checkFechaInicio()
+  }
+
+  class DescuentoRecargo {
+    -nombre: String
+    -tipo: String
+    -monto: float
+    -fechaInicio: Date
+    -fechaFin: Date
+    -habilitado: boolean
+  }
+
+  class DetalleVenta {
+    -nombre: String
+    -cantidad: int
+    -descuentoRecargo: float
+    -precioVenta: float
+    -producto: Producto
+    +calcularSubtotal(): float
+  }
+
+  class Producto {
+    -nombre: String
+    -Stock: List<Stock>
+    -precio: List<Precio>
+    -Marca: String
+    -codigoBarras: String
+  }
+
+  class Precio {
+    -monto: float
+    -fecha: Date
+    +getPrecio(): float
+    +getPrecio(fecha: Date): float
+  }
+
+  class Stock {
+    -cantidad: float
+    -fecha: Date
+    +getStock(): int
+    +getStock(fecha: Date): int
+  }
+
+  
+
+  ' Relaciones
+
+  Persona <|-- Cliente
+  Persona <|-- Empleado
+  Usuario "1" --> "0..1" Empleado
+  Cliente "1" --> "0..*" Venta
+  Empleado "1" --> "0..*" Venta : vendedor
+  Venta "0..*" --> "1" MedioPago
+  MedioPago "1" --> "0..*" DescuentoRecargo
+  Venta "1" --> "0..*" DetalleVenta
+  DetalleVenta "1..*" --> "1" Producto
+  Producto "1" --> "1..*" Precio
+  Producto "1" --> "1..*" Stock
+
+  Persona --|> modelo
+  Usuario --|> modelo
+  Venta --|> modelo
+  MedioPago --|> modelo
+  DescuentoRecargo --|> modelo
+  DetalleVenta --|> modelo
+  Producto --|> modelo
+  Precio --|> modelo
+  Stock --|> modelo
+}
+
+package dao {
+
+  abstract class Dao<T> {
+    + conn: SqlConnection
+    +listarTodos(): List<T>
+    +buscar(obj: T): T
+    +actualizar(obj: T): Boolean
+    +borrar(obj: T): Boolean
+  }
+
+  ' DAOs con métodos de la interfaz Dao<T>
+
+  class PersonaDao {
+    - conn: SqlConnection
+    +listarTodos(): List<PersonaDto>
+    +buscar(obj: PersonaDto): PersonaDto
+    +actualizar(obj: PersonaDto): Boolean
+    +borrar(obj: PersonaDto): Boolean
+  }
+
+  class ClienteDao {
+    - conn: SqlConnection
+    +listarTodos(): List<ClienteDto>
+    +buscar(obj: ClienteDto): ClienteDto
+    +actualizar(obj: ClienteDto): Boolean
+    +borrar(obj: ClienteDto): Boolean
+  }
+
+  class EmpleadoDao {
+    - conn: SqlConnection
+    +listarTodos(): List<EmpleadoDto>
+    +buscar(obj: EmpleadoDto): EmpleadoDto
+    +actualizar(obj: EmpleadoDto): Boolean
+    +borrar(obj: EmpleadoDto): Boolean
+  }
+
+  class UsuarioDao {
+    - conn: SqlConnection
+    +listarTodos(): List<UsuarioDto>
+    +buscar(obj: UsuarioDto): UsuarioDto
+    +actualizar(obj: UsuarioDto): Boolean
+    +borrar(obj: UsuarioDto): Boolean
+  }
+
+  class VentaDao {
+    - conn: SqlConnection
+    +listarTodos(): List<VentaDto>
+    +buscar(obj: VentaDto): VentaDto
+    +actualizar(obj: VentaDto): Boolean
+    +borrar(obj: VentaDto): Boolean
+  }
+
+  class DetalleVentaDao {
+    - conn: SqlConnection
+    +listarTodos(): List<DetalleVentaDto>
+    +buscar(obj: DetalleVentaDto): DetalleVentaDto
+    +actualizar(obj: DetalleVentaDto): Boolean
+    +borrar(obj: DetalleVentaDto): Boolean
+  }
+
+  class ProductoDao {
+    - conn: SqlConnection
+    +listarTodos(): List<ProductoDto>
+    +buscar(obj: ProductoDto): ProductoDto
+    +actualizar(obj: ProductoDto): Boolean
+    +borrar(obj: ProductoDto): Boolean
+  }
+
+  class PrecioDao {
+    - conn: SqlConnection
+    +listarTodos(): List<PrecioDto>
+    +buscar(obj: PrecioDto): PrecioDto
+    +actualizar(obj: PrecioDto): Boolean
+    +borrar(obj: PrecioDto): Boolean
+  }
+
+  class StockDao {
+    - conn: SqlConnection
+    +listarTodos(): List<StockDto>
+    +buscar(obj: StockDto): StockDto
+    +actualizar(obj: StockDto): Boolean
+    +borrar(obj: StockDto): Boolean
+  }
+
+  class MedioPagoDao {
+    - conn: SqlConnection
+    +listarTodos(): List<MedioPagoDto>
+    +buscar(obj: MedioPagoDto): MedioPagoDto
+    +actualizar(obj: MedioPagoDto): Boolean
+    +borrar(obj: MedioPagoDto): Boolean
+  }
+
+  class DescuentoRecargoDao {
+    - conn: SqlConnection
+    +listarTodos(): List<DescuentoRecargoDto>
+    +buscar(obj: DescuentoRecargoDto): DescuentoRecargoDto
+    +actualizar(obj: DescuentoRecargoDto): Boolean
+    +borrar(obj: DescuentoRecargoDto): Boolean
+  }
+
+  ' Relaciones con la interfaz Dao
+  Dao <|.. PersonaDao
+  Dao <|.. ClienteDao
+  Dao <|.. EmpleadoDao
+  Dao <|.. UsuarioDao
+  Dao <|.. VentaDao
+  Dao <|.. DetalleVentaDao
+  Dao <|.. ProductoDao
+  Dao <|.. PrecioDao
+  Dao <|.. StockDao
+  Dao <|.. MedioPagoDao
+  Dao <|.. DescuentoRecargoDao
+
+}
+
+package dtos{
+  ' DTOs con atributos
+  class PersonaDto {
+    +nombreApellido: String
+    +tipoDocumento: String
+    +nroDocumento: String
+    +CUIT: String
+    +condicionAfip: String
+    +genero: String
+    +fechaNacimiento: Date
+    +domicilio: String
+    +email: String
+    +telefonos: List<String>
+  }
+
+  class ClienteDto {
+    +nro_cliente: String
+  }
+
+  class EmpleadoDto {
+    +cargo: String
+  }
+
+  class UsuarioDto {
+    +login: String
+    +password: String
+    +ultimoAcceso: Date
+    +empleado: EmpleadoDto
+  }
+
+  class VentaDto {
+    +vendedor: EmpleadoDto
+    +fecha: Date
+    +estado: String
+    +montoPagado: float
+    +medioPago: MedioPagoDto
+    +cliente: ClienteDto
+    +detalleVenta: List<DetalleVentaDto>
+  }
+
+  class DetalleVentaDto {
+    +nombre: String
+    +cantidad: int
+    +descuentoRecargo: float
+    +precioVenta: float
+    +producto: ProductoDto
+  }
+
+  class ProductoDto {
+    +nombre: String
+    +stock: List<StockDto>
+    +precio: List<PrecioDto>
+    +marca: String
+    +codigoBarras: String
+  }
+
+  class PrecioDto {
+    +monto: float
+    +fecha: Date
+  }
+
+  class StockDto {
+    +cantidad: float
+    +fecha: Date
+  }
+
+  class MedioPagoDto {
+    +nombre: String
+    +descuentoRecargo: List<DescuentoRecargoDto>
+    +habilitado: boolean
+    +fechaHabilitadoDesde: Date
+    +fechaHabilitadoHasta: Date
+  }
+
+  class DescuentoRecargoDto {
+    +nombre: String
+    +tipo: String
+    +monto: float
+    +fechaInicio: Date
+    +fechaFin: Date
+    +habilitado: boolean
+  }
+
+  ' Relaciones entre Dao y DTO
+  PersonaDao ..> PersonaDto
+  ClienteDao ..> ClienteDto
+  EmpleadoDao ..> EmpleadoDto
+  UsuarioDao ..> UsuarioDto
+  VentaDao ..> VentaDto
+  DetalleVentaDao ..> DetalleVentaDto
+  ProductoDao ..> ProductoDto
+  PrecioDao ..> PrecioDto
+  StockDao ..> StockDto
+  MedioPagoDao ..> MedioPagoDto
+  DescuentoRecargoDao ..> DescuentoRecargoDto
+
+}
+
+package singletonSqlConnection {
+  class SqlConnection {
+    -url: String
+    -conn: Connection
+    -instance: SqlConnection
+    --
+    +getInstance(): SqlConnection
+    +getConnection(): Connection
+    +closeConnection(): void
+  }
+
+  note right of SqlConnection::getInstance
+    Devuelve la instancia única de SqlConnection.
+  end note
+
+  note right of SqlConnection::getConnection
+    Devuelve la conexión activa a la base de datos.
+  end note
+
+  ' Relaciones entre DAOs y SqlConnection
+  SqlConnection "1" <-- "1..*" PersonaDao
+  SqlConnection "1" <-- "1..*" ClienteDao
+  SqlConnection "1" <-- "1..*" EmpleadoDao
+  SqlConnection "1" <-- "1..*" UsuarioDao
+  SqlConnection "1" <-- "1..*" VentaDao
+  SqlConnection "1" <-- "1..*" DetalleVentaDao
+  SqlConnection "1" <-- "1..*" ProductoDao
+  SqlConnection "1" <-- "1..*" PrecioDao
+  SqlConnection "1" <-- "1..*" StockDao
+  SqlConnection "1" <-- "1..*" MedioPagoDao
+  SqlConnection "1" <-- "1..*" DescuentoRecargoDao
+}
+
+package factories {
+  class DaoFactory{
+    +fabricar(tipo: String): Dao
+  }
+
+  Dao <-- DaoFactory : "crea"
+  
+  note right of DaoFactory::fabricar
+    Fabrica un Dao según el tipo especificado usando java refection.
+  end note
+
+  class PersonaFactory {
+    +fabricar(tipo: String): Persona
+  }
+
+  Persona --> DaoFactory
+  Usuario --> DaoFactory
+  Venta --> DaoFactory
+  MedioPago --> DaoFactory
+  DescuentoRecargo --> DaoFactory
+  DetalleVenta --> DaoFactory
+  Producto --> DaoFactory
+  Precio --> DaoFactory
+  Stock --> DaoFactory
+  Cliente --> DaoFactory
+  Empleado --> DaoFactory
+}
+
+
+' package mvc {
+'   package controller {
+'     class ClienteController {
+'       -cliente: Cliente
+'       +registrarCliente(): void
+'       +editarCliente(): void
+'       +eliminarCliente(): void
+'       +listarClientes(): List<Cliente>
+'     }
+
+'     class EmpleadoController {
+'       -empleado: Empleado
+'       +generarInforme(): void
+'     }
+
+'     class VentaController {
+'       -venta: Venta
+'       +iniciarVenta(): void
+'       +agregarProducto(): void
+'       +asignarCliente(): void
+'       +confirmarVenta(): void
+'       +cancelarVenta(): void
+'     }
+
+'     class ProductoController {
+'       -producto: Producto
+'       +listarProductos(): List<Producto>
+'       +consultarStock(): int
+'     }
+
+'     ClienteController --> Cliente
+'     EmpleadoController --> Empleado
+'     VentaController --> Venta
+'     VentaController --> DetalleVenta
+'     VentaController --> Producto
+'     VentaController --> Cliente
+'     VentaController --> MedioPago
+'     ProductoController --> Producto
+'   }
+
+'   package view {
+'     class ClienteView {
+'       +mostrarFormularioRegistro(): void
+'       +mostrarClientes(List<Cliente>): void
+'     }
+
+'     class EmpleadoView {
+'       +mostrarInforme(): void
+'     }
+
+'     class VentaView {
+'       +mostrarPantallaVenta(): void
+'       +mostrarDetalleVenta(): void
+'     }
+
+'     class ProductoView {
+'       +mostrarListadoProductos(): void
+'       +mostrarStockProducto(): void
+'     }
+
+'     ClienteView --> Cliente
+'     EmpleadoView --> Empleado
+'     VentaView --> Venta
+'     VentaView --> DetalleVenta
+'     ProductoView --> Producto
+'   }
+}
+
+@enduml

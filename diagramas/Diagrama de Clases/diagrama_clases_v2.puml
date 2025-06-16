@@ -1,0 +1,173 @@
+@startuml
+title Diagrama de Clases - Sistema de Ventas
+scale max 800x1100
+skinparam dpi 150
+
+' Clases
+package modelo {
+  abstract class modelo{
+    +dao : Dao
+    +modelMapper: ModelMapper
+    +listar(): List<T>
+    +buscar(params: List<String>): List<T>
+    +registrar(): T
+    +actualizar(params: List<String>): T
+    +eliminar(): T 
+  }
+
+  abstract class Persona {
+    -nombreApellido: String
+    -tipoDocumento: String
+    -nroDocumento: String
+    -CUIT: String
+    -condicionAfip: String
+    -genero: String
+    -fechaNacimiento: Date
+    -domicilio: String
+    -email: String
+    -telefonos: List<String>
+  }
+
+  class Cliente {
+    -nro_cliente: String
+  }
+
+  class Empleado {
+    -cargo: String
+    -legajo: String
+    
+    +generarInformeVentaDiaria(): void
+    +generarInformeVentaCajero(c: Empleado): void
+    +generarInformeStockGeneral(): void
+    +generarInformeStockProducto(p: Producto): void
+  }
+
+  class Usuario {
+    -username: String
+    -password: String
+    -ultimoAcceso: String
+    -empleado: Empleado
+    
+    +iniciarSesion(): Usuario
+  }
+
+  class Venta {
+    -codigoVenta: String
+    -vendedor: Empleado
+    -fecha: Date
+    -estado: String
+    -montoPagado: float
+    -medioPago: MedioPago
+    -cliente: Cliente
+    -detalleVenta: List<DetalleVenta>
+    
+    +calcularMontoTotal(): float
+    +calcularVuelto(totalVenta float): float
+    +agregarDetalleVenta(dv DetalleVenta): void
+    +cobrar(monto: float): void
+    +checkCobro(monto: float): Boolean
+    +cancelar(): void
+    +getNextCodiigoVenta(): String
+  }
+
+  Persona <|-- Cliente
+  Persona <|-- Empleado
+  Usuario "1" --> "0..1" Empleado
+  Cliente "1" --> "0..*" Venta
+  Empleado "1" --> "0..*" Venta
+
+  Persona --|> modelo
+  Usuario --|> modelo
+  Venta --|> modelo
+
+}
+
+newpage
+title Diagrama de Clases - Sistema de Ventas (Continuación)
+scale max 800x1100
+skinparam dpi 150
+package modelo {
+  abstract class modelo{
+  }
+
+  class MedioPago {
+    -codigoMedioPago: String
+    -nombre: String
+    -descuentoRecargo: List<DescuentoRecargo>
+    -habilitado: boolean
+    -fechaHabilitadoDesde: Date
+    -fechaHabilitadoHasta: Date
+    
+    +checkFechaFin(): Boolean
+    +deshabilitar(): void
+    +habilitar(): void
+    +checkFechaInicio()
+  }
+
+  abstract class DescuentoRecargo {
+    -codigoDescuentoRecargo: String
+    -nombre: String
+    -tipo: String
+    -monto: float
+    -fechaInicio: Date
+    -fechaFin: Date
+    -habilitado: boolean
+    +calcular(monto: float) : float
+    +calcularPolitica(monto: float) : float
+    +aplicarPolitica(monto: float) : float
+  }
+
+  class Descuento{}
+
+  class Recargo{}
+
+  class DetalleVenta {
+    -nombre: String
+    -cantidad: int
+    -precioVenta: float
+    -producto: Producto
+    +calcularSubtotal(): float
+  }
+
+  class Producto {
+    -nombre: String
+    -Stock: List<Stock>
+    -precio: List<Precio>
+    -Marca: String
+    -codigoBarras: String
+    +getLastPrecio():float
+    +getLastStock(): float
+  }
+
+  class Precio {
+    -monto: float
+    -fecha: Date
+  }
+
+  class Stock {
+    -cantidad: float
+    -fecha: Date
+  }
+
+  ' Relaciones
+
+  Venta "0..*" --> "1" MedioPago
+  Venta  "0..*" --> "1" DescuentoRecargo
+  MedioPago "1" --> "0..*" DescuentoRecargo
+  Venta "1" --> "0..*" DetalleVenta
+  DetalleVenta "1..*" --> "1" Producto
+  Producto "1" --> "1..*" Precio
+  Producto "1" --> "1..*" Stock
+
+  Descuento --|> DescuentoRecargo
+  Recargo --|> DescuentoRecargo
+
+  MedioPago --|> modelo
+  DescuentoRecargo --|> modelo
+  DetalleVenta --|> modelo
+  Producto --|> modelo
+  Precio --|> modelo
+  Stock --|> modelo
+}
+
+@enduml

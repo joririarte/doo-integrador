@@ -1,0 +1,39 @@
+@startuml
+title Patron Factory Method - Sistema de Ventas
+package modelo {
+  abstract class Modelo {
+    +dao: dao.Dao 
+  }
+  abstract class DescuentoRecargo {
+    -tipo: String
+  }
+  class Descuento
+  class Recargo
+
+  class Venta
+  class MedioPago
+
+  DescuentoRecargo ..|> Modelo
+  DescuentoRecargo <|.. Descuento
+  DescuentoRecargo <|.. Recargo
+  Venta "1..*" --> "1..*" MedioPago
+  Venta "0..*" --> "1" DescuentoRecargo
+  MedioPago  "1" --> "0..*" DescuentoRecargo
+}
+
+package factories {
+  class FabricaDescuentoRecargo {
+    +fabricar(tipo: String): dao.Dao
+    +fabricar(DescuentoRecargoDto dto): DescuentoRecargo
+  }
+
+  FabricaDescuentoRecargo <.. MedioPago : usa
+  FabricaDescuentoRecargo <.. Venta : usa
+}
+
+package dto{
+    class DescuentoRecargoDto
+    DescuentoRecargoDto <-- FabricaDescuentoRecargo : usa
+}
+
+@enduml

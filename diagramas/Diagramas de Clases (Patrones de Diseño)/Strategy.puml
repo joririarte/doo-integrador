@@ -1,0 +1,31 @@
+@startuml
+package modelo{
+    class Venta {
+        -descuentoRecargo: DescuentoRecargo
+    }
+    class MedioPago {
+        -descuentoRecargo: List<DescuentoRecargo>
+    }
+
+    abstract class DescuentoRecargo {
+        -codigoDescuentoRecargo: String
+        -nombre: String
+        -tipo: String
+        -monto: float
+        -fechaInicio: Date
+        -fechaFin: Date
+        -habilitado: boolean
+        +calcularPolitica(monto: float) : float
+        +aplicarPolitica(monto: float) : float
+    }
+
+    class Descuento{}
+
+    class Recargo{}
+
+    Venta  "0..*" --> "1" DescuentoRecargo
+    MedioPago "1" --> "0..*" DescuentoRecargo
+    Descuento --|> DescuentoRecargo
+    Recargo --|> DescuentoRecargo
+}
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+object :Cliente
+object :Carrito
+object :Producto
+object :Pedido
+
+:Cliente --> :Carrito : 1. agregarProducto(p)
+:Carrito --> :Producto : 1.1 verificarStock()
+:Carrito --> :Pedido : 2. crearPedido()
+@enduml

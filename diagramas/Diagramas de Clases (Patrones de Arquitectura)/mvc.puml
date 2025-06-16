@@ -1,0 +1,36 @@
+@startuml
+package modelo {
+  class Usuario {
+    -username: String
+    -password: String
+    -ultimoAcceso: String
+    -empleado: Empleado
+    +iniciarSesion(): Usuario
+    +buscar(params: List<String>): List<Usuario>
+  }
+}
+
+package controller {
+  class AppContext{
+    -UsuarioActual: Usuario
+    +getUsuarioActual(): Usuario
+    +setUsuarioActual(usuario: Usuario): void
+  }
+
+  class LoginController {
+    -usuarioField: TextField
+    -passwordField: PasswordField
+    +onLogin(): void
+  }
+  AppContext "1" --> "1" Usuario
+  LoginController --> Usuario : usa
+}
+
+package view {
+  class LoginView {
+  }
+
+  LoginView --> LoginController : invoca
+  LoginController --> LoginView : actualiza
+}
+@enduml

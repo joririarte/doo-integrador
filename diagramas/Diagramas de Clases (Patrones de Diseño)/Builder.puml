@@ -1,0 +1,39 @@
+@startuml
+title Diagrama de Clases - Patrón Builder
+scale max 800x1100
+skinparam dpi 150
+
+package "modelo" {
+    class Producto {
+        -codigoBarras: String
+        -nombre: String
+        -Stock: List<Stock>
+        -precio: List<Precio>
+        -Marca: String
+        --
+        +setCodigoBarras(codigoBarras: String) : void
+        +setNombre(nombre: String) : void
+        +setStock(stock: List<Stock>) : void
+        +setPrecio(precio: List<Precio>) : void
+        +setMarca(marca: String) : void
+        +Producto(builder: ProductoBuilder)
+    }
+
+    class ProductoBuilder {
+        -codigoBarras: String
+        -nombre: String
+        -Stock: List<Stock>
+        -precio: List<Precio>
+        -Marca: String
+        --
+        +conCodigoBarras(codigoBarras: String) : ProductoBuilder
+        +conNombre(nombre: String) : ProductoBuilder
+        +conStock(stock: List<Stock>) : ProductoBuilder
+        +conPrecio(precio: List<Precio>) : ProductoBuilder
+        +conMarca(marca: String) : ProductoBuilder
+        +build() : Producto
+    }
+
+    Producto o-- ProductoBuilder : "<<inner class>>"
+}
+@enduml
