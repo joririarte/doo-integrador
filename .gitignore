@@ -1,2 +1,35 @@
-/target/
-/.idea/
+# Maven target folders
+*/target/
+target/
+
+# Eclipse, IntelliJ, VSCode and NetBeans project files
+*.iml
+.idea/
+*.ipr
+*.iws
+*.bak
+*.swp
+*.swo
+*.class
+*.log
+*.tmp
+*.DS_Store
+*.vscode/
+*.nb-gradle/
+*.settings/
+*.project
+*.classpath
+
+# OS generated files
+Thumbs.db
+.DS_Store
+
+# Java build artifacts
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# Database files (optional, uncomment if you don't want to track

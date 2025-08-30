@@ -10,7 +10,7 @@ public class ConexionSQLite {
     private String URL;
 
     private ConexionSQLite() {
-        URL = "jdbc:sqlite:SistemaVentas.db";
+        URL = "jdbc:sqlite:../SistemaVentas.db";
         try {
             conn = DriverManager.getConnection(URL);
         } catch (SQLException e) {
