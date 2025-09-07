@@ -14,7 +14,7 @@ public class EmpleadoController {
     }
 
     @GetMapping("/{id}")
-    public Empleado buscarPorId(@PathVariable String id) {
+    public Empleado buscar(@PathVariable("id") String id) {
         return new Empleado().buscar(List.of(id)).getFirst();
     }
 

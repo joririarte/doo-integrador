@@ -1,24 +1,36 @@
 package com.ventas.Utils;
 
 public class ApiResponse<T> {
-    private String status = "NoOK";
-    private String message = "Recurso no Encontrado";
+    private Boolean success;
+    private String message;
     private T data;
 
-    public ApiResponse(String status, String message, T data) {
-        this.status = status;
+    public ApiResponse(){
+        this.success = false;
+        this.message = "Recurso no encontrado";
+        this.data = null;
+    }
+
+    public ApiResponse(Boolean success, String message, T data) {
+        this.success = success;
         this.message = message;
         this.data = data;
     }
 
     // getters y setters
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public Boolean getStatus() { return success; }
+    public void setStatus(Boolean success) { this.success = success; }
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
 
     public T getData() { return data; }
     public void setData(T data) { this.data = data; }
+
+    public void setSuccessResponse(T data){
+        this.success = true;
+        this.message = "Recurso encontrado";
+        this.data = data;
+    }
 }
 

@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+
+import com.ventas.Utils.ApiResponse;
 import com.ventas.model.Cliente;
 import com.ventas.model.Cliente.ClienteBuilder;
 
@@ -18,16 +20,22 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> buscarPorId(@PathVariable("id") String id) {
+    public ApiResponse<Cliente> buscar(@PathVariable("id") String id) {
+        ApiResponse<Cliente> response = new ApiResponse<Cliente>();
+
         Cliente c = ClienteBuilder.getBuilder()
                                   .conNroCliente(id)
                                   .build();
+        
         List<Cliente> clientes = c.buscar(List.of("nroCliente"));
+        
         if (clientes != null && !clientes.isEmpty()) {
-            return ResponseEntity.ok(clientes.getFirst()); // 200 + Cliente en JSON
-        } else {
-            return ResponseEntity.notFound().build(); // 404 si no existe
+            response.setSuccessResponse(clientes.getFirst());
+            
+            return response;
         }
+
+        return response;
     }
 
     @PostMapping

@@ -2,7 +2,10 @@ package com.ventas.controller;
 
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+
+import com.ventas.Utils.ApiResponse;
 import com.ventas.model.Venta;
+import com.ventas.model.Venta.VentaBuilder;
 
 @RestController
 @RequestMapping("/api/ventas")
@@ -14,8 +17,22 @@ public class VentaController {
     }
 
     @GetMapping("/{id}")
-    public Venta buscarPorId(@PathVariable String id) {
-        return new Venta().buscar(List.of(id)).getFirst();
+    public ApiResponse<Venta> buscar(@PathVariable("id") String id) {
+        ApiResponse<Venta> response = new ApiResponse<Venta>();
+
+        Venta c = VentaBuilder.getBuilder()
+                                  .conCodigoVenta(id)
+                                  .build();
+        
+        List<Venta> clientes = c.buscar(List.of("codigoVenta"));
+        
+        if (clientes != null && !clientes.isEmpty()) {
+            response.setSuccessResponse(clientes.get(0));
+            
+            return response;
+        }
+
+        return response;
     }
 
     @PostMapping

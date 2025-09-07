@@ -2,6 +2,8 @@ package com.ventas.controller;
 
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+
+import com.ventas.Utils.ApiResponse;
 import com.ventas.model.Producto;
 import com.ventas.model.Producto.ProductoBuilder;
 
@@ -15,11 +17,18 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public Producto buscarPorId(@PathVariable("id") String id) {
+    public ApiResponse<Producto> buscar(@PathVariable("id") String id) {
+        ApiResponse<Producto> response = new ApiResponse<Producto>();
+
         Producto p = ProductoBuilder.getBuilder()
                                     .conCodigoBarras(id)
                                     .build();
-        return p.buscar(List.of("codigoBarras")).getFirst();
+        List<Producto> productos = p.buscar(List.of("codigoBarras"));
+        if(productos != null && !productos.isEmpty()){
+            response.setSuccessResponse(productos.getFirst());
+            return response;
+        }
+        return response;
     }
 
     @PostMapping
