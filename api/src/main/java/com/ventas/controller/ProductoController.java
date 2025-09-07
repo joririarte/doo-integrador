@@ -3,6 +3,7 @@ package com.ventas.controller;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.ventas.model.Producto;
+import com.ventas.model.Producto.ProductoBuilder;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -14,8 +15,11 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public Producto buscarPorId(@PathVariable String id) {
-        return new Producto().buscar(List.of(id)).getFirst();
+    public Producto buscarPorId(@PathVariable("id") String id) {
+        Producto p = ProductoBuilder.getBuilder()
+                                    .conCodigoBarras(id)
+                                    .build();
+        return p.buscar(List.of("codigoBarras")).getFirst();
     }
 
     @PostMapping
